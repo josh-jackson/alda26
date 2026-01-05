@@ -22,6 +22,14 @@ lm(t2 ~ t1 + group, data = df) # residualized change
 Equivalent if assumed everyone starts the same. But does not easily scale to more than 2 occasions, among other pitfalls 
 
 
+
+-----------------------------
+
+
+![](chelsea.jpeg)
+
+
+
 ----------------
 
 ```{r}
@@ -64,23 +72,13 @@ summary(mod.1)
 
 ------------
 
-Level 1 $${Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
+Level 1 $${Y}_{ti} = \beta_{0i}  + \varepsilon_{ti}$$
 
-Level 2 $${\beta}_{0j} = \gamma_{00} + U_{0j}$$
+Level 2 $${\beta}_{0i} = \gamma_{00} + U_{0i}$$
 
-$${U}_{0j} \sim\mathcal{N}(0, \tau_{00}^{2})$$ $${e}_{ij} \sim\mathcal{N}(0, \sigma^{2})$$
-
-
-
-![](chelsea.jpeg)
+$${U}_{0i} \sim\mathcal{N}(0, \tau_{00}^{2})$$ $${e}_{ti} \sim\mathcal{N}(0, \sigma^{2})$$
 
 
-
-## MLM review
-
-$${Y}_{i} = b_{0} + b_{1}X_{i} +  ... +\epsilon_{i}$$
-
-$${Y}_{ij} = b_{0} + b_{1}X_{ij} + ... +\epsilon_{ij}$$ Where j refers to some clustering or grouping variable and i refers to the observations within j
 
 ----------------
 
@@ -93,9 +91,10 @@ mlm
 
 
 
+```{r}
+#| code-fold: true
+# Function to sample people and their observations
 
-
-```{r, echo = FALSE}
 library(tidyverse)
 sample_n_of <- function(data, size, ...) {
   dots <- quos(...)
@@ -116,25 +115,29 @@ sample_n_of <- function(data, size, ...) {
 
 ## Empty model
 
-Level 1 $${Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
+Level 1 $${Y}_{ti} = \beta_{0i}  + \varepsilon_{ti}$$
 
-Level 2 $${\beta}_{0j} = \gamma_{00} + U_{0j}$$
+Level 2 $${\beta}_{0i} = \gamma_{00} + U_{0i}$$
 
-$${U}_{0j} \sim\mathcal{N}(0, \tau_{00}^{2})$$ $${e}_{ij} \sim\mathcal{N}(0, \sigma^{2})$$
+
+$${U}_{0i} \sim\mathcal{N}(0, \tau_{00}^{2})$$ 
+
+$${e}_{ti} \sim\mathcal{N}(0, \sigma^{2})$$
 
 ------------------------------------------------------------------------
 
 ```{r}
 #| code-fold: true
 
+set.seed(123)
 mlm %>%
   sample_n_of(8, ID) %>% 
 ggplot(aes(x = week, y = CON, group = ID)) + geom_point(aes(color = factor(ID))) + stat_smooth(aes(color = factor(ID)), method = "lm", formula=y~1, se = FALSE) + xlab("time") + ylab("Y") + theme(legend.position = "none")
 ```
 
-$${Y}_{ij} = \gamma_{00} + U_{0j}  + \varepsilon_{ij}$$
+$${Y}_{ti} = \gamma_{00} + U_{0i}  + \varepsilon_{ti}$$
 
-Akin to ANOVA if we treat $U_{0j}$ as between subjects variance & $\varepsilon_{ij}$ as within subjects variance.
+Akin to ANOVA if we treat $U_{0i}$ as between subjects variance & $\varepsilon_{ti}$ as within subjects variance.
 
 ## MLM intuitions
 
@@ -212,8 +215,6 @@ ggplot(aes(x=study, y=test.score, group = group)) +
 ```
 
 
-
-
 ## 1. Aggregation obscures hypotheses
 
 -   Between person H1: Do students who study more get better grades?
@@ -222,7 +223,6 @@ ggplot(aes(x=study, y=test.score, group = group)) +
 
 -   H1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate.
 
--   #compositeskill
 
 ## 2. Regressions within regressions
 
@@ -237,7 +237,7 @@ We are going to use level one components to run a regression, all the while leve
 
 ## Longitudinal example
 
-Level 1 can be thought of as regressions for each person with time as a predictor. Time can be a simple vector of integers indciating wave, year, hour, etc. 
+Level 1 can be thought of as regressions for each person with time as a predictor. Time can be a simple vector of integers indicating wave, year, hour, etc. 
 
 $$Y_\text{josh} = \beta_{0josh} + \beta_{1josh} + \varepsilon_\text{josh}$$
 
@@ -281,6 +281,7 @@ $$\beta_{1i} = \gamma_{10} + U_{1i}$$
 - We can treat this like any other regression, adding terms to test hypothesis that end up changing the value of other coefficients. 
 
 $$\beta_{1i} = \gamma_{10} + \gamma_{11}EDU + U_{1i}$$
+
 ## Some reminders
 
 - Any level 1 variable is automatically a level 2. Your choice if you want to keep with a single average (fixed effect) or if you also want to model a random effect, though we will "keep it maximal"
@@ -296,7 +297,7 @@ To sum up the first two ways to think about regression, we take a relationship t
 
 The third way is to think of questions at different levels. One difficulty people have is mixing types of questions. 
 
-At level 1 we can ask lower-unit questions e.g., if you are stressed at one time point, will you have higher scores? Often about fluctuations vs change
+At level 1 we can ask lower-unit questions e.g., if you are stressed at one time point, will you have higher scores?  Differentiates fluctuations vs level 2-long term change
 
 
 ------------------------------------------------------------------------
@@ -319,19 +320,22 @@ If we are interested in individual differences in intraindividual change, we mus
 
 - Most studies present fixed effect findings, focusing on the person average effect. Often we are going to be interested in deviations from the effect. We model these person specifics through our random effects. 
 
-$$Y_{trials, i} = \beta_{0i} + \beta_{1i}X_{trial,i} + \varepsilon_{trial}$$ $$\beta_{0} = \gamma_{00} + U_{0i}$$ $$\beta_{1} = \gamma_{10} +\gamma_{11}Z_i+ U_{1i}$$
+$$Y_{t i} = \beta_{0i} + \beta_{1i}X_{t i} + \varepsilon_{ti}$$
+
+$$\beta_{0} = \gamma_{00} + U_{0i}$$ 
+$$\beta_{1} = \gamma_{10} +\gamma_{11}Z_i+ U_{1i}$$
 
 ------------------------------------------------------------------------
 
 ![](btw.png)
 
-Assume a simple intercept only regression model where we aggregate across time.
+Assume a simple pre-post null model with long data. Y ~ 1.   
 
 ------------------------------------------------------------------------
 
 ![](win.png)
 
-A MLM intercept only model takes what was previously chalked up to error and reassigns it into person specific "buckets"
+A MLM intercept only model [y ~ 1 + (1 |ID)] takes what was previously chalked up to error and reassigns it into person specific "buckets"
 
 ------------------------------------------------------------------------
 
@@ -340,7 +344,7 @@ A MLM intercept only model takes what was previously chalked up to error and rea
 
 - We can relate the random effects to other random effects e.g., do people who increase faster also start higher? 
 
-- We can make person specific predictions by feeding our regression different values (much like we create a regression line by feeding the equation different values of X)
+- We can make person specific predictions by feeding our regression different values (much like we create a regression line by feeding the equation different values of X). 
 
 
 ## 5. Shrinkage/partial pooling
@@ -398,7 +402,20 @@ ggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() +
 #| code-fold: true
 
 library(viridis)
-ggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = "lm", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab("test score") + xlab("study amount") + geom_point()
+library(marginaleffects)
+library(lme4)
+model <- lmer(SMN7 ~ week + (1 + week | ID), data = mlm)
+
+avg_line <- predictions(model, newdata = datagrid(week = 1:6), 
+                        re.form = NA)
+
+predictions(model, newdata = datagrid(ID = unique(mlm$ID), week = 1:6), allow.new.levels = T) |> 
+ggplot() +
+  geom_line(aes(x = week, y = estimate, group = ID), 
+            alpha = 0.3, color = "blue") + 
+  geom_line(data = avg_line, 
+            aes(x = week, y = estimate),
+            size = 2, color = "black")
 ```
 
 ------------------------------------------------------------------------
@@ -419,193 +436,11 @@ If you have a little data, then the safe bet is to look at the average. If you h
 
 - Null or intercept only model
 
-Level 1: $${Y}_{ij} = \beta_{0j}  + \varepsilon_{ij}$$
+Level 1: $${Y}_{ti} = \beta_{0i}  + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0j} = \gamma_{00} + U_{0j}$$ Combined: $${Y}_{ij} = \gamma_{00} + U_{0j}  + \varepsilon_{ij}$$
+Level 2: $${\beta}_{0i} = \gamma_{00} + U_{0i}$$ Combined: $${Y}_{ti} = \gamma_{00} + U_{0i}  + \varepsilon_{ti}$$
 
 
-## Level 1 predictors
-
-Level 1 is where you have data that repeats within your grouping or clustering data. Is your cluster classrooms? Then students are level 1. Is your cluster people? Then observations are level 1.
-
-$${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ Notice on the subscript of X that these predictors vary across group (j) and within the group (i) So if your grouping (j) is people, then i refers to different observations.
-
-
--------------
-
-- For longitudinal data, level 1 refers (mostly) to within-Person (WP) Variation, Level-1, aka INTRA-individual, aka Time-Varying,
-
-- Observations are NESTED within person
-
-------------------------------------------------------------------------
-
-Level 2 takes the parameters at level 1 and decomposes them into a fixed component ( $\gamma$ ) that reflects the average and, if desired, the individual deviations around that fixed effect (U).
-
-level 1 $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$
-
-level 2 $${\beta}_{0j} = \gamma_{00} + U_{0j}$$\
-$${\beta}_{1j} = \gamma_{10}$$
-
-------------------------------------------------------------------------
-
-Level 1:
-
-$${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ 
-
-Level 2:
-
-$${\beta}_{0j} = \gamma_{00} + U_{0j}$$
-
-$${\beta}_{1j} = \gamma_{10} + U_{1j}$$
-
---------
-
-Combined $${Y}_{ij} = \gamma_{00} + \gamma_{10}(X_{ij})+ U_{0j} + U_{1j}(X_{ij}) + \varepsilon_{ij}$$
-
-Can think of a persons score divided up into a fixed component as well as the random component.
-
-$${\beta}_{16} = \gamma_{10} \pm U_{16}$$
-
-
-------------
-
--   Level 2 referes to Between-Person (BP) Variation, INTER-individual, Differences, Time-INvariant, make comparisons across individuals.
-
-- Some variables can be both depending on how you measure them. E.g. Age
-
-- Level 1 and Level 2 can be differentiated in your dataset by which one repeats vs which is consistent. 
-
-
-## Error structure
-
-The residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.
-
-$$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix}
-\sim \mathcal{N} \begin{pmatrix} 
-  0,      \tau_{00}^{2} & \tau_{01}\\ 
-  0,  \tau_{01} & \tau_{10}^{2}
-\end{pmatrix}$$
-
-Note that it is possible to have a different error structure for the random effects
-
-$${e}_{ij} \sim \mathcal{N}(0, \sigma^{2})$$
-
-## Multiple level 1 predictors
-
-Level 1:
-
-$${Y}_{ijk} = \beta_{0j}  + \beta_{1j}X_{ij} + \beta_{2j}Z_{ik} + \varepsilon_{ijk}$$ Level 2:\
-$${\beta}_{0j} = \gamma_{00} + U_{0j}$$
-
-$${\beta}_{1j} = \gamma_{10} + U_{1j}$$ $${\beta}_{2k} = \gamma_{20} + U_{2k}$$
-
--------
-
-- Remember that MLM is just like a lot of separate regressions done at Level 1. 
-
-- What happens when we have multiple predictors? The effect of any one variable partials out the common variance, the same as with multiple regression. 
-
-## Level 2 predictors
-
-Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
-$${\beta}_{1j} = \gamma_{10} + U_{1j}$$
-
--------
-
-
-Combined $${Y}_{ij} = \gamma_{00} + \gamma_{01}G_{j}+  \gamma_{10} (X_{ij}) + U_{0j} + U_{1j}(X_{ij}) + \varepsilon_{ij}$$ $${Y}_{ij} = [\gamma_{00} + \gamma_{01}G_{j}+ U_{0j}]  + [(\gamma_{10}  + U_{1j})(X_{ij})] + \varepsilon_{ij}$$
-
---------
- 
-- Level 2 predictors on the intercept can also be thought of a simple regression. Here the level 2 DV are group-level (person) means when the level 1 predictor = 0. That's because it is the intercept!  
-
-- The intercept of this regression is the fixed effect, or population average of the level 1 intercept. 
-
-- The regression coefficient for the intercept can be interpreted the same as a normal regression
-
-## Cross level interactions
-
-level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}X_{ij} + \varepsilon_{ij}$$ Level 2: $${\beta}_{0j} = \gamma_{00} + \gamma_{01}G_{j} +   U_{0j}$$\
-$${\beta}_{1j} = \gamma_{10} + \gamma_{11}G_{j} + U_{1j}$$\
-$${Y}_{ij} = \gamma_{00} + \gamma_{01}G_{j}+  \gamma_{10} (X_{ij}) + \gamma_{11}(G_{j}*X{ij}) +  U_{0j} + U_{1j}(X{ij}) + \varepsilon_{ij}$$
-
-$${Y}_{ij} = [\gamma_{00} + U_{0j} +\gamma_{01}G_{j}] + [(\gamma_{10}  + \gamma_{11}G_{j}+  U_{1j})(X{ij})] + \varepsilon_{ij}$$
-
-
-## Centering
-
-As a rule, each level-1 predictor is really 2 predictor variables. It is important to separate within-group from between group variance. Failing to do so will "smush" between and within variance to level 1.
-
-Example: student SES at level 1, with schools at level 2. Some kids have more money than other kids in their school Some schools have more money than other schools
-
-Fortunately it is easy to separate this
-
-------------------------------------------------------------------------
-
-Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}(X_{ij}- \bar{X_j}) + \varepsilon_{ij}$$
-
-Level 2: $${\beta}_{0j} = \gamma_{00} + \bar{X_j} +   U_{0j}$$
-
-$${\beta}_{1j} = \gamma_{10} + \bar{X_j} + U_{1j}$$
-
-## MLM as default and make it maximum
-
-If you have data like this you should analyze like this! If you don't, then you are losing information (GEE being a potential exception).
-
-The question often is about which random effects to fit. There are multiple opinions, but mine is to start maximum, and then work downward (ie simplify) if necessary/consistent with theory. It doesn't really hurt to include them, especially with new estimation advances (Bayesian estimation)
-
-
-
-
-## Basic Longitudinal Models
-
-To keep with the book, we are going to discuss DVs that take on different values at each timepoint t, for individual i ${Y}_{ti}$ Other naming schemes are equivalent such as the same ${Y}_{ij}$ where i's are nested in j groups.
-
-## Empty model
-
-Level 1 $${Y}_{ti} = \beta_{0i}  + \varepsilon_{ti}$$
-
-Level 2 $${\beta}_{0i} = \gamma_{00} + U_{0i}$$
-
-$${e}_{ti} \sim \mathcal{N}(0, \sigma^{2})$$
-
-$${U}_{0i} \sim \mathcal{N}(0, \tau_{00}^{2})$$
-
-## What does this look like?
-
-```{r, echo = FALSE}
-library(tidyverse)
-sample_n_of <- function(data, size, ...) {
-  dots <- quos(...)
-  
-  group_ids <- data %>% 
-    group_by(!!! dots) %>% 
-    group_indices()
-  
-  sampled_groups <- sample(unique(group_ids), size)
-  data %>% 
-    filter(group_ids %in% sampled_groups)
-}
-```
-
-```{r, echo = FALSE, warning = FALSE}
-set.seed(24)
-
-
-mlm %>%
-  sample_n_of(8, ID) %>% 
-ggplot(aes(x = week, y = CON, group = ID)) + geom_point(aes(color = factor(ID))) + stat_smooth(aes(color = factor(ID)), method = "lm", formula=y~1, se = FALSE) + xlab("We dont have a predictor") + ylab("Y") + theme(legend.position = "none") + geom_hline(yintercept = .22, size = 1.5)
-```
-
-## combined equation
-
-$${Y}_{ti} = \gamma_{00} + U_{0i}  + \varepsilon_{ti}$$
-
-Akin to ANOVA if we treat $U_{0i}$ as between subjects variance & $\varepsilon_{ti}$ as within subjects variance.
-
--   $\gamma_{00}$ is fixed or constant across people
-
--   $U_{0i}$ is random or varies across people
 
 ## ICC
 
@@ -614,6 +449,7 @@ Between version variance over total variance. If the ICC is greater than zero, w
 $$\frac{U_{0i}}{U_{0i}+ \varepsilon_{ti}}$$
 
 ICC can also be interpreted as the average (or expected) correlation within a nested group, in this case a person. On other words, the ICC is the correlation between any person's repeated measures (technically residuals).
+
 
 ## GSOEP EXAMPLE
 
@@ -702,7 +538,7 @@ str(b5_long)
 
 ```{r}
 
-mod.1 <- lmer(C ~ 1 + (1 | ID), data=b5_long)
+mod.1 <- glmmTMB(C ~ 1 + (1 | ID), data=b5_long)
 ```
 
 ------------------------------------------------------------------------
@@ -732,7 +568,7 @@ model_performance(mod.1)
 
 ## what do the random effects look like?
 
-```{r, message = FALSE,  echo = TRUE}
+```{r}
 #| code-fold: true
 library(modelbased)
 random <- estimate_grouplevel(mod.1) 
@@ -742,45 +578,12 @@ head(random)
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
+```{r}
 #| code-fold: true
 library(see)
 random %>% 
 sample_n(100) %>% 
-plot(.) +
-  theme_lucid()
-```
-
-## base r dealing with random effects
-
-coef = fixef + raneff
-
-```{r, echo = TRUE}
-head(ranef(mod.1))
-```
-
-
-
---------------
-
-
-
-```{r, echo = TRUE}
-head(coef(mod.1))
-```
-
-```{r, echo = TRUE}
-fixef(mod.1)
-```
-
-## Residuals
-
-```{r}
-#| code-fold: true
-library(broom.mixed)
-example.aug<- augment(mod.1, data = b5_long)
-describe(example.aug)
-
+plot(.) 
 ```
 
 
@@ -817,32 +620,45 @@ predictions(mod.1, newdata = datagrid(ID = c(901, 2301)))
 
 
 
-## within person empty model
+## Within person empty null model
 
 $${Y}_{ti} = \gamma_{00} + U_{0i}  + \varepsilon_{ti}$$
 
 This model is helpful in producing the simplest longitudinal model, one where it states: there is an average value $\gamma_{00}$ that people differ along $U_{0i}$ . Because time is not in the model it assumes people do not change. $\varepsilon_{ti}$ reflects variation around each person's predicted score ( $\gamma_{00} + U_{0i}$ ).
 
+
+
+
+
 ## Growth model
 
-We are going to fit a simple longitudinal model: a growth model. Growth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person.
+Growth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person.
 
 
-## A predictor in level 1
+Level 1: 
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \varepsilon_{ti}$$ 
+Because we have a level 1 time predictor in the model, we are now asking the question, how does time influence scores on our DV? Because all regressions are linear by default, it asks if there is an association such that as time increases does the DV? 
 
-Level 1 is where you have data that repeats within your grouping or clustering data. 
-
-$${Y}_{ti} = \beta_{0i}  + \beta_{1i}\text{time}_{ti} + \varepsilon_{ti}$$
 
 ------------------------------------------------------------------------
 
 Level 2 takes the parameters at level 1 and decomposes them into a fixed component ( $\gamma$ ) that reflects the average and, if desired, the individual deviations around that fixed effect (U).
 
-level 1 $${Y}_{ti} = \beta_{0i}  + \beta_{1i}\text{time}_{ti} + \varepsilon_{ti}$$
+level 1 $${Y}_{ti} = \beta_{0i}  + \beta_{1j}Time_{ti} + \varepsilon_{ti}$$
 
 level 2 $${\beta}_{0i} = \gamma_{00} + U_{0i}$$\
 $${\beta}_{1i} = \gamma_{10}$$
 
+
+--------
+
+Combined equation: $${Y}_{ti} = \gamma_{00} + \gamma_{10} (\text{time}_{1i})+ U_{0i}  + \varepsilon_{ti}$$
+
+Combined with random slope: $${Y}_{ti} = \gamma_{00} + \gamma_{10}(time_{ti})+ U_{0i} + U_{1i}(time_{ti}) + \varepsilon_{ti}$$
+
+Can think of a persons score divided up into a fixed component as well as the random component.
+
+$${\beta}_{1.6} = \gamma_{10} \pm U_{1.6}$$
 
 ---------
 
@@ -851,14 +667,8 @@ Notice how if we constrain random effects this just turns into a simple regressi
 level 1 $${Y}_{ti} = \beta_{0i}  + \beta_{1i}\text{time}_{ti} + \varepsilon_{ti}$$
 
 level 2 $${\beta}_{0i} = \gamma_{00} $$\
+
 $${\beta}_{1i} = \gamma_{10}$$
-
-
-------------------------------------------------------------------------
-
-Combined equation: $${Y}_{ti} = \gamma_{00} + \gamma_{10} (\text{time}_{1i})+ U_{0i}  + \varepsilon_{ti}$$
-
-Because we have a level 1 time predictor in the model, we are now asking the question, how does time influence scores on our DV? Because all regressions are linear by default, it asks if there is an association such that as time increases does the DV? This describes a trajectory.
 
 
 ## The role of time
@@ -870,42 +680,12 @@ Because we have a level 1 time predictor in the model, we are now asking the que
 - Our time variable can be categorical or continuous, most often it is centered around some meaningful time (initial status, average age, etc). 
 
 
-## Including a random slope
 
-level 1 $${Y}_{ti} = \beta_{0i}  + \beta_{1i}\text{time}_{ti} + \varepsilon_{ti}$$
+## Growth curve example
 
-level 2 $${\beta}_{0i} = \gamma_{00} + U_{0i}$$\
-
-$${\beta}_{1i} = \gamma_{10}+ U_{1i}$$ 
-
-----------------
-
-
-combined: $${Y}_{ti} = \gamma_{00} + \gamma_{10}(\text{time}_{ti})+ U_{0i} + U_{1i}(\text{time}_{ti}) + \varepsilon_{ti}$$
-
-$${Y}_{ti} = (\gamma_{00} + U_{0i}) + (\gamma_{10}+  U_{1i})\text{time}_{ti} + \varepsilon_{ti}$$
-
-------------------------------------------------------------------------
-
--   By including random effects (U) you making a claim that every group/cluster does *not* have the same $\gamma$ ie intercept/regression coefficient.
-
--   An advantage of MLM is to separate more "buckets" of variance that are unexplained. What was originally $e_{ti}$ is now ( $U_0$ + $U_1$ + $e_{ti}$ ). This additional decomposition of variance is beneficial because you are separating signal from noise, translating what was noise $e_{ti}$ into meaningful signal ( $U_0$ , $U_1$ , etc).
-
--   E.g., multiple responses per person can identify individual differences that normally would be chalked up to error. If you parse out this error your signal becomes stronger.
-
-## person predictions
-
-Can think of a persons score divided up into a fixed component as well as the random component.
-
-$${\beta}_{1.26} = \gamma_{10} \pm U_{26}$$ Also call BLUPs or empirical bayes estimates
-
-
-
-## Slope example
-
-```{r, echo = TRUE}
+```{r}
 #| code-fold: true
-mod.2 <- lmer(C ~ 1 + year + (1 | ID), data=b5_long)
+mod.2 <- glmmTMB(C ~ 1 + year + (1 | ID), data=b5_long)
 summary(mod.2)
 ```
 
@@ -946,34 +726,31 @@ library(parameters)
 library(see)
 
 result <- model_parameters(mod.4)
-
+result
 ```
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
+```{r}
 plot(result)
 ```
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
+```{r}
 result2 <- simulate_parameters(mod.4)
 plot(result2, show_intercept = FALSE)
 ```
 
-------------------------------------------------------------------------
 
-```{r, echo = TRUE}
-result3 <- model_parameters(mod.4,  group_level = TRUE)
-plot(result3)
-```
 
-------------------------------------------------------------------------
+## Feed our model
 
--   These graphs however just take your output and make it look nice, in that the same information is still on the results. If we want to say, plot the predicted line we need to do an additional step and FEED the data back into the model. In doing so we create predicted values for each person (or each value of our predictor X), and then can visualize our findings as we would with a regression line.
+-   These graphs however just take your summary output and make it look nice. 
 
-The logic is simple: 1. fit model. 2. create grid that defines points to plot 3. feed grid into model to create predictions
+- If we want to say, plot the predicted line we need to do an additional step and FEED the data back into the model. Same as with graphing simple regressions
+
+- The logic is simple: 1. fit model. 2. create grid that defines points to plot 3. feed grid into model to create predictions
 
 ------------------------------------------------------------------------
 
@@ -995,17 +772,22 @@ Automatically chooses levels \[0,4,8\]
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
+```{r}
 plot(p.mod4)
 ```
 
 ------------------------------------------------------------------------
 
-If you want you can also get predicted lines for a particular individual. Along with prediction CI
+If you want you can also get predicted lines for a particular individual. I really like the package marignaleffects as it is more flexible than ggeffects
 
-```{r, echo = TRUE}
-p.r.mod2 <- ggpredict(mod.4, "year.c", type = "random", condition = c(ID = 97))
+```{r}
+library(marginaleffects)
+p.r.mod2 <- predictions(mod.4, 
+          newdata = 
+          datagrid(ID = b5_long$ID, 
+                   year.c = 0:8))
 p.r.mod2
+
 ```
 
 
@@ -1013,116 +795,132 @@ $$\hat{Y}_{ti} = [\gamma_{00} + U_{0i}] + [\gamma_{10}+U_{1i} ]  * Time_{ti}$$
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
-plot(p.r.mod2)
-```
-
-------------------------------------------------------------------------
-
-```{r, echo = TRUE}
-p.r.mod3 <- ggpredict(mod.4, c("year.c","ID[sample=9]"), type = "random")
-plot(p.r.mod3)
-```
-
-------------------------------------------------------------------------
-
--   My preferred general approach is to use the {modelr} package. It is pretty user friendly, makes you aware of what is going on behind the scenes.
-
--   First we have to create a new dataframe for those values to go. If we are *not* going to use original data, then the fitted values cannot go into the original dataframe. So we need to make it up. To do so we are going to use the data_grid function from modelr. It is very similar to the expand.grid, crossing or other expand functions if you are familiar with those
-
-------------------------------------------------------------------------
-
-- Right now our models are relatively simple, and all we have to do is feed in our time variable. But when we have multiple predictors and covariates that we may want at certain values, calculating the predicted values are relatively difficult by hand. 
-
-- Think we want estimated trajectories at average levels of 4 background covariates, but only for females with college degrees, for example.  
-
-- That is where modelr comes in (or marginaleffects).
-
-------------------------------------------------------------------------
-
-1.  Start with a dataset that you created your model from and feed that to data_grid. Then we need to specify what variables you want to be constant and what variables you want to vary.
-
 ```{r}
-#| code-fold: true
-library(modelr)
-b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10))
-```
-
-
-------------------------------------------------------------------------
-
-```{r}
-#| code-fold: true
-b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long)
-```
-
-------------------------------------------------------------------------
-
-```{r, echo = TRUE}
-#| code-fold: true
-test.c <- b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long) %>% 
-    add_predictions(mod.4)
-
-```
-
-------------------------------------------------------------------------
-
-```{r}
-#| code-fold: true
-b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long) %>% 
-    add_predictions(mod.4) %>% 
-   ggplot(aes(y = pred, x = year.c, group = ID)) +
-  geom_line(alpha = .2)
-```
-
-------------------------------------------------------------------------
-
-```{r}
- #| code-fold: true
-fix_eff <- b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long) %>% 
-  add_predictions(mod.4) %>% 
-  group_by(year.c) %>% 
-  dplyr::summarize(pred = mean(pred)) 
-fix_eff
-```
-
-
-
-
-
------
-```{r}
-#| code-fold: true
-b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long) %>% 
-  add_predictions(mod.4) %>% 
-  group_by(year.c) %>% 
-  dplyr::summarize(pred = mean(pred)) %>% 
-  ggplot(aes(y = pred, x = year.c)) +
+p.r.mod2 |> 
+sample_n_of(74, ID) |> 
+ggplot(aes(year.c, estimate, level = ID)) +
   geom_line() 
-
 ```
 
 
+## Error structure
 
------------
+The residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.
 
-```{r}
-#| code-fold: true
-b5_long %>% 
-  data_grid(year.c = seq_range(year.c, n = 10), .model = b5_long) %>% 
-    add_predictions(mod.4) %>% 
-   ggplot(aes(y = pred, x = year.c)) +
-  geom_line(aes(group = ID), alpha = .2) +
-  geom_line(data = fix_eff, color = "blue", size = 3) +
-  ylim(4.5,5 )
+$$\begin{pmatrix} {U}_{0i} \\ {U}_{1i} \end{pmatrix}
+\sim \mathcal{N} \begin{pmatrix} 
+  0,      \tau_{00}^{2} & \tau_{01}\\ 
+  0,  \tau_{01} & \tau_{10}^{2}
+\end{pmatrix}$$
 
-```
+Note that it is possible to have a different error structure for the random effects
+
+$${e}_{ti} \sim \mathcal{N}(0, \sigma^{2})$$
+
+## Multiple level 1 predictors
+
+Level 1:
+
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}time_{ti} + \beta_{2i}Z_{ti} + \varepsilon_{ti}$$ 
+Level 2:
+$${\beta}_{0i} = \gamma_{00} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$ 
+$${\beta}_{2i} = \gamma_{20} + U_{2i}$$
+
+-------
+
+- Remember that MLM is just like a lot of separate regressions done at Level 1. 
+
+- What happens when we have multiple predictors? The effect of any one variable partials out the common variance, the same as with multiple regression. 
+
+
+## Level 2 predictors
+
+Level 1: $${Y}_{ti} = \beta_{0i}  + \beta_{1j}time_{ti} + \varepsilon_{ti}$$ 
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+
+-------
+
+
+Combined $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} Time_{ti} + U_{0i} + U_{1j}Time_{ti} + \varepsilon_{ti}$$
+
+$${Y}_{ti} = [\gamma_{00} + \gamma_{01}G_{i}+ U_{0i}]  + [(\gamma_{10}  + U_{1i})(Time_{ti})] + \varepsilon_{ti}$$
+
+------------
+
+-   Level 2 refers to Between-Person (BP) Variation, INTER-individual, Differences, Time-Invariant, make comparisons across individuals.
+
+- Some variables can be both depending on how you measure them. E.g. Age
+
+- Level 1 and Level 2 can be differentiated in your dataset by which one repeats vs which is consistent. 
+
+
+
+## Cross level interactions
+
+level 1: $${Y}_{ti} = \beta_{0i}  + \beta_{1i}time_{ti} + \varepsilon_{ti}$$ Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + \gamma_{11}G_{i} + U_{1i}$$
+
+$${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (time_{ti}) + \gamma_{11}(G_{i}*time_{ti}) +  U_{0j} + U_{1i}(time_{ti}) + \varepsilon_{ti}$$
+
+$${Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(time_{ti})] + \varepsilon_{ti}$$
+
+
+## Centering
+
+As a rule, each level-1 predictor is really 2 predictor variables. It is important to separate within-group from between group variance. Failing to do so will "smush" between and within variance to level 1.
+
+Example: SES at level 1, nested within school at level 2. Some kids have more money than other kids in their school and some schools have more money than other schools
+
+Fortunately it is easy to separate this
+
+------------------------------------------------------------------------
+
+Level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}(X_{ij}- \bar{X_j}) + \varepsilon_{ij}$$
+
+Level 2: $${\beta}_{0j} = \gamma_{00} + \bar{X_j} +   U_{0j}$$
+
+$${\beta}_{1j} = \gamma_{10} + \bar{X_j} + U_{1j}$$
+
+-------------
+
+- Time is a special level-1 variable, as time unfolds similarly for all, so we do not necessarily have to center it nor add back in the average. 
+
+- Sometimes we will center to reduce slope correlation with intercept. Typically we "center" to get a meaningful zero. 
+
+- Because time unfolds the same for everyone, there are no between people differences. Thus no need to center.  
+
+## MLM as default and make it maximum
+
+If you don't include all random effects then you are losing information (GEE being a potential exception).
+
+The question often is necessitated by model convergence. There are multiple opinions, but mine is to start maximum, and then work downward (ie simplify) if necessary/consistent with theory. It doesn't really hurt to include them, especially with new estimation advances (Bayesian estimation)
+
+
+
+
+
+
+
+## here
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Adding a random slope

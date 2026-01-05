@@ -11,7 +11,7 @@
     "href": "lectures.html",
     "title": "Lectures",
     "section": "",
-    "text": "Motivation and handling data\nLongitudinal MLM\nLongitudinal SEM\nBends\nconditional\nadvanced SEM"
+    "text": "Motivation and handling data\nLongitudinal MLM\nLongitudinal SEM\nBends\nConditional\nAdvanced SEM"
   },
   {
     "objectID": "intro-1.html#goals-for-todayweek",
@@ -347,7 +347,7 @@
     "href": "mlm-2.html#empty-model",
     "title": "MLM",
     "section": "Empty model",
-    "text": "Empty model\nLevel 1 \\[{Y}_{ij} = \\beta_{0j}  + \\varepsilon_{ij}\\]\nLevel 2 \\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]\n\\[{U}_{0j} \\sim\\mathcal{N}(0, \\tau_{00}^{2})\\] \\[{e}_{ij} \\sim\\mathcal{N}(0, \\sigma^{2})\\]"
+    "text": "Empty model\nLevel 1 \\[{Y}_{ti} = \\beta_{0i}  + \\varepsilon_{ti}\\]\nLevel 2 \\[{\\beta}_{0i} = \\gamma_{00} + U_{0i}\\]\n\\[{U}_{0i} \\sim\\mathcal{N}(0, \\tau_{00}^{2})\\]\n\\[{e}_{ti} \\sim\\mathcal{N}(0, \\sigma^{2})\\]"
   },
   {
     "objectID": "mlm-2.html#mlm-intuitions",
@@ -375,7 +375,7 @@
     "href": "mlm-2.html#aggregation-obscures-hypotheses",
     "title": "MLM",
     "section": "1. Aggregation obscures hypotheses",
-    "text": "1. Aggregation obscures hypotheses\n\nBetween person H1: Do students who study more get better grades?\nWithin person H2: When a student studies, do they get better grades?\nH1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate.\n#compositeskill"
+    "text": "1. Aggregation obscures hypotheses\n\nBetween person H1: Do students who study more get better grades?\nWithin person H2: When a student studies, do they get better grades?\nH1 and H2 are independent from one another! Aggregation collapses the two. When you have nested data with many DVs it is important to not aggregate."
   },
   {
     "objectID": "mlm-2.html#regressions-within-regressions",
@@ -389,14 +389,14 @@
     "href": "mlm-2.html#longitudinal-example",
     "title": "MLM",
     "section": "Longitudinal example",
-    "text": "Longitudinal example\nLevel 1 can be thought of as regressions for each person with time as a predictor. Time can be a simple vector of integers indciating wave, year, hour, etc.\n\\[Y_\\text{josh} = \\beta_{0josh} + \\beta_{1josh} + \\varepsilon_\\text{josh}\\]\nWe are going to run regressions for each person in the dataset, N = 1."
+    "text": "Longitudinal example\nLevel 1 can be thought of as regressions for each person with time as a predictor. Time can be a simple vector of integers indicating wave, year, hour, etc.\n\\[Y_\\text{josh} = \\beta_{0josh} + \\beta_{1josh} + \\varepsilon_\\text{josh}\\]\nWe are going to run regressions for each person in the dataset, N = 1."
   },
   {
     "objectID": "mlm-2.html#different-types-of-hypotheses",
     "href": "mlm-2.html#different-types-of-hypotheses",
     "title": "MLM",
     "section": "3. Different types of hypotheses",
-    "text": "3. Different types of hypotheses\nTo sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct regressions from regressions. (Regression inception).\nThe third way is to think of questions at different levels. One difficulty people have is mixing types of questions.\nAt level 1 we can ask lower-unit questions e.g., if you are stressed at one time point, will you have higher scores? Often about fluctuations vs change"
+    "text": "3. Different types of hypotheses\nTo sum up the first two ways to think about regression, we take a relationship that could be simplified by aggregation, and conduct regressions from regressions. (Regression inception).\nThe third way is to think of questions at different levels. One difficulty people have is mixing types of questions.\nAt level 1 we can ask lower-unit questions e.g., if you are stressed at one time point, will you have higher scores? Differentiates fluctuations vs level 2-long term change"
   },
   {
     "objectID": "mlm-2.html#variance-decomposition",
@@ -417,7 +417,7 @@
     "href": "mlm-2.html#complete-partial-and-no-pooling",
     "title": "MLM",
     "section": "Complete, partial and no pooling",
-    "text": "Complete, partial and no pooling\n\nComplete assumes everyone is the same, with \\(U_{0i}\\) being zero for everyone.\nNo pooling is if we calculate every person’s effect with a regression, subtracting out he grand mean average.\nPartial pooling is in the middle, a weighted average between the two. For those with fewer trials there is less information for a particular individual, thus the complete pooling estimate will be given more weight. If someone has a lot of data, there weighted average is closer to no pooling.\nPartial pooling prevents both over and under fitting of your data, leading to increased out of sample predictions."
+    "text": "Complete, partial and no pooling\n\nComplete assumes everyone is the same, with \\(U_{0i}\\) being zero for everyone.\nNo pooling is if we calculate every person’s effect with a regression, subtracting out he grand mean average.\nPartial pooling is in the middle, a weighted average between the two. For those with fewer observations there is less information for a particular individual, thus the complete pooling estimate will be given more weight. If someone has a lot of data, their weighted average is closer to no pooling.\nPartial pooling prevents both over and under fitting of your data, leading to increased out of sample predictions."
   },
   {
     "objectID": "mlm-2.html#complete-pooling",
@@ -438,7 +438,7 @@
     "href": "mlm-2.html#partial-pooling-aka-shrinkage-aka-regularization",
     "title": "MLM",
     "section": "Partial pooling aka shrinkage aka regularization",
-    "text": "Partial pooling aka shrinkage aka regularization\n\n\nCode\nlibrary(viridis)\nggplot(mlm, aes(x = week, y = SMN7, group = ID, colour = ID)) + stat_smooth(method = \"lm\", se = FALSE, alpha = .5) +scale_color_viridis()+  ylab(\"test score\") + xlab(\"study amount\") + geom_point()"
+    "text": "Partial pooling aka shrinkage aka regularization\n\n\nCode\nlibrary(viridis)\nlibrary(marginaleffects)\nlibrary(lme4)\nmodel &lt;- lmer(SMN7 ~ week + (1 + week | ID), data = mlm)\n\navg_line &lt;- predictions(model, newdata = datagrid(week = 1:6), \n                        re.form = NA)\n\npredictions(model, newdata = datagrid(ID = unique(mlm$ID), week = 1:6), allow.new.levels = T) |&gt; \nggplot() +\n  geom_line(aes(x = week, y = estimate, group = ID), \n            alpha = 0.3, color = \"blue\") + \n  geom_line(data = avg_line, \n            aes(x = week, y = estimate),\n            size = 2, color = \"black\")"
   },
   {
     "objectID": "mlm-2.html#random-and-fixed-effects",
@@ -459,21 +459,21 @@
     "href": "mlm-2.html#error-structure",
     "title": "MLM",
     "section": "Error structure",
-    "text": "Error structure\nThe residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]\nNote that it is possible to have a different error structure for the random effects\n\\[{e}_{ij} \\sim \\mathcal{N}(0, \\sigma^{2})\\]"
+    "text": "Error structure\nThe residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.\n\\[\\begin{pmatrix} {U}_{0i} \\\\ {U}_{1i} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]\nNote that it is possible to have a different error structure for the random effects\n\\[{e}_{ti} \\sim \\mathcal{N}(0, \\sigma^{2})\\]"
   },
   {
     "objectID": "mlm-2.html#multiple-level-1-predictors",
     "href": "mlm-2.html#multiple-level-1-predictors",
     "title": "MLM",
     "section": "Multiple level 1 predictors",
-    "text": "Multiple level 1 predictors\nLevel 1:\n\\[{Y}_{ijk} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\beta_{2j}Z_{ik} + \\varepsilon_{ijk}\\] Level 2:\n\\[{\\beta}_{0j} = \\gamma_{00} + U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + U_{1j}\\] \\[{\\beta}_{2k} = \\gamma_{20} + U_{2k}\\]"
+    "text": "Multiple level 1 predictors\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}time_{ti} + \\beta_{2i}Z_{ti} + \\varepsilon_{ti}\\] Level 2: \\[{\\beta}_{0i} = \\gamma_{00} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} + U_{2i}\\]"
   },
   {
     "objectID": "mlm-2.html#level-2-predictors",
     "href": "mlm-2.html#level-2-predictors",
     "title": "MLM",
     "section": "Level 2 predictors",
-    "text": "Level 2 predictors\nLevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + U_{1j}\\]"
+    "text": "Level 2 predictors\nLevel 1: \\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1j}time_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\]"
   },
   {
     "objectID": "mlm-2.html#cross-level-interactions",
@@ -501,7 +501,7 @@
     "href": "mlm-2.html#basic-longitudinal-models",
     "title": "MLM",
     "section": "Basic Longitudinal Models",
-    "text": "Basic Longitudinal Models\nTo keep with the book, we are going to discuss DVs that take on different values at each timepoint t, for individual i \\({Y}_{ti}\\) Other naming schemes are equivalent such as the same \\({Y}_{ij}\\) where i’s are nested in j groups."
+    "text": "Basic Longitudinal Models\n\nNull or intercept only model\n\nLevel 1: \\[{Y}_{ti} = \\beta_{0i}  + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + U_{0i}\\] Combined: \\[{Y}_{ti} = \\gamma_{00} + U_{0i}  + \\varepsilon_{ti}\\]"
   },
   {
     "objectID": "mlm-2.html#empty-model-1",
@@ -578,7 +578,7 @@
     "href": "mlm-2.html#growth-model",
     "title": "MLM",
     "section": "Growth model",
-    "text": "Growth model\nWe are going to fit a simple longitudinal model: a growth model. Growth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person."
+    "text": "Growth model\nWe are going to fit a simple longitudinal model: a growth model. Growth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person.\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}X_{ti} + \\varepsilon_{ti}\\] Notice on the subscript of X that these predictors vary across group (i) and within the group (t) So if your grouping (i) is people, then t refers to different observations."
   },
   {
     "objectID": "mlm-2.html#a-predictor-in-level-1",
@@ -775,5 +775,306 @@
     "title": "intro",
     "section": "Common questions",
     "text": "Common questions\n\nDoes variable Y changes across time/age/wave/year? (If so, what is shape?)\nDoes every person change the same on Y?\nHow does person Q change on variable Y?\nDoes experience X change Y? (If so, are these changes lasting?)\nDoes variable X change with variable Y?\nDoes change in X precede change in Y?"
+  },
+  {
+    "objectID": "mlm-2.html#basic-longitudinal-models-1",
+    "href": "mlm-2.html#basic-longitudinal-models-1",
+    "title": "MLM",
+    "section": "Basic Longitudinal Models",
+    "text": "Basic Longitudinal Models\nTo keep with the book, we are going to discuss DVs that take on different values at each timepoint t, for individual i \\({Y}_{ti}\\) Other naming schemes are equivalent such as the same \\({Y}_{ij}\\) where i’s are nested in j groups."
+  },
+  {
+    "objectID": "mlm-2.html#some-reminders",
+    "href": "mlm-2.html#some-reminders",
+    "title": "MLM",
+    "section": "Some reminders",
+    "text": "Some reminders\n\nAny level 1 variable is automatically a level 2. Your choice if you want to keep with a single average (fixed effect) or if you also want to model a random effect, though we will “keep it maximal”\nRandom effects are (typically) deviation scores, and thus need to be interpreted with dispersion estimates\nThe interpretation of coefficients are dictated by regression 101 rules. Remember: centering, dummy/effect coding, links, etc."
+  },
+  {
+    "objectID": "sem-3.html#longitudinal-structural-equation-modeling",
+    "href": "sem-3.html#longitudinal-structural-equation-modeling",
+    "title": "SEM",
+    "section": "Longitudinal Structural Equation Modeling",
+    "text": "Longitudinal Structural Equation Modeling\nSEM is the broader umbrella from the GLM. With it we are able to do two interesting this:\n\nFit a latent measurement model (e.g., CFA)\nFit a structural model (e.g,. path analysis)\n\nThese two components allow us to address more difficult research questions involving but not limited to: multiple DVs, mediators, varying effects across time, unmeasured variables, constraints, and measurement invariance."
+  },
+  {
+    "objectID": "sem-3.html#sem-terminology",
+    "href": "sem-3.html#sem-terminology",
+    "title": "SEM",
+    "section": "SEM terminology",
+    "text": "SEM terminology\n\nIndicators or items or manifest variables\n\nRepresented by squares in path diagrams\n\nLatent or unobserved\n\nRepresented by circles"
+  },
+  {
+    "objectID": "sem-3.html#path-diagrams",
+    "href": "sem-3.html#path-diagrams",
+    "title": "SEM",
+    "section": "Path diagrams",
+    "text": "Path diagrams\nCircles = latent variables\nBoxes = observed indicator variables\nTwo headed arrows = correlations/covariances/variances\nSingle head arrows = regressions\nTriangle = means"
+  },
+  {
+    "objectID": "sem-3.html#classical-test-theory-interpretation",
+    "href": "sem-3.html#classical-test-theory-interpretation",
+    "title": "SEM",
+    "section": "Classical test theory interpretation",
+    "text": "Classical test theory interpretation\n\nLatent construct = what the indicators share in common\nIndicators represent the sum of True Score variance + Item specific variance + Random error\nVariance of the latent variable represents the amount of common information. Variance represents that meaningful differences btwn people.\nThe residual errors (disturbances) represent the amount of information unique to each indicator. A combination of error and item-specific variance.\nThe extent of the connection between the latent variable and the indicators is represented as a factor loading."
+  },
+  {
+    "objectID": "sem-3.html#generizability-interpretation-of-latent-variables",
+    "href": "sem-3.html#generizability-interpretation-of-latent-variables",
+    "title": "SEM",
+    "section": "Generizability interpretation of latent variables",
+    "text": "Generizability interpretation of latent variables\nTrue score variance can be thought of as consisting as a combination of:\n\nConstruct variance- this is the truest true score variance.\nMethod variance- see Campbell and Fiske or sludge factor of Meehl.\nOccasion/time specific- important for longitudinal, aging, and cohort analyses–and for this class.\n\n\nFor longitudinal models, occasion specific variance can lead to biased estimates. We want to separate the occasion variance from the overall construct variance."
+  },
+  {
+    "objectID": "sem-3.html#formative-indicators",
+    "href": "sem-3.html#formative-indicators",
+    "title": "SEM",
+    "section": "Formative indicators",
+    "text": "Formative indicators\n\nThese pretty pictures imply that the latent variables “cause” the indicators. This is the standard view and are referred to as reflexive indicators.\nThere is another approach, formative indicators, where indicators “cause” the latent variable. It is not real, only a combination of variables.\nAn example of this is SES. SES does not ‘exist’ but is a socially constructed idea."
+  },
+  {
+    "objectID": "sem-3.html#measurement-error",
+    "href": "sem-3.html#measurement-error",
+    "title": "SEM",
+    "section": "Measurement error",
+    "text": "Measurement error\n\nA major advantage of SEM is that each latent variable does not contain measurement error. It is as is if we measured our variable with an alpha = 1.\nGets us closer to the population model, which could yield higher R2 and better parameter estimates.\nCaptures what is shared among the indicators. The measurement error associated with each indicator is uncorrelated with the latent variable. Compare with composite approach.\n“Theoretically error free”. The latent variable is not only filled with true score variance (see above re: occasion and method variance). Unless you have multiple methods and occasions it is hard to parse them apart."
+  },
+  {
+    "objectID": "sem-3.html#path-model",
+    "href": "sem-3.html#path-model",
+    "title": "SEM",
+    "section": "Path model",
+    "text": "Path model\n\nThe path model component can be in addition to a measurement model or separate from them.\nYou have already worked with path models as a simple regression is a path model, so is a standard mediation.\nYou can make the path models more complex than these though, by specifying relationships among many variables."
+  },
+  {
+    "objectID": "sem-3.html#path-model-with-measurement-model",
+    "href": "sem-3.html#path-model-with-measurement-model",
+    "title": "SEM",
+    "section": "path model with measurement model",
+    "text": "path model with measurement model\n\n\nCode\nmod.2 &lt;- 'X =~ x1 + x2 + x3\nM =~ x4 + x5 + x6\nY =~ x7 + x8 + x9\n\nY ~ M + X\nM ~ X'\n\nfit.2 &lt;- cfa(mod.2, data=HolzingerSwineford1939)\nsemPaths(fit.2)"
+  },
+  {
+    "objectID": "sem-3.html#estimating-an-sem-model",
+    "href": "sem-3.html#estimating-an-sem-model",
+    "title": "SEM",
+    "section": "Estimating an SEM model",
+    "text": "Estimating an SEM model\n\nCompare our model implied associations to actual associations.\nIn addition to setting the measurement model and paths we may want to put apriori constraining parameters (variances/covariances/regressions) to reflect how we think variables are related.\nThen we use or ML algorithm to get our model implied covariances/means as close as possible to the observed covariances/means."
+  },
+  {
+    "objectID": "sem-3.html#fit-indices",
+    "href": "sem-3.html#fit-indices",
+    "title": "SEM",
+    "section": "Fit Indices",
+    "text": "Fit Indices\n\nresiduals. Good to check.\nmodification indices. Check to see if missing parameters that residuals may suggest you didn’t include or should include.\nchi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.\nRMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable\nCFI, TFI (Relative fit models). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually &gt;.9 is okay. Some care about &gt; .95"
+  },
+  {
+    "objectID": "sem-3.html#identification",
+    "href": "sem-3.html#identification",
+    "title": "SEM",
+    "section": "Identification",
+    "text": "Identification\n\nWe have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.\nIf you are asking too much you canconstrain parameters to be the same, which reduces the number of parameters.\nCompare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable\nThe covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable."
+  },
+  {
+    "objectID": "sem-3.html#setting-the-scale",
+    "href": "sem-3.html#setting-the-scale",
+    "title": "SEM",
+    "section": "Setting the scale",
+    "text": "Setting the scale\n\nWe are trying to measure clouds. Need to define the scale of a latent variable because there is no inherent scale of measurement.\nLargely irrelevant as to what scale is chosen just as centering or standardizing yield no substantive changes.\nInstead, scaling serves to establish a point of reference so as to interpret other parameters."
+  },
+  {
+    "objectID": "sem-3.html#types-of-identification",
+    "href": "sem-3.html#types-of-identification",
+    "title": "SEM",
+    "section": "Types of identification",
+    "text": "Types of identification\n\nJust identified is where the number of knowns equal unknowns. Also known as saturated model.\n\n\nWhen you evaluate the fit of the model these will be perfect. So while these will estimate, we cannot examine whether or not our model is a good representation of the world, as we are simply recreating the observed covariance matrix (data).\nKnowns - unknowns = df. Note that df in this case df will not directly relate to sample size, so it is a little different than typical degree of freedom concepts."
+  },
+  {
+    "objectID": "sem-3.html#types-of-identification-1",
+    "href": "sem-3.html#types-of-identification-1",
+    "title": "SEM",
+    "section": "Types of identification",
+    "text": "Types of identification\n\nOver identified is when you have more knowns than unknowns. This is good as we can fit a model that is more parsimonious than our data. Moreover, we can examine fit stats.\nUnder identified is when you have problems and have more unknowns than knowns. this is because there is more than one solution available and the algorithm cannot decide e.g,. 2 + X = Y. If we add a constraint or a known value then it becomes manageable 2 + X = 12"
+  },
+  {
+    "objectID": "sem-3.html#parcels",
+    "href": "sem-3.html#parcels",
+    "title": "SEM",
+    "section": "Parcels",
+    "text": "Parcels\n\nIt is often necessary to simplify your model. Parcels combine indicators into a composite.\nBenefits in terms of the assumptions of the indicator variables (multivariate normal).\nYou can combine items however you want into 3 or 4 parcels. You may balance highly loading with less highly loading items (item to construct technique) or you may pair pos and neg keyed items together.\nSome dislike parcels because you are assuming each indicator is exchangeable."
+  },
+  {
+    "objectID": "sem-3.html#regarding-means",
+    "href": "sem-3.html#regarding-means",
+    "title": "SEM",
+    "section": "Regarding means",
+    "text": "Regarding means\n\nSEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e means are not necessary.\n\nThis is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.\nGiven we are interested in change across time,we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on. We can standardize them, use the original metric, and more!"
+  },
+  {
+    "objectID": "sem-3.html#types-of-longitudinal-sem-models",
+    "href": "sem-3.html#types-of-longitudinal-sem-models",
+    "title": "SEM",
+    "section": "Types of longitudinal SEM models",
+    "text": "Types of longitudinal SEM models\n\nGrowth models\nLongitudinal CFA\nCross lag panel model\nLongitudinal mediation\nGrowth models + cross lags\nLatent change/difference score models\nMixture or class based longitudinal models"
+  },
+  {
+    "objectID": "sem-3.html#lavaan",
+    "href": "sem-3.html#lavaan",
+    "title": "SEM",
+    "section": "lavaan",
+    "text": "lavaan\n\nlibrary(lavaan)\nwide &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/longitudinal.csv\")\n\nsummary(wide)\n\n    PosAFF11        PosAFF21         PosAFF31        NegAFF11      \n Min.   :1.365   Min.   :0.4152   Min.   :1.140   Min.   :-0.8584  \n 1st Qu.:2.739   1st Qu.:2.6343   1st Qu.:2.797   1st Qu.: 1.1035  \n Median :3.209   Median :3.1143   Median :3.204   Median : 1.5075  \n Mean   :3.212   Mean   :3.1050   Mean   :3.248   Mean   : 1.5220  \n 3rd Qu.:3.688   3rd Qu.:3.6216   3rd Qu.:3.775   3rd Qu.: 1.9815  \n Max.   :5.804   Max.   :6.1970   Max.   :6.048   Max.   : 3.2403  \n    NegAFF21          NegAFF31          PosAFF12        PosAFF22     \n Min.   :-0.3991   Min.   :-0.5606   Min.   :1.528   Min.   :0.6575  \n 1st Qu.: 1.0229   1st Qu.: 1.0100   1st Qu.:2.852   1st Qu.:2.6571  \n Median : 1.3718   Median : 1.4335   Median :3.215   Median :3.1206  \n Mean   : 1.3971   Mean   : 1.3981   Mean   :3.253   Mean   :3.1256  \n 3rd Qu.: 1.7566   3rd Qu.: 1.8101   3rd Qu.:3.637   3rd Qu.:3.5467  \n Max.   : 2.9844   Max.   : 2.7674   Max.   :5.413   Max.   :5.4420  \n    PosAFF32         NegAFF12         NegAFF22         NegAFF32       \n Min.   :0.7369   Min.   :0.1797   Min.   :0.1784   Min.   :-0.03494  \n 1st Qu.:2.8484   1st Qu.:1.1464   1st Qu.:0.9963   1st Qu.: 1.02027  \n Median :3.2692   Median :1.3818   Median :1.3172   Median : 1.31692  \n Mean   :3.2737   Mean   :1.4115   Mean   :1.3237   Mean   : 1.30002  \n 3rd Qu.:3.7170   3rd Qu.:1.7251   3rd Qu.:1.6382   3rd Qu.: 1.56441  \n Max.   :5.9676   Max.   :2.5033   Max.   :2.5587   Max.   : 2.44236  \n    PosAFF13        PosAFF23         PosAFF33        NegAFF13       \n Min.   :1.307   Min.   :0.8057   Min.   :1.629   Min.   :-0.01837  \n 1st Qu.:2.979   1st Qu.:2.7147   1st Qu.:2.858   1st Qu.: 1.15739  \n Median :3.299   Median :3.0832   Median :3.325   Median : 1.43937  \n Mean   :3.302   Mean   :3.0945   Mean   :3.280   Mean   : 1.43015  \n 3rd Qu.:3.683   3rd Qu.:3.5296   3rd Qu.:3.698   3rd Qu.: 1.73650  \n Max.   :4.712   Max.   :4.8007   Max.   :5.014   Max.   : 2.75085  \n    NegAFF23        NegAFF33     \n Min.   :0.147   Min.   :0.3145  \n 1st Qu.:1.009   1st Qu.:1.0261  \n Median :1.294   Median :1.3154  \n Mean   :1.281   Mean   :1.2974  \n 3rd Qu.:1.560   3rd Qu.:1.5583  \n Max.   :2.447   Max.   :2.6385"
+  },
+  {
+    "objectID": "sem-3.html#wide-data-for-sem-models.",
+    "href": "sem-3.html#wide-data-for-sem-models.",
+    "title": "SEM",
+    "section": "Wide data for SEM models.",
+    "text": "Wide data for SEM models.\n\nhead(wide)\n\n  PosAFF11 PosAFF21 PosAFF31  NegAFF11  NegAFF21 NegAFF31 PosAFF12 PosAFF22\n1 3.407196 3.161366 2.691232 2.4207020 2.3531140 2.338767 3.608672 2.385396\n2 2.594691 2.682974 2.676173 1.6652403 0.8228416 1.083938 3.103346 2.666753\n3 3.168698 2.854090 3.277873 1.5646086 1.6909398 1.502032 2.327999 3.061529\n4 4.600160 4.698997 4.751315 0.9352668 0.7944903 0.205178 4.254750 3.792440\n5 1.911294 2.184561 1.661057 1.6076395 1.5046016 1.209850 3.971308 4.674580\n6 3.472354 4.016982 4.021543 1.9754108 1.1348223 1.729405 3.845904 4.186825\n  PosAFF32 NegAFF12  NegAFF22  NegAFF32 PosAFF13 PosAFF23 PosAFF33 NegAFF13\n1 3.029975 2.283468 2.3173734 2.3932485 3.561401 3.506353 3.862975 2.090484\n2 3.251786 1.651941 1.7019345 1.3462416 2.893546 2.804488 2.637762 1.257376\n3 3.272173 1.749022 1.6237575 1.5763265 2.705572 2.310391 2.841122 1.699849\n4 3.934392 1.279030 0.8741891 1.1822674 3.212826 2.775791 3.239004 1.824778\n5 4.093508 1.019751 1.0376248 0.7776716 3.487932 2.673107 3.093565 1.316975\n6 4.316398 1.189548 1.1866801 1.3158520 3.236481 3.256453 4.023383 1.053895\n   NegAFF23  NegAFF33\n1 1.3276333 1.6680488\n2 1.6585273 1.4298172\n3 1.7373582 1.8542867\n4 1.3016450 1.5356285\n5 0.7120284 0.7083461\n6 1.4449087 0.9600753\n\n\nAnyone have some comments on naming conventions for this dataset?"
+  },
+  {
+    "objectID": "sem-3.html#growth-models",
+    "href": "sem-3.html#growth-models",
+    "title": "SEM",
+    "section": "Growth models",
+    "text": "Growth models\n\nGrowth models in an SEM framework is very similar to the MLM framework.\nThe major differences is how time is treated with time variables being the same for everyone, with a variable associated with it (categorical time).\nWhereas previously we had a time variable, now we indirectly include time into our model by specifying when variables were assessed. This has the consequence of necessitating a wide format\nOther than time, the idea behind the growth model is exactly the same."
+  },
+  {
+    "objectID": "sem-3.html#coding-time",
+    "href": "sem-3.html#coding-time",
+    "title": "SEM",
+    "section": "Coding time",
+    "text": "Coding time\nLet’s use the long dataset from chapter 4 of Singer and Willet. It is a three wave longitudinal study of adolescents. We are looking at alcohol use during the previous year, measured from 0 - 7. COA is a variable indicating the child’s parents are alcoholics.\n\n\nCode\nalcohol &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/alcohol1_pp.csv\")\nhead(alcohol)\n\n\n  X id age coa male age_14   alcuse      peer      cpeer  ccoa\n1 1  1  14   1    0      0 1.732051 1.2649111  0.2469111 0.549\n2 2  1  15   1    0      1 2.000000 1.2649111  0.2469111 0.549\n3 3  1  16   1    0      2 2.000000 1.2649111  0.2469111 0.549\n4 4  2  14   1    1      0 0.000000 0.8944272 -0.1235728 0.549\n5 5  2  15   1    1      1 0.000000 0.8944272 -0.1235728 0.549\n6 6  2  16   1    1      2 1.000000 0.8944272 -0.1235728 0.549"
+  },
+  {
+    "objectID": "sem-3.html#compare-with-mlm",
+    "href": "sem-3.html#compare-with-mlm",
+    "title": "SEM",
+    "section": "Compare with MLM",
+    "text": "Compare with MLM\n\n\nCode\nlibrary(lme4)\nfit1.mlm.c &lt;- lmer(alcuse ~  age_14 + (age_14 | id), data = alcohol)\nsummary(fit1.mlm.c)\n\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: alcuse ~ age_14 + (age_14 | id)\n   Data: alcohol\n\nREML criterion at convergence: 643.2\n\nScaled residuals: \n     Min       1Q   Median       3Q      Max \n-2.48287 -0.37933 -0.07858  0.38876  2.49284 \n\nRandom effects:\n Groups   Name        Variance Std.Dev. Corr \n id       (Intercept) 0.6355   0.7972        \n          age_14      0.1552   0.3939   -0.23\n Residual             0.3373   0.5808        \nNumber of obs: 246, groups:  id, 82\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept)  0.65130    0.10573   6.160\nage_14       0.27065    0.06284   4.307\n\nCorrelation of Fixed Effects:\n       (Intr)\nage_14 -0.441"
+  },
+  {
+    "objectID": "sem-3.html#rescale-time",
+    "href": "sem-3.html#rescale-time",
+    "title": "SEM",
+    "section": "rescale time",
+    "text": "rescale time\n\n\nCode\nmodel.2 &lt;- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 \n            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16'\nfit.2 &lt;- growth(model.2, data=alcohol.wide)\nsummary(fit.2)\n\n\nlavaan 0.6-19 ended normally after 26 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                         8\n\n  Number of observations                            82\n\nModel Test User Model:\n                                                      \n  Test statistic                                 0.636\n  Degrees of freedom                                 1\n  P-value (Chi-square)                           0.425\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i =~                                                \n    alcuse_14         1.000                           \n    alcuse_15         1.000                           \n    alcuse_16         1.000                           \n  s =~                                                \n    alcuse_14         0.000                           \n    alcuse_15         0.500                           \n    alcuse_16         1.000                           \n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i ~~                                                \n    s                -0.374    0.203   -1.841    0.066\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n    i                 0.634    0.103    6.163    0.000\n    s                 0.555    0.124    4.481    0.000\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .alcuse_14         0.064    0.147    0.436    0.663\n   .alcuse_15         0.420    0.094    4.463    0.000\n   .alcuse_16         0.280    0.180    1.556    0.120\n    i                 0.807    0.193    4.177    0.000\n    s                 0.936    0.334    2.803    0.005"
+  },
+  {
+    "objectID": "sem-3.html#constraining-slope-to-be-fixed-only",
+    "href": "sem-3.html#constraining-slope-to-be-fixed-only",
+    "title": "SEM",
+    "section": "constraining slope to be fixed only",
+    "text": "constraining slope to be fixed only\nAs with MLM we have options to handle the inclusion of random effects.\n\n\nCode\nmodel.3 &lt;- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 \n            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16\n               s ~~0*s'\nfit.3&lt;- growth(model.3, data=alcohol.wide)\nsummary(fit.3)\n\n\nlavaan 0.6-19 ended normally after 21 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                         7\n\n  Number of observations                            82\n\nModel Test User Model:\n                                                      \n  Test statistic                                 7.508\n  Degrees of freedom                                 2\n  P-value (Chi-square)                           0.023\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i =~                                                \n    alcuse_14         1.000                           \n    alcuse_15         1.000                           \n    alcuse_16         1.000                           \n  s =~                                                \n    alcuse_14         0.000                           \n    alcuse_15         0.500                           \n    alcuse_16         1.000                           \n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i ~~                                                \n    s                 0.083    0.114    0.731    0.465\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n    i                 0.652    0.104    6.273    0.000\n    s                 0.556    0.115    4.849    0.000\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n    s                 0.000                           \n   .alcuse_14         0.416    0.100    4.172    0.000\n   .alcuse_15         0.331    0.084    3.923    0.000\n   .alcuse_16         0.692    0.138    5.003    0.000\n    i                 0.541    0.147    3.676    0.000"
+  },
+  {
+    "objectID": "sem-3.html#modeling-residuals",
+    "href": "sem-3.html#modeling-residuals",
+    "title": "SEM",
+    "section": "modeling residuals",
+    "text": "modeling residuals\nConstrain to be equal. Compare with mlm residual\n\n\nCode\nmodel.4 &lt;- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 \n            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16\n            \nalcuse_14 ~~ a*alcuse_14\nalcuse_15 ~~ a*alcuse_15\nalcuse_16 ~~ a*alcuse_16'\n\nfit.4 &lt;- growth(model.4, data=alcohol.wide)\nsummary(fit.4)\n\n\nlavaan 0.6-19 ended normally after 22 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                         8\n  Number of equality constraints                     2\n\n  Number of observations                            82\n\nModel Test User Model:\n                                                      \n  Test statistic                                 4.238\n  Degrees of freedom                                 3\n  P-value (Chi-square)                           0.237\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i =~                                                \n    alcuse_14         1.000                           \n    alcuse_15         1.000                           \n    alcuse_16         1.000                           \n  s =~                                                \n    alcuse_14         0.000                           \n    alcuse_15         0.500                           \n    alcuse_16         1.000                           \n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i ~~                                                \n    s                -0.137    0.140   -0.977    0.329\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n    i                 0.651    0.105    6.198    0.000\n    s                 0.541    0.125    4.334    0.000\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .alcuse_14  (a)    0.337    0.053    6.403    0.000\n   .alcuse_15  (a)    0.337    0.053    6.403    0.000\n   .alcuse_16  (a)    0.337    0.053    6.403    0.000\n    i                 0.624    0.148    4.217    0.000\n    s                 0.605    0.226    2.678    0.007"
+  },
+  {
+    "objectID": "sem-3.html#plotting",
+    "href": "sem-3.html#plotting",
+    "title": "SEM",
+    "section": "Plotting",
+    "text": "Plotting\n\nlavPredict(fit.1,type=\"lv\")\n\n          i      s\n [1,] 1.673  0.151\n [2,] 0.016  0.420\n [3,] 1.037  0.892\n [4,] 0.155  0.808\n [5,] 0.012  0.096\n [6,] 2.857  0.058\n [7,] 1.700 -0.140\n [8,] 0.012  0.096\n [9,] 0.094  1.294\n[10,] 0.960  0.066\n[11,] 0.024  1.120\n[12,] 0.895  0.228\n[13,] 0.020  0.744\n[14,] 2.747  0.069\n[15,] 1.691  0.314\n[16,] 0.990  0.231\n[17,] 0.080  0.171\n[18,] 1.886 -0.309\n[19,] 0.012  0.096\n[20,] 3.167 -0.733\n[21,] 1.013  0.358\n[22,] 2.686 -0.582\n[23,] 0.963  0.303\n[24,] 0.080  0.171\n[25,] 2.719 -0.260\n[26,] 0.085  0.629\n[27,] 2.647 -0.631\n[28,] 0.012  0.096\n[29,] 0.016  0.420\n[30,] 1.031  0.378\n[31,] 1.776  0.529\n[32,] 1.630 -0.217\n[33,] 0.085  0.629\n[34,] 0.084  0.495\n[35,] 0.956 -0.258\n[36,] 0.964  0.390\n[37,] 1.093  0.904\n[38,] 0.138  0.874\n[39,] 0.012  0.096\n[40,] 0.012  0.096\n[41,] 1.259  0.137\n[42,] 0.012  0.096\n[43,] 0.012  0.096\n[44,] 0.120  1.174\n[45,] 2.135  0.276\n[46,] 0.017  0.554\n[47,] 0.080  0.171\n[48,] 0.012  0.096\n[49,] 0.012  0.096\n[50,] 0.012  0.096\n[51,] 0.012  0.096\n[52,] 0.080  0.171\n[53,] 0.012  0.096\n[54,] 0.016  0.420\n[55,] 0.012  0.096\n[56,] 0.118  1.060\n[57,] 0.012  0.096\n[58,] 0.994  0.567\n[59,] 0.022  0.953\n[60,] 0.085  0.629\n[61,] 1.924  0.053\n[62,] 0.012  0.096\n[63,] 0.012  0.096\n[64,] 0.157  0.971\n[65,] 0.085  0.629\n[66,] 1.498  0.721\n[67,] 0.888 -0.334\n[68,] 0.080  0.171\n[69,] 0.012  0.096\n[70,] 1.832 -0.688\n[71,] 0.012  0.096\n[72,] 0.012  0.096\n[73,] 0.012  0.096\n[74,] 0.138  0.951\n[75,] 0.012  0.096\n[76,] 0.012  0.096\n[77,] 0.119  1.119\n[78,] 0.012  0.096\n[79,] 1.046  0.293\n[80,] 0.963  0.303\n[81,] 0.012  0.096\n[82,] 0.112  0.526"
+  },
+  {
+    "objectID": "sem-3.html#what-is-measurement-invariance",
+    "href": "sem-3.html#what-is-measurement-invariance",
+    "title": "SEM",
+    "section": "What is measurement invariance?",
+    "text": "What is measurement invariance?\n\nTo meaningfully look at means, we need to have the means mean the same thing.\nOtherwise, change could reflect people responding to the indicators differently. For example, a common item on an extraversion scale is “Do you like to go to parties?” This is likely interpreted differently by a 20 year old compared to a 70 year old.\nMaturation is the easiest way to see measurement differences, but it also happens when you want to compare groups. This assumption is typically never critically examined."
+  },
+  {
+    "objectID": "sem-3.html#types-of-mi",
+    "href": "sem-3.html#types-of-mi",
+    "title": "SEM",
+    "section": "types of MI",
+    "text": "types of MI\n\nConfigural (pattern). Asks: does your measure have the same factor structure? Typically always true with a decent measure of your construct. Can be tested through test statistics and eye-balling. Serves as default model to compare with our more stringent models.\nWeak (metric/loading). Can be easily met. Not meeting this shows big problems, unless you are working with a really large dataset (where there is large power to find differences)."
+  },
+  {
+    "objectID": "sem-3.html#configural-baseline",
+    "href": "sem-3.html#configural-baseline",
+    "title": "SEM",
+    "section": "configural (baseline)",
+    "text": "configural (baseline)\n\n\nCode\nconfig &lt;- '\n## define latent variables\nPos1 =~ PosAFF11 + PosAFF21 + PosAFF31\nPos2 =~ PosAFF12 + PosAFF22 + PosAFF32\nPos3 =~ PosAFF13 + PosAFF23 + PosAFF33\n\n\n\n\n'\n\nconfig &lt;- cfa(config, data=wide, meanstructure=TRUE, std.lv=TRUE)\n\nsummary(config, standardized=TRUE, fit.measures=TRUE)\n\n\nlavaan 0.6-19 ended normally after 59 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        30\n\n  Number of observations                           368\n\nModel Test User Model:\n                                                      \n  Test statistic                                22.648\n  Degrees of freedom                                24\n  P-value (Chi-square)                           0.541\n\nModel Test Baseline Model:\n\n  Test statistic                              2688.088\n  Degrees of freedom                                36\n  P-value                                        0.000\n\nUser Model versus Baseline Model:\n\n  Comparative Fit Index (CFI)                    1.000\n  Tucker-Lewis Index (TLI)                       1.001\n\nLoglikelihood and Information Criteria:\n\n  Loglikelihood user model (H0)              -2047.648\n  Loglikelihood unrestricted model (H1)      -2036.324\n                                                      \n  Akaike (AIC)                                4155.296\n  Bayesian (BIC)                              4272.539\n  Sample-size adjusted Bayesian (SABIC)       4177.360\n\nRoot Mean Square Error of Approximation:\n\n  RMSEA                                          0.000\n  90 Percent confidence interval - lower         0.000\n  90 Percent confidence interval - upper         0.040\n  P-value H_0: RMSEA &lt;= 0.050                    0.991\n  P-value H_0: RMSEA &gt;= 0.080                    0.000\n\nStandardized Root Mean Square Residual:\n\n  SRMR                                           0.013\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 =~                                                               \n    PosAFF11          0.656    0.030   22.006    0.000    0.656    0.906\n    PosAFF21          0.652    0.031   20.887    0.000    0.652    0.876\n    PosAFF31          0.683    0.031   22.152    0.000    0.683    0.909\n  Pos2 =~                                                               \n    PosAFF12          0.554    0.026   21.138    0.000    0.554    0.881\n    PosAFF22          0.644    0.030   21.660    0.000    0.644    0.894\n    PosAFF32          0.642    0.028   23.340    0.000    0.642    0.936\n  Pos3 =~                                                               \n    PosAFF13          0.508    0.024   21.006    0.000    0.508    0.886\n    PosAFF23          0.547    0.027   20.375    0.000    0.547    0.869\n    PosAFF33          0.536    0.026   20.707    0.000    0.536    0.878\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 ~~                                                               \n    Pos2              0.475    0.044   10.733    0.000    0.475    0.475\n    Pos3              0.406    0.048    8.407    0.000    0.406    0.406\n  Pos2 ~~                                                               \n    Pos3              0.458    0.046   10.023    0.000    0.458    0.458\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11          3.212    0.038   85.115    0.000    3.212    4.437\n   .PosAFF21          3.105    0.039   80.021    0.000    3.105    4.171\n   .PosAFF31          3.248    0.039   82.957    0.000    3.248    4.324\n   .PosAFF12          3.253    0.033   99.137    0.000    3.253    5.168\n   .PosAFF22          3.126    0.038   83.295    0.000    3.126    4.342\n   .PosAFF32          3.274    0.036   91.525    0.000    3.274    4.771\n   .PosAFF13          3.302    0.030  110.492    0.000    3.302    5.760\n   .PosAFF23          3.094    0.033   94.296    0.000    3.094    4.916\n   .PosAFF33          3.280    0.032  102.971    0.000    3.280    5.368\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11          0.094    0.011    8.285    0.000    0.094    0.180\n   .PosAFF21          0.129    0.013    9.818    0.000    0.129    0.232\n   .PosAFF31          0.098    0.012    8.052    0.000    0.098    0.173\n   .PosAFF12          0.089    0.009   10.022    0.000    0.089    0.224\n   .PosAFF22          0.104    0.011    9.375    0.000    0.104    0.200\n   .PosAFF32          0.059    0.009    6.557    0.000    0.059    0.125\n   .PosAFF13          0.070    0.008    8.357    0.000    0.070    0.214\n   .PosAFF23          0.097    0.011    9.204    0.000    0.097    0.245\n   .PosAFF33          0.085    0.010    8.774    0.000    0.085    0.229\n    Pos1              1.000                               1.000    1.000\n    Pos2              1.000                               1.000    1.000\n    Pos3              1.000                               1.000    1.000\n\n\nNotice that we didnt do anything different here except for fitting a mean structure and ask for fit.measures in the output."
+  },
+  {
+    "objectID": "sem-3.html#weak-constrain-loadings",
+    "href": "sem-3.html#weak-constrain-loadings",
+    "title": "SEM",
+    "section": "Weak (constrain loadings)",
+    "text": "Weak (constrain loadings)\n\nIf the values are numbers, constraints will force the parameters to be that number. If they are letter, then it names the parameter and forces all of those with the same naming scheme to be equivalent.\nWeak measurement invariance test is to constrain the item loadings to be equivalent across waves.\nHere NA is used to allow the latent variance at time 2 and 3 to be estimated, rather than to be automatically constrained to 1 (bc we used a fixed factor approach)"
+  },
+  {
+    "objectID": "sem-3.html#strong-constrain-loadings-and-intercepts",
+    "href": "sem-3.html#strong-constrain-loadings-and-intercepts",
+    "title": "SEM",
+    "section": "Strong (constrain loadings and intercepts)",
+    "text": "Strong (constrain loadings and intercepts)\n\nStrong introduces means to the equation.They were there before but now we constrain the means of each item to be the same across time\nWhy are we doing that if we want to test whether people change? Change will be reflected latently.\n\n\n\nCode\nstrong &lt;- '\n## define latent variables\nPos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31\nPos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32\nPos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33\n\n\n## constrain intercepts across time\nPosAFF11 ~ t1*1\nPosAFF21 ~ t2*1\nPosAFF31 ~ t3*1\n\n\nPosAFF12 ~ t1*1\nPosAFF22 ~ t2*1\nPosAFF32 ~ t3*1\n\n\nPosAFF13 ~ t1*1\nPosAFF23 ~ t2*1\nPosAFF33 ~ t3*1\n\n'\n\nstrong &lt;- cfa(strong, data=wide, meanstructure=TRUE, std.lv=TRUE)\n\nsummary(strong, standardized=TRUE, fit.measures=TRUE)\n\n\nlavaan 0.6-19 ended normally after 66 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        30\n  Number of equality constraints                    12\n\n  Number of observations                           368\n\nModel Test User Model:\n                                                      \n  Test statistic                                62.650\n  Degrees of freedom                                36\n  P-value (Chi-square)                           0.004\n\nModel Test Baseline Model:\n\n  Test statistic                              2688.088\n  Degrees of freedom                                36\n  P-value                                        0.000\n\nUser Model versus Baseline Model:\n\n  Comparative Fit Index (CFI)                    0.990\n  Tucker-Lewis Index (TLI)                       0.990\n\nLoglikelihood and Information Criteria:\n\n  Loglikelihood user model (H0)              -2067.649\n  Loglikelihood unrestricted model (H1)      -2036.324\n                                                      \n  Akaike (AIC)                                4171.298\n  Bayesian (BIC)                              4241.643\n  Sample-size adjusted Bayesian (SABIC)       4184.536\n\nRoot Mean Square Error of Approximation:\n\n  RMSEA                                          0.045\n  90 Percent confidence interval - lower         0.025\n  90 Percent confidence interval - upper         0.063\n  P-value H_0: RMSEA &lt;= 0.050                    0.656\n  P-value H_0: RMSEA &gt;= 0.080                    0.000\n\nStandardized Root Mean Square Residual:\n\n  SRMR                                           0.098\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 =~                                                               \n    PosAFF11  (L1)    0.572    0.017   33.166    0.000    0.572    0.871\n    PosAFF21  (L2)    0.616    0.019   32.764    0.000    0.616    0.868\n    PosAFF31  (L3)    0.624    0.018   34.247    0.000    0.624    0.895\n  Pos2 =~                                                               \n    PosAFF12  (L1)    0.572    0.017   33.166    0.000    0.572    0.890\n    PosAFF22  (L2)    0.616    0.019   32.764    0.000    0.616    0.883\n    PosAFF32  (L3)    0.624    0.018   34.247    0.000    0.624    0.930\n  Pos3 =~                                                               \n    PosAFF13  (L1)    0.572    0.017   33.166    0.000    0.572    0.905\n    PosAFF23  (L2)    0.616    0.019   32.764    0.000    0.616    0.891\n    PosAFF33  (L3)    0.624    0.018   34.247    0.000    0.624    0.909\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 ~~                                                               \n    Pos2              0.460    0.045   10.130    0.000    0.460    0.460\n    Pos3              0.397    0.048    8.193    0.000    0.397    0.397\n  Pos2 ~~                                                               \n    Pos3              0.472    0.044   10.672    0.000    0.472    0.472\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11  (t1)    3.259    0.025  129.148    0.000    3.259    4.959\n   .PosAFF21  (t2)    3.106    0.027  113.614    0.000    3.106    4.372\n   .PosAFF31  (t3)    3.267    0.027  120.338    0.000    3.267    4.680\n   .PosAFF12  (t1)    3.259    0.025  129.148    0.000    3.259    5.070\n   .PosAFF22  (t2)    3.106    0.027  113.614    0.000    3.106    4.452\n   .PosAFF32  (t3)    3.267    0.027  120.338    0.000    3.267    4.864\n   .PosAFF13  (t1)    3.259    0.025  129.148    0.000    3.259    5.153\n   .PosAFF23  (t2)    3.106    0.027  113.614    0.000    3.106    4.490\n   .PosAFF33  (t3)    3.267    0.027  120.338    0.000    3.267    4.755\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11          0.104    0.011    9.480    0.000    0.104    0.242\n   .PosAFF21          0.125    0.013    9.601    0.000    0.125    0.247\n   .PosAFF31          0.097    0.012    8.346    0.000    0.097    0.200\n   .PosAFF12          0.086    0.009    9.681    0.000    0.086    0.208\n   .PosAFF22          0.107    0.011    9.979    0.000    0.107    0.220\n   .PosAFF32          0.061    0.008    7.215    0.000    0.061    0.136\n   .PosAFF13          0.073    0.008    8.842    0.000    0.073    0.182\n   .PosAFF23          0.099    0.010    9.564    0.000    0.099    0.206\n   .PosAFF33          0.082    0.010    8.597    0.000    0.082    0.174\n    Pos1              1.000                               1.000    1.000\n    Pos2              1.000                               1.000    1.000\n    Pos3              1.000                               1.000    1.000"
+  },
+  {
+    "objectID": "sem-3.html#strict-loadings-intercept-residual-variances",
+    "href": "sem-3.html#strict-loadings-intercept-residual-variances",
+    "title": "SEM",
+    "section": "Strict (loadings, intercept, residual variances)",
+    "text": "Strict (loadings, intercept, residual variances)\nThe next step is to constrain residual variances to be the same. This step isn’t necessary to for correctly interpretting growth models.\n\n\nCode\nstrict &lt;- '\n## define latent variables\nPos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31\nPos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32\nPos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33\n\n\n## equality of residuals \nPosAFF11 ~~ r*PosAFF11 \nPosAFF12 ~~ r*PosAFF12\nPosAFF13 ~~ r*PosAFF13\n\nPosAFF21 ~~ r*PosAFF21 \nPosAFF22 ~~ r*PosAFF22\nPosAFF23 ~~ r*PosAFF23\n\nPosAFF31 ~~ r*PosAFF31 \nPosAFF32 ~~ r*PosAFF32\nPosAFF33 ~~ r*PosAFF33\n\n\n## constrain intercepts across time\nPosAFF11 ~ t1*1\nPosAFF21 ~ t2*1\nPosAFF31 ~ t3*1\n\n\nPosAFF12 ~ t1*1\nPosAFF22 ~ t2*1\nPosAFF32 ~ t3*1\n\n\nPosAFF13 ~ t1*1\nPosAFF23 ~ t2*1\nPosAFF33 ~ t3*1\n\n'\n\nstrict &lt;- cfa(strict, data=wide, meanstructure=TRUE, std.lv=TRUE)\n\nsummary(strict, standardized=TRUE, fit.measures=TRUE)\n\n\nlavaan 0.6-19 ended normally after 34 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        30\n  Number of equality constraints                    20\n\n  Number of observations                           368\n\nModel Test User Model:\n                                                      \n  Test statistic                                93.802\n  Degrees of freedom                                44\n  P-value (Chi-square)                           0.000\n\nModel Test Baseline Model:\n\n  Test statistic                              2688.088\n  Degrees of freedom                                36\n  P-value                                        0.000\n\nUser Model versus Baseline Model:\n\n  Comparative Fit Index (CFI)                    0.981\n  Tucker-Lewis Index (TLI)                       0.985\n\nLoglikelihood and Information Criteria:\n\n  Loglikelihood user model (H0)              -2083.225\n  Loglikelihood unrestricted model (H1)      -2036.324\n                                                      \n  Akaike (AIC)                                4186.450\n  Bayesian (BIC)                              4225.531\n  Sample-size adjusted Bayesian (SABIC)       4193.804\n\nRoot Mean Square Error of Approximation:\n\n  RMSEA                                          0.055\n  90 Percent confidence interval - lower         0.040\n  90 Percent confidence interval - upper         0.071\n  P-value H_0: RMSEA &lt;= 0.050                    0.266\n  P-value H_0: RMSEA &gt;= 0.080                    0.004\n\nStandardized Root Mean Square Residual:\n\n  SRMR                                           0.105\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 =~                                                               \n    PosAFF11  (L1)    0.573    0.017   33.193    0.000    0.573    0.883\n    PosAFF21  (L2)    0.626    0.018   34.047    0.000    0.626    0.899\n    PosAFF31  (L3)    0.617    0.018   33.923    0.000    0.617    0.897\n  Pos2 =~                                                               \n    PosAFF12  (L1)    0.573    0.017   33.193    0.000    0.573    0.883\n    PosAFF22  (L2)    0.626    0.018   34.047    0.000    0.626    0.899\n    PosAFF32  (L3)    0.617    0.018   33.923    0.000    0.617    0.897\n  Pos3 =~                                                               \n    PosAFF13  (L1)    0.573    0.017   33.193    0.000    0.573    0.883\n    PosAFF23  (L2)    0.626    0.018   34.047    0.000    0.626    0.899\n    PosAFF33  (L3)    0.617    0.018   33.923    0.000    0.617    0.897\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n  Pos1 ~~                                                               \n    Pos2              0.457    0.045   10.065    0.000    0.457    0.457\n    Pos3              0.397    0.048    8.214    0.000    0.397    0.397\n  Pos2 ~~                                                               \n    Pos3              0.480    0.044   10.857    0.000    0.480    0.480\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11  (t1)    3.255    0.025  128.237    0.000    3.255    5.021\n   .PosAFF21  (t2)    3.108    0.027  113.239    0.000    3.108    4.467\n   .PosAFF31  (t3)    3.267    0.027  120.462    0.000    3.267    4.747\n   .PosAFF12  (t1)    3.255    0.025  128.237    0.000    3.255    5.021\n   .PosAFF22  (t2)    3.108    0.027  113.239    0.000    3.108    4.467\n   .PosAFF32  (t3)    3.267    0.027  120.462    0.000    3.267    4.747\n   .PosAFF13  (t1)    3.255    0.025  128.237    0.000    3.255    5.021\n   .PosAFF23  (t2)    3.108    0.027  113.239    0.000    3.108    4.467\n   .PosAFF33  (t3)    3.267    0.027  120.462    0.000    3.267    4.747\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all\n   .PosAFF11   (r)    0.092    0.003   33.226    0.000    0.092    0.220\n   .PosAFF12   (r)    0.092    0.003   33.226    0.000    0.092    0.220\n   .PosAFF13   (r)    0.092    0.003   33.226    0.000    0.092    0.220\n   .PosAFF21   (r)    0.092    0.003   33.226    0.000    0.092    0.191\n   .PosAFF22   (r)    0.092    0.003   33.226    0.000    0.092    0.191\n   .PosAFF23   (r)    0.092    0.003   33.226    0.000    0.092    0.191\n   .PosAFF31   (r)    0.092    0.003   33.226    0.000    0.092    0.195\n   .PosAFF32   (r)    0.092    0.003   33.226    0.000    0.092    0.195\n   .PosAFF33   (r)    0.092    0.003   33.226    0.000    0.092    0.195\n    Pos1              1.000                               1.000    1.000\n    Pos2              1.000                               1.000    1.000\n    Pos3              1.000                               1.000    1.000"
+  },
+  {
+    "objectID": "sem-3.html#other-mi-types",
+    "href": "sem-3.html#other-mi-types",
+    "title": "SEM",
+    "section": "Other MI types",
+    "text": "Other MI types\nNote that there are other types of MI that we could investigate, depending on what we are interested in. We could look at equality of latent means and variances, as well as regressions, if they were in the model."
+  },
+  {
+    "objectID": "sem-3.html#comparing-the-models",
+    "href": "sem-3.html#comparing-the-models",
+    "title": "SEM",
+    "section": "Comparing the models",
+    "text": "Comparing the models\nUsually done through chi-square difference test. You want NS, i.e. the constrains do not lead to worse fit. But this is a very sensitive test, especially with larger samples. Better to look at changes in CFI. If delta is .01 or greater than maybe it shows misfit.\n\n##Compare configural and weak model\nanova(config, weak)\n\n\nChi-Squared Difference Test\n\n       Df    AIC    BIC  Chisq Chisq diff    RMSEA Df diff Pr(&gt;Chisq)    \nconfig 24 4155.3 4272.5 22.648                                           \nweak   30 4170.1 4263.9 49.459      26.81 0.097082       6  0.0001572 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "sem-3.html#types-of-longitudinal-models",
+    "href": "sem-3.html#types-of-longitudinal-models",
+    "title": "SEM",
+    "section": "Types of longitudinal models",
+    "text": "Types of longitudinal models\n\nGrowth models\nLongitudinal CFA\nCross lag panel model\nLongitudinal mediation\nGrowth models + cross lags\nLatent change/difference score models\nMixture or class based longitudinal models"
+  },
+  {
+    "objectID": "sem-3.html#longitudinal-cfa",
+    "href": "sem-3.html#longitudinal-cfa",
+    "title": "SEM",
+    "section": "Longitudinal CFA",
+    "text": "Longitudinal CFA\n\nCan be simply thought of as does this construct relate to itself across time? And, to the extent that it does not, is that due to changes in how the construct is measured over time?\nSubstantively, these analyses get at the relative rank order of people across assessment points. What is nice is that unlike using composites, this looks at latent correlations across time.\n\n-Also nice is that different measures can be used eg a cognitive ability exam for children which naturally differs in content across age groups."
+  },
+  {
+    "objectID": "sem-3.html#unstandardized-estimates",
+    "href": "sem-3.html#unstandardized-estimates",
+    "title": "SEM",
+    "section": "unstandardized estimates",
+    "text": "unstandardized estimates\n\nNotice the difference in loadings\nNotice the difference in covariances\n\nThis uses the marker variable approach. The above uses the fixed factor method.\n\nfit.long.cfa.us &lt;- cfa(long.cfa, data=wide, std.lv=FALSE)\nsummary(fit.long.cfa.us)\n\nlavaan 0.6-19 ended normally after 144 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        69\n\n  Number of observations                           368\n\nModel Test User Model:\n                                                      \n  Test statistic                               119.443\n  Degrees of freedom                               102\n  P-value (Chi-square)                           0.114\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  Pos1 =~                                             \n    PosAFF11          1.000                           \n    PosAFF21          0.996    0.041   24.232    0.000\n    PosAFF31          1.048    0.040   26.223    0.000\n  Pos2 =~                                             \n    PosAFF12          1.000                           \n    PosAFF22          1.148    0.047   24.463    0.000\n    PosAFF32          1.159    0.043   27.012    0.000\n  Pos3 =~                                             \n    PosAFF13          1.000                           \n    PosAFF23          1.072    0.049   22.027    0.000\n    PosAFF33          1.058    0.047   22.511    0.000\n  Neg1 =~                                             \n    NegAFF11          1.000                           \n    NegAFF21          0.851    0.040   21.308    0.000\n    NegAFF31          0.985    0.042   23.372    0.000\n  Neg2 =~                                             \n    NegAFF12          1.000                           \n    NegAFF22          1.027    0.049   21.002    0.000\n    NegAFF32          1.007    0.049   20.719    0.000\n  Neg3 =~                                             \n    NegAFF13          1.000                           \n    NegAFF23          0.940    0.055   17.134    0.000\n    NegAFF33          0.948    0.056   16.997    0.000\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n .PosAFF11 ~~                                         \n   .PosAFF12          0.004    0.007    0.578    0.563\n   .PosAFF13          0.000    0.007    0.037    0.971\n .PosAFF12 ~~                                         \n   .PosAFF13          0.004    0.006    0.674    0.500\n .PosAFF21 ~~                                         \n   .PosAFF22          0.008    0.008    1.020    0.308\n   .PosAFF23          0.008    0.008    0.991    0.322\n .PosAFF22 ~~                                         \n   .PosAFF23          0.011    0.007    1.470    0.142\n .PosAFF31 ~~                                         \n   .PosAFF32          0.004    0.007    0.616    0.538\n   .PosAFF33          0.016    0.007    2.182    0.029\n .PosAFF32 ~~                                         \n   .PosAFF33          0.004    0.006    0.690    0.490\n .NegAFF11 ~~                                         \n   .NegAFF12          0.005    0.005    0.966    0.334\n   .NegAFF13          0.006    0.006    1.036    0.300\n .NegAFF12 ~~                                         \n   .NegAFF13          0.007    0.005    1.528    0.126\n .NegAFF21 ~~                                         \n   .NegAFF22          0.015    0.004    3.605    0.000\n   .NegAFF23          0.011    0.005    2.387    0.017\n .NegAFF22 ~~                                         \n   .NegAFF23          0.010    0.003    3.145    0.002\n .NegAFF31 ~~                                         \n   .NegAFF32         -0.006    0.004   -1.607    0.108\n   .NegAFF33         -0.008    0.004   -1.778    0.075\n .NegAFF32 ~~                                         \n   .NegAFF33         -0.001    0.003   -0.481    0.630\n  Pos1 ~~                                             \n    Pos2              0.172    0.023    7.457    0.000\n    Pos3              0.132    0.021    6.446    0.000\n    Neg1             -0.160    0.023   -6.937    0.000\n    Neg2             -0.071    0.014   -4.955    0.000\n    Neg3             -0.040    0.014   -2.866    0.004\n  Pos2 ~~                                             \n    Pos3              0.127    0.018    7.088    0.000\n    Neg1             -0.056    0.018   -3.116    0.002\n    Neg2             -0.110    0.014   -8.074    0.000\n    Neg3             -0.040    0.012   -3.351    0.001\n  Pos3 ~~                                             \n    Neg1             -0.021    0.016   -1.293    0.196\n    Neg2             -0.031    0.011   -2.860    0.004\n    Neg3             -0.054    0.011   -4.737    0.000\n  Neg1 ~~                                             \n    Neg2              0.108    0.014    7.765    0.000\n    Neg3              0.072    0.013    5.512    0.000\n  Neg2 ~~                                             \n    Neg3              0.058    0.009    6.483    0.000\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .PosAFF11          0.096    0.011    8.497    0.000\n   .PosAFF21          0.130    0.013    9.956    0.000\n   .PosAFF31          0.095    0.012    7.944    0.000\n   .PosAFF12          0.087    0.009   10.044    0.000\n   .PosAFF22          0.110    0.011    9.883    0.000\n   .PosAFF32          0.055    0.009    6.437    0.000\n   .PosAFF13          0.070    0.008    8.319    0.000\n   .PosAFF23          0.098    0.011    9.317    0.000\n   .PosAFF33          0.085    0.010    8.716    0.000\n   .NegAFF11          0.104    0.011    9.546    0.000\n   .NegAFF21          0.091    0.009   10.363    0.000\n   .NegAFF31          0.056    0.009    6.475    0.000\n   .NegAFF12          0.062    0.006   10.835    0.000\n   .NegAFF22          0.037    0.004    8.445    0.000\n   .NegAFF32          0.033    0.004    7.917    0.000\n   .NegAFF13          0.084    0.008   10.660    0.000\n   .NegAFF23          0.043    0.005    8.170    0.000\n   .NegAFF33          0.038    0.005    7.372    0.000\n    Pos1              0.427    0.039   10.968    0.000\n    Pos2              0.309    0.029   10.628    0.000\n    Pos3              0.258    0.025   10.514    0.000\n    Neg1              0.317    0.031   10.233    0.000\n    Neg2              0.133    0.014    9.494    0.000\n    Neg3              0.132    0.015    8.564    0.000"
+  },
+  {
+    "objectID": "sem-3.html#introducing-means.",
+    "href": "sem-3.html#introducing-means.",
+    "title": "SEM",
+    "section": "introducing means.",
+    "text": "introducing means.\n\nNotice how we can also estimate means of the variables, though we don’t necessarily need to. These are now under the “intercepts” heading.\n\n\nfit.long.cfa.us.mean &lt;- cfa(long.cfa, meanstructure=TRUE, data=wide, std.lv=FALSE)\nsummary(fit.long.cfa.us.mean)\n\nlavaan 0.6-19 ended normally after 144 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        87\n\n  Number of observations                           368\n\nModel Test User Model:\n                                                      \n  Test statistic                               119.443\n  Degrees of freedom                               102\n  P-value (Chi-square)                           0.114\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  Pos1 =~                                             \n    PosAFF11          1.000                           \n    PosAFF21          0.996    0.041   24.232    0.000\n    PosAFF31          1.048    0.040   26.223    0.000\n  Pos2 =~                                             \n    PosAFF12          1.000                           \n    PosAFF22          1.148    0.047   24.463    0.000\n    PosAFF32          1.159    0.043   27.012    0.000\n  Pos3 =~                                             \n    PosAFF13          1.000                           \n    PosAFF23          1.072    0.049   22.027    0.000\n    PosAFF33          1.058    0.047   22.511    0.000\n  Neg1 =~                                             \n    NegAFF11          1.000                           \n    NegAFF21          0.851    0.040   21.308    0.000\n    NegAFF31          0.985    0.042   23.372    0.000\n  Neg2 =~                                             \n    NegAFF12          1.000                           \n    NegAFF22          1.027    0.049   21.002    0.000\n    NegAFF32          1.007    0.049   20.719    0.000\n  Neg3 =~                                             \n    NegAFF13          1.000                           \n    NegAFF23          0.940    0.055   17.134    0.000\n    NegAFF33          0.948    0.056   16.997    0.000\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n .PosAFF11 ~~                                         \n   .PosAFF12          0.004    0.007    0.578    0.563\n   .PosAFF13          0.000    0.007    0.037    0.971\n .PosAFF12 ~~                                         \n   .PosAFF13          0.004    0.006    0.674    0.500\n .PosAFF21 ~~                                         \n   .PosAFF22          0.008    0.008    1.020    0.308\n   .PosAFF23          0.008    0.008    0.991    0.322\n .PosAFF22 ~~                                         \n   .PosAFF23          0.011    0.007    1.470    0.142\n .PosAFF31 ~~                                         \n   .PosAFF32          0.004    0.007    0.616    0.538\n   .PosAFF33          0.016    0.007    2.182    0.029\n .PosAFF32 ~~                                         \n   .PosAFF33          0.004    0.006    0.690    0.490\n .NegAFF11 ~~                                         \n   .NegAFF12          0.005    0.005    0.966    0.334\n   .NegAFF13          0.006    0.006    1.036    0.300\n .NegAFF12 ~~                                         \n   .NegAFF13          0.007    0.005    1.528    0.126\n .NegAFF21 ~~                                         \n   .NegAFF22          0.015    0.004    3.605    0.000\n   .NegAFF23          0.011    0.005    2.387    0.017\n .NegAFF22 ~~                                         \n   .NegAFF23          0.010    0.003    3.145    0.002\n .NegAFF31 ~~                                         \n   .NegAFF32         -0.006    0.004   -1.607    0.108\n   .NegAFF33         -0.008    0.004   -1.778    0.075\n .NegAFF32 ~~                                         \n   .NegAFF33         -0.001    0.003   -0.481    0.630\n  Pos1 ~~                                             \n    Pos2              0.172    0.023    7.457    0.000\n    Pos3              0.132    0.021    6.446    0.000\n    Neg1             -0.160    0.023   -6.937    0.000\n    Neg2             -0.071    0.014   -4.955    0.000\n    Neg3             -0.040    0.014   -2.866    0.004\n  Pos2 ~~                                             \n    Pos3              0.127    0.018    7.088    0.000\n    Neg1             -0.056    0.018   -3.116    0.002\n    Neg2             -0.110    0.014   -8.074    0.000\n    Neg3             -0.040    0.012   -3.351    0.001\n  Pos3 ~~                                             \n    Neg1             -0.021    0.016   -1.293    0.196\n    Neg2             -0.031    0.011   -2.860    0.004\n    Neg3             -0.054    0.011   -4.737    0.000\n  Neg1 ~~                                             \n    Neg2              0.108    0.014    7.765    0.000\n    Neg3              0.072    0.013    5.512    0.000\n  Neg2 ~~                                             \n    Neg3              0.058    0.009    6.483    0.000\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .PosAFF11          3.212    0.038   85.141    0.000\n   .PosAFF21          3.105    0.039   80.039    0.000\n   .PosAFF31          3.248    0.039   82.975    0.000\n   .PosAFF12          3.253    0.033   99.077    0.000\n   .PosAFF22          3.126    0.037   83.350    0.000\n   .PosAFF32          3.274    0.036   91.552    0.000\n   .PosAFF13          3.302    0.030  110.512    0.000\n   .PosAFF23          3.094    0.033   94.436    0.000\n   .PosAFF33          3.280    0.032  102.909    0.000\n   .NegAFF11          1.522    0.034   45.016    0.000\n   .NegAFF21          1.397    0.030   47.359    0.000\n   .NegAFF31          1.398    0.031   44.488    0.000\n   .NegAFF12          1.412    0.023   61.269    0.000\n   .NegAFF22          1.324    0.022   60.181    0.000\n   .NegAFF32          1.300    0.021   60.718    0.000\n   .NegAFF13          1.430    0.024   59.112    0.000\n   .NegAFF23          1.281    0.021   61.551    0.000\n   .NegAFF33          1.297    0.021   62.890    0.000\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .PosAFF11          0.096    0.011    8.497    0.000\n   .PosAFF21          0.130    0.013    9.956    0.000\n   .PosAFF31          0.095    0.012    7.944    0.000\n   .PosAFF12          0.087    0.009   10.044    0.000\n   .PosAFF22          0.110    0.011    9.883    0.000\n   .PosAFF32          0.055    0.009    6.437    0.000\n   .PosAFF13          0.070    0.008    8.319    0.000\n   .PosAFF23          0.098    0.011    9.317    0.000\n   .PosAFF33          0.085    0.010    8.716    0.000\n   .NegAFF11          0.104    0.011    9.546    0.000\n   .NegAFF21          0.091    0.009   10.363    0.000\n   .NegAFF31          0.056    0.009    6.475    0.000\n   .NegAFF12          0.062    0.006   10.835    0.000\n   .NegAFF22          0.037    0.004    8.445    0.000\n   .NegAFF32          0.033    0.004    7.917    0.000\n   .NegAFF13          0.084    0.008   10.660    0.000\n   .NegAFF23          0.043    0.005    8.170    0.000\n   .NegAFF33          0.038    0.005    7.372    0.000\n    Pos1              0.427    0.039   10.968    0.000\n    Pos2              0.309    0.029   10.628    0.000\n    Pos3              0.258    0.025   10.514    0.000\n    Neg1              0.317    0.031   10.233    0.000\n    Neg2              0.133    0.014    9.494    0.000\n    Neg3              0.132    0.015    8.564    0.000"
+  },
+  {
+    "objectID": "sem-3.html#second-order-growth-model",
+    "href": "sem-3.html#second-order-growth-model",
+    "title": "SEM",
+    "section": "Second order growth model",
+    "text": "Second order growth model\nRepeated measures are latent. Why would we want to do this? At least two reasons.\n\nWe can take advantage of the benefits of latent variables ie no measurement error.\nwe can impose constraints for measurement invariance across time (MI)."
+  },
+  {
+    "objectID": "sem-3.html#effect-coding",
+    "href": "sem-3.html#effect-coding",
+    "title": "SEM",
+    "section": "effect coding",
+    "text": "effect coding\n\n\nCode\nsec.order &lt;- '\n## define latent variables\nPos1 =~ NA*PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31\nPos2 =~ NA*PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32\nPos3 =~ NA*PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33\n\n## intercepts\nPosAFF11 ~ t1*1\nPosAFF21 ~ t2*1\nPosAFF31 ~ t3*1\n\nPosAFF12 ~ t1*1\nPosAFF22 ~ t2*1\nPosAFF32 ~ t3*1\n\nPosAFF13 ~ t1*1\nPosAFF23 ~ t2*1\nPosAFF33 ~ t3*1\n\n\n## correlated residuals across time\nPosAFF11 ~~ PosAFF12 + PosAFF13\nPosAFF12 ~~ PosAFF13\nPosAFF21 ~~ PosAFF22 + PosAFF23\nPosAFF22 ~~ PosAFF23\nPosAFF31 ~~ PosAFF32 + PosAFF33\nPosAFF32 ~~ PosAFF33\n\n\n## latent variable intercepts\nPos1 ~ 0*1\nPos2  ~ 0*1\nPos3  ~ 0*1\n\n#model constraints for effect coding\n## loadings must average to 1\nL1 == 3 - L2 - L3\n## means must average to 0\nt1 == 0 - t2 - t3\n\ni =~ 1*Pos1 + 1*Pos2 + 1*Pos3 \ns =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '\n\n\nfit.sec.order &lt;- growth(sec.order, data=wide, missing = \"ML\")"
   }
 ]

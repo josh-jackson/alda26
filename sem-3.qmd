@@ -185,19 +185,19 @@ semPaths(fit.2)
 
 3.  chi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.
 
-4.  RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable
+4.  RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good
 
-5.  CFI, TFI (Relative fit models). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually \>.9 is okay. Some care about \> .95
+5.  CFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually \>.9 is okay. Some care about \> .95
 
 ## Identification
 
 -   We have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.
 
--   If you are asking too much you canconstrain parameters to be the same, which reduces the number of parameters.
+-   If you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.
 
 -   Compare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable
 
--   The covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable.
+-   The covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable which sets the scale.
 
 ## Setting the scale
 
@@ -243,11 +243,13 @@ semPaths(fit.2)
 
 ## Regarding means
 
--   SEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e means are not necessary.\
+-   SEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e. means are not necessary.\
 -   This is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.
--   Given we are interested in change across time,we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on. We can standardize them, use the original metric, and more!
+-   Given we are interested in change across time,we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on. 
 
 ## Types of longitudinal SEM models
+
+** not an actual taxonomy
 
 1.  Growth models
 
@@ -262,6 +264,8 @@ semPaths(fit.2)
 6.  Latent change/difference score models
 
 7.  Mixture or class based longitudinal models
+
+8.  Dynamic factor and dSEM models. 
 
 ## lavaan
 

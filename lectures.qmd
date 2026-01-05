@@ -11,6 +11,6 @@ editor: visual
 
 4.  [Bends](bends-4.qmd)
 
-5.  [conditional](conditional-5.qmd)
+5.  [Conditional](conditional-5.qmd)
 
-6.  [advanced SEM](sem2-6.qmd)
+6.  [Advanced SEM](sem2-6.qmd)
