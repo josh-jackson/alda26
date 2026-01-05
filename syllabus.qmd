@@ -1,0 +1,75 @@
+---
+title: "Syllabus"
+editor: visual
+---
+
+### Class hours:
+
+215A Somers
+
+Monday & Wednesday 1 - 2:20
+
+### Instructor:
+
+Joshua Jackson
+
+### Office:
+
+315b
+
+### Office hours:
+
+Monday after class and by appt
+
+This course covers modern methods of handling longitudinal, repeated measures. The class will introduce the rationale of measuring change and stability over time to study phenomena, as well as how within-person designs can increase statistical power and precision compared to more traditional designs. Most the course will use multi-level models and latent (growth) curve models to specify patterns of change across time. Additional topics include: visualization, measurement invariance, time-to- event models and power. PREREQ: Use of R will be required, Familiarity with MLM and/or Structural Equation Models.
+
+### Class textbooks
+
+Hoffman, Lesa. (2015). Longitudinal Analysis: Modeling Within-Person Fluctuation and Change. (referred to as LA)
+
+Singer & Willett (2003). Applied Longitudinal Applied Longitudinal Data Analysis: Modeling
+Change and Event Occurrence.  (referred to as SA)
+
+Little, T. D. (2013). Longitudinal structural equation modeling.  (referred to as LSEM)
+
+
+I have PDFs available if you do not want to purchase the textbook.
+
+I find these textbooks quite readable, but if you are struggling I have additional recommendations for intro MLM and SEM that may fill in the gaps. Additionally, if there are topics that you are interested in and want to know more about please let me know as there are a number of textbooks devoted to a single topic.
+
+### Grading
+
+Grading consists of 3 aspects:
+
+1.  Semi-weekly "pop" quiz. Quizzes consist of 1-3 questions based on the previous lecture and readings. They will always occur on Wednesdays. 
+
+2.  Homework take homes. Homework will be (typically) due 1 week later.
+
+3.  Final project. Everyone needs to do a longitudinal data analysis from start to finish. Preferably you have your own data, but if you do not then let me know and I can give you some. More details on this later.
+
+Grading breakdown is 1/3 for each of these components.
+
+### Schedule
+
+This will likely change based on our pace and what we want to cover more/less in depth
+
+| Week | Date | Topic                                    | Readings             |
+|-----------------|-----------------|-----------------------|-----------------|
+| 1    | 1/12 | Motivation and data                      | LA Ch 1 (2 optional) |
+| 2    | 1/19 | Longitudinal MLM                         | LA Ch 3, 5           |
+| 3    | 1/26 | Longitudinal SEM                        |                      |
+| 4    | 2/2  | Measurement invariance and treating time            | LSEM 1,3             |
+| 5    | 2/9  | Curves that bend                  | LSEM 8               |
+| 6    | 2/19 | GAMs          | LSEM 7               |
+| 7    | 2/23 | Predictors of change                        | LA 6                 |
+| 8    | 3/2  |                        |                      |
+| 9    | 3/9  | Spring Break                   |                      |
+| 10   | 3/16 | Predictors of change                              | LA 7                 |
+| 11   | 3/23 | Intensive longitudinal designs           | LA 8                 |
+| 12   | 3/30 | Intensive longitudinal designs           | LA 9                 |
+| 13   | 4/6  | Multivariate change                      |                      |
+| 14   | 4/13 | Multivariate change                        |                      |
+| 15   | 4/20 | Mixture Models                            |                      |
+
+
+Other topics: Longitudinal mediation (and multilevel mediation), time to event analyses, power,  ...?

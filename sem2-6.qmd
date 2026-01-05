@@ -1,0 +1,1988 @@
+---
+title: "multivariate"
+format: revealjs
+slide-number: true
+editor: visual
+execute:
+  echo: true
+html:
+  code-fold: true
+  code-summary: Show the code
+  scrollable: true
+---
+
+## Multiple DVs
+
+-   Normally we are only interested in 1 DV at a time. However, many theories incorprate multiple DVs. With longitudinal models it is easy to incorporate multivariate questions.
+
+-   SEM is well suited for multiple DVs as there is less of an emphasis on a single traidtional equation. "If you can draw it you can model it"
+
+-   Some \~basic multivariate models can be run with MLM
+
+## Growth models x2
+
+What does a multivariate growth model look like?
+
+```{r}
+#| code-fold: true
+
+affect <- read.csv("https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/longitudinal.csv")
+library(lavaan)
+library(tidyverse)
+
+
+
+model.1 <- '  i =~ 1*PosAFF11 + 1*PosAFF12 + 1*PosAFF13 
+            s =~ 0*PosAFF11 + 1*PosAFF12 + 2*PosAFF13'
+
+fit.1 <- growth(model.1, data=affect)
+summary(fit.1)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+
+model.2 <- '  i1 =~ 1*PosAFF11 + 1*PosAFF12 + 1*PosAFF13 
+            s1 =~ 0*PosAFF11 + 1*PosAFF12 + 2*PosAFF13
+            
+             i2 =~ 1*NegAFF21 + 1*NegAFF22 + 1*NegAFF23 
+            s2 =~ 0*NegAFF21 + 1*NegAFF22 + 2*NegAFF23
+
+'
+
+fit.2 <- growth(model.2, data=affect, missing = "ML")
+summary(fit.2, standardized = TRUE)
+
+```
+
+## second order
+
+```{r}
+mv.sec.order <- '
+## define latent variables
+Pos1 =~ NA*PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31
+Pos2 =~ NA*PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32
+Pos3 =~ NA*PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33
+
+Neg1 =~ NA*NegAFF11 + L4*NegAFF11 + L5*NegAFF21 + L6*NegAFF31
+Neg2 =~ NA*NegAFF12 + L4*NegAFF12 + L5*NegAFF22 + L6*NegAFF32
+Neg3 =~ NA*NegAFF13 + L4*NegAFF13 + L5*NegAFF23 + L6*NegAFF33
+
+## intercepts
+PosAFF11 ~ t1*1
+PosAFF21 ~ t2*1
+PosAFF31 ~ t3*1
+
+PosAFF12 ~ t1*1
+PosAFF22 ~ t2*1
+PosAFF32 ~ t3*1
+
+PosAFF13 ~ t1*1
+PosAFF23 ~ t2*1
+PosAFF33 ~ t3*1
+
+NegAFF11 ~ tt1*1
+NegAFF21 ~ tt2*1
+NegAFF31 ~ tt3*1
+
+NegAFF12 ~ tt1*1
+NegAFF22 ~ tt2*1
+NegAFF32 ~ tt3*1
+
+NegAFF13 ~ tt1*1
+NegAFF23 ~ tt2*1
+NegAFF33 ~ tt3*1
+
+
+## correlated residuals across time
+PosAFF11 ~~ PosAFF12 + PosAFF13
+PosAFF12 ~~ PosAFF13
+PosAFF21 ~~ PosAFF22 + PosAFF23
+PosAFF22 ~~ PosAFF23
+PosAFF31 ~~ PosAFF32 + PosAFF33
+PosAFF32 ~~ PosAFF33
+
+NegAFF11 ~~ NegAFF12 + NegAFF13
+NegAFF12 ~~ NegAFF13
+NegAFF21 ~~ NegAFF22 + NegAFF23
+NegAFF22 ~~ NegAFF23
+NegAFF31 ~~ NegAFF32 + NegAFF33
+NegAFF32 ~~ NegAFF33
+
+## latent variable intercepts
+Pos1 ~ 0*1
+Pos2  ~ 0*1
+Pos3  ~ 0*1
+
+Neg1 ~ 0*1
+Neg2  ~ 0*1
+Neg3  ~ 0*1
+
+#model constraints for effect coding
+## loadings must average to 1
+L1 == 3 - L2 - L3
+L4 == 3 - L5 - L6
+## means must average to 0
+t1 == 0 - t2 - t3
+tt1 == 0 - tt2 - tt3
+
+i.p =~ 1*Pos1 + 1*Pos2 + 1*Pos3 
+s.p =~ 0*Pos1 + 1*Pos2 + 2*Pos3
+
+i.n =~ 1*Neg1 + 1*Neg2 + 1*Neg3 
+s.n =~ 0*Neg1 + 1*Neg2 + 2*Neg3'
+
+
+mv.secondorder <- growth(mv.sec.order, data=affect, missing = "ML")
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(mv.secondorder, standardized = TRUE)
+```
+
+## Bayesian multivariate models
+
+```{r}
+#| code-fold: true
+data <- "https://raw.githubusercontent.com/josh-jackson/bayes/master/mlm.csv"
+mlm <- read.csv(data) 
+head(mlm)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+library(brms)
+mlm.4 <- 
+  brm(family = gaussian,
+      CON ~ 1 + time + (1 + time | ID),
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 1.5), class = b),
+                prior(normal(0, 1.5), class = sd, coef = Intercept, group = ID), 
+                prior(normal(0, 1.5), class = sd, coef = time, group = ID), 
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 4000, warmup = 1000, chains = 4, cores = 4,
+      file = "mlm.4",
+      backend = "cmdstanr",
+      data = mlm)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(mlm.4)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+mv.1 <- 
+  brm(family = gaussian,
+      mvbind(CON, DAN) ~ 1 + time + (1 + time |i| ID),
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 1.5), class = b),
+                prior(lkj(2), class = cor),
+                prior(lkj(2), class = rescor)),
+      iter = 4000, warmup = 1000, chains = 4, cores = 4,
+      file = "mv.1a",
+      backend = "cmdstanr",
+      data = mlm)
+
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(mv.1)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+fixef(mv.1)
+```
+
+```{r}
+library(tidybayes)
+mv.1 %>% 
+  spread_draws(cor_ID__CON_time__DAN_time) %>% 
+   median_qi()
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+mv.1 %>% 
+  spread_draws(cor_ID__CON_time__DAN_time) %>% 
+   ggplot(aes(x = cor_ID__CON_time__DAN_time)) +
+   stat_halfeye()
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+mlm.wide <- mlm %>% 
+  dplyr::select(ID, DAN, CON, wave) %>% 
+  pivot_longer(cols = DAN:CON, names_to = "trait", values_to = "value") %>% 
+  pivot_wider(id_cols = "ID", names_from = c("trait", "wave"), values_from = value)
+
+head(mlm.wide)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+bv.c <- '
+
+    i.dan =~ 1*DAN_1 + 1*DAN_2 + 1*DAN_3 + 1*DAN_4
+    s.dan =~ 0*DAN_1 + 1*DAN_2 + 2*DAN_3 + 3*DAN_4
+
+    i.con =~ 1*CON_1 + 1*CON_2 + 1*CON_3 + 1*CON_4
+    s.con =~ 0*CON_1 + 1*CON_2 + 2*CON_3 + 3*CON_4
+
+'
+fit.bv.c <- growth(bv.c, data = mlm.wide, missing = "ML")
+summary(fit.bv.c,standardized=TRUE)
+```
+
+## More complex SEM multivariate models
+
+Suggested readings:
+
+https://www.annualreviews.org/doi/abs/10.1146/annurev.psych.60.110707.163612
+
+https://www.sciencedirect.com/science/article/pii/S187892931730021X#sec0125
+
+## Two wave assessments
+
+How to measure change, or should we? https://www.gwern.net/docs/dnb/1970-cronbach.pdf This paper lays out some of the problems that occur with standard treatments of two wave assessments.
+
+The most basic two wave form of change is a difference score. However, many have said these are problematic. The issues are: 1. hard to separate measurement error from true change\
+2. unreliable estimate of change\
+3. initial level (or last level) may be driving change. How to account for?
+
+------------------------------------------------------------------------
+
+-   The alternative is a standard residual gain/change score where you regress time 2 onto time 1. This overcomes some of the issues raised about because we are being conservative about the error by "regressing to the mean" such that people with larger changes than average will have their change scores "shrunken" to the average, must like we do with MLMs.
+
+-   This also helps with accounting for starting values that may be responsible for the changes, as this is literally controlling for the initial level.
+
+------------------------------------------------------------------------
+
+The issues with residualized change models, however, are:
+
+1.  it isn't true change, as you are implying people change similarly
+
+2.  it does not account for unreliability of change in a principled way
+
+## Lords Paradox
+
+This has lead to what is known as Lord's paradox. Take the two approaches above, simplified to:
+
+`lm(t2-t1 ~ group)`
+
+`lm(t2 ~ t1 + group)`
+
+```{r, echo = FALSE}
+set.seed(1234)
+N = 200
+group  = rep(c(0, 1), e=N/2)
+T1 = .75*group + rnorm(N, sd=.25)
+T2 = .4*T1 + .5*group + rnorm(N, sd=.1)
+diff = T2-T1
+df = data.frame(id=factor(1:N), group=factor(group, labels=c('Tx', 'Control')), T1, T2, diff)
+
+```
+
+```{r}
+head(df)
+```
+
+## change score/gain score model
+
+```{r}
+
+summary(lm(diff ~ group, df)) 
+
+```
+
+## residualized change score model
+
+```{r}
+summary(lm(T2 ~ group + T1, df))
+```
+
+------------------------------------------------------------------------
+
+What is going on? We are asking different questions by not accounting for T1 in the former model. The change score model is accounting for the total effect (in mediation language) whereas the residualized change score model is only interested in the direct effect.
+
+```{r}
+#| code-fold: true
+mod <- '
+  T1 ~ a*group
+  T2 ~ b*group + c*T1
+  
+  # total effect
+  TE := (a*-1) + (a*c*1) + (b*1)  
+'
+lord <- sem(mod, data=df)
+summary(lord)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(lm(diff ~ group + T1, df)) 
+```
+
+------------------------------------------------------------------------
+
+What is not immediately obvious is that the change score can be conceptualized as a series of regressions. Starting with the residualized change score model
+
+`T2 = b*T1 + e`
+
+If we assume that the relationship (b) between T1 and T2 is 1. We can re-write as:
+
+`T2 = 1*T1 + e`
+
+Then we can subtract T1 fro each side of the model, leaving:
+
+`T2 - T1 = e`
+
+In other words, a change score is equivalent to assuming a perfect regression association (correlation) between timepoints.
+
+------------------------------------------------------------------------
+
+Here, the residual will be equal to the average change and the variance of that will be the variance in the change. This can be thought of as akin to the mean and variance of our latent slope variable.
+
+Lets visualize each of these models via path models
+
+## Residualized change model
+
+![](res.change.png)
+
+Our latent residual can be conceptualized as what is left over from T2 after accounting for T1 (based on the average association between T1 and T2). We now have a measure of error/change that is not correlated to T1.
+
+------------------------------------------------------------------------
+
+```{r}
+res.change <- '
+  T2 ~ T1
+'
+res.change <- sem(res.change, data=df)
+summary(res.change)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(lm(T2~T1, df))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+res.change.m <- '
+  T2 ~ T1
+'
+res.change.m <- sem(res.change.m, data=df,meanstructure = TRUE)
+summary(res.change.m)
+
+```
+
+## residual sd from the regression
+
+```{r}
+#standard error of the estimate from linear model
+0.1565^2
+```
+
+Is equal to the SEM t2 variance. SEM is just regression.
+
+------------------------------------------------------------------------
+
+Note that this model isn't telling us anything about the difference score or even the means of the numbers per se. .845 and .097 arent 28/4means or differences.
+
+```{r}
+library(psych)
+describe(df)
+```
+
+This is why I am not a fan of the residualzed change score. It doesn't get at change the way we typically think of it. Previously our MLMs provide a way to think about what change means, and SEMs will do the same.
+
+## Latent change score
+
+Using SEM we can have:
+
+1)  Examine absolute differences
+
+2)  Able to separate (account for) initial levels from change
+
+3)  Measuring change latently, and thus error free.
+
+Number 2 is accomplished above in the residualized change models. However, what is not accomplished is getting terms similar to the slope component of a growth curve ie absolute change. Nor does it account for measurement error
+
+## Lets compare this with our old trusty mlm friend
+
+```{r}
+#| code-fold: true
+df.long <- df %>% 
+  pivot_longer(cols=T1:T2, names_to = c("drop","time"),names_pattern = "([A-Za-z]+)(\\d+)", values_to = "value") %>% 
+  select(-drop) %>% 
+  mutate(time = as.numeric(time)) %>% 
+  mutate(time = time -1)
+head(df.long)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+library(lme4)
+mlm.1 <- lmer(value ~  time + (1  | id ), data = df.long)
+summary(mlm.1)
+```
+
+------------------------------------------------------------------------
+
+Time equals the absolute difference!! Intercept is the value at T1. I can recreate the mean values with this output. And I can see how people differ at T1.
+
+However, this does not tell you differences in how people change. That is, everyone is assumed to change similarly ie fixed slope.
+
+------------------------------------------------------------------------
+
+```{r,eval = FALSE}
+library(lme4)
+mlm.2 <- lmer(value ~  time + (1 + time  | id ), data = df.long)
+```
+
+output: Error: number of observations (=400) \<= number of random effects (=400) for term (1 + time \| id); the random-effects parameters and the residual variance (or scale parameter) are probably unidentifiable
+
+<sad trombone noise>
+
+------------------------------------------------------------------------
+
+We can either do two things: go with Bayes or go with SEM. SEM is actually more flexible here so lets explore this option.
+
+Knowing what we know about recreating difference scores via constraints, we can also make a latent change score by modifying the same residual path model. This time assuming the association between t1 and t2 are the same.
+
+------------------------------------------------------------------------
+
+Remember this is our residual change model
+
+![](res.change.png)
+
+And remember that we can recreate a difference score if we set `T2 = 1*T1 + e`
+
+`T2 - T1 = e`
+
+------------------------------------------------------------------------
+
+![](latent.change.png)
+
+Now we can interpret the residual as change, as it is explicitly what is left over from T2 after accoutering for T1. This is starting to look like what we for a growth model.
+
+------------------------------------------------------------------------
+
+We have: 1. Mean and variance of the slope(change), akin to our random and fixed effects in MLM 2. Covariance between intercept and slope.
+
+```{r}
+#| code-fold: true
+latent.change <- '
+  #define difference score
+  T2 ~ 1*T1
+  
+  # define the latent change variable
+  change =~ 1*T2
+  
+  #estimate means
+  change ~ 1
+  T1 ~ 1
+  
+  #Constrains mean of T2 to 0
+  T2 ~0*1
+
+  #estimate variance of change
+  change ~~ change
+
+  #estimate variance of T1 intercept
+  T1 ~~ T1
+  
+  #constrain variance of T2 to 0
+  T2 ~~ 0*T2
+
+  #intercept slope covariance
+  change ~~ T1
+'
+
+latent.change <- sem(latent.change, data=df)
+summary(latent.change)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+describe(df)
+```
+
+Change now has an intercept and a variance -- just like in growth curves!
+
+## Residualized latent change score
+
+Note that we haven't yet removed the variance from the T1 (control for T1).
+
+![](res.lat.change.png)
+
+------------------------------------------------------------------------
+
+This may or may not be something you want to do. It is mostly helpful if change has occurred prior to T1 and you are looking at the impact of some variable on change. If you are doing an intervention that takes place after T1 then maybe stick to latent change model. If you are measuring a developmental process across time and want to make sure that initial levels aren't influencing change then you may want to do this. If you are doing that but think that initial levels are related to the change process then maybe you would be over controlling, wiping away what may be important. ¯\_(ツ)\_/¯
+
+## Group as predictor
+
+```{r}
+#| code-fold: true
+m.2 <- '
+  #define difference score
+  T2 ~ 1*T1
+  
+  # define the latent change variable
+  change =~ 1*T2
+  
+  #estimate means
+  change ~ 1
+  T1 ~ 1
+  
+  #Constrains mean of T2 to 0
+  T2 ~0*1
+
+  #estimate variance of change
+  change ~~ change
+
+  #estimate variance of T1 intercept
+  T1 ~~ T1
+  
+  #constrain variance of T2 to 0
+  T2 ~~ 0*T2
+
+  #change  intercept covariance
+  change ~~ T1 
+  
+  ## use group as a predictor
+  T1 ~ group
+  change ~ group
+'
+
+fit.2 <- sem(m.2, missing = "ml", data=df)
+summary(fit.2)
+
+```
+
+## Multiple group comparisons
+
+-   can compare groups as well as complete vs incomplete data
+
+![](mgroup.png)
+
+## Multiple group
+
+```{r}
+#| code-fold: true
+m.4 <- '
+  #define difference score
+  T2 ~ 1*T1
+  
+  # define the latent change variable
+  change =~ 1*T2
+  
+  #estimate means
+  change ~ 1
+  T1 ~ 1
+  
+  #Constrains mean of T2 to 0
+  T2 ~0*1
+
+  #estimate variance of change
+  change ~~ change
+
+  #estimate variance of T1 intercept
+  T1 ~~ T1
+  
+  #constrain variance of T2 to 0
+  T2 ~~ 0*T2
+
+  #change intercept covariance
+  change ~~ T1 
+
+'
+
+fit.4 <- sem(m.4,  missing = "ml", data=df, group ="group")
+summary(fit.4, fit.measures = TRUE)
+
+```
+
+## Multiple group
+
+```{r}
+#| code-fold: true
+m.4c <- '
+  #define difference score
+  T2 ~ 1*T1
+  
+  # define the latent change variable
+  change =~ 1*T2
+  
+  #estimate means
+  change ~ 1
+  T1 ~ 1
+  
+  #Constrains mean of T2 to 0
+  T2 ~0*1
+
+  #estimate variance of change
+  change ~~ change
+
+  #estimate variance of T1 intercept
+  T1 ~~ T1
+  
+  #constrain variance of T2 to 0
+  T2 ~~ 0*T2
+
+  #change intercept covariance
+  change ~~ T1 
+
+'
+
+fit.4c <- sem(m.4c,  missing = "ml", data=df, group ="group", group.equal = c("loadings", "intercepts", "means", "lv.variances", "lv.covariances"))
+summary(fit.4c, fit.measures = TRUE)
+
+```
+
+## Model comparisons
+
+```{r}
+lavTestLRT(fit.4, fit.4c)
+```
+
+Adding constraints lead to a worse fitting model.
+
+## Multiple group
+
+But we added a lot of constraints. Where were the constraints important?
+
+```{r}
+#| code-fold: true
+m.4c <- '
+  #define difference score
+  T2 ~ 1*T1
+  
+  # define the latent change variable
+  change =~ 1*T2
+  
+  #estimate means
+  change ~ 1
+  T1 ~ 1
+  
+  #Constrains mean of T2 to 0
+  T2 ~0*1
+
+  #estimate variance of change
+  change ~~ change
+
+  #estimate variance of T1 intercept
+  T1 ~~ T1
+  
+  #constrain variance of T2 to 0
+  T2 ~~ 0*T2
+
+  #change intercept covariance
+  change ~~ T1 
+
+'
+
+fit.4c2 <- sem(m.4c,  missing = "ml", data=df, group ="group", group.equal = c("means"))
+summary(fit.4c2,fit.measures = TRUE )
+
+```
+
+## model comparisons
+
+```{r}
+lavTestLRT(fit.4, fit.4c, fit.4c2 )
+```
+
+Model comparison #2 (fit.4c2) is not different from the unconstrained model (fit.4). Thus assuming the mean slope of the two models are the same does not yield worse fit. .8686 is the same p value as the regression model (.869)
+
+## Latent change (difference) model
+
+Takes our two wave change model and expands it
+
+![](latent.latent.png)
+
+## Alternative ways to handle time
+
+-   A slight detour before we get back to latent change models
+
+![](autoregress.png)
+
+## Longitudinal Mediation model
+
+See Selig & Preacher, 2009 ![](med1.png)
+
+## Longitudinal Mediation model
+
+Example where data are not ideal Harris et al. 2017 EJP
+
+![](med2.png)
+
+## Cross Lag Panel Model
+
+![](clpm.png)
+
+## Cross-lagged panel model
+
+some cons: 1. Arbitrary starting point can change association\
+2. Time between lags can influence results because changes may not be aligned with assessment\
+3. Different constructs may change at different rates\
+4. Theoretically, the model suggest that one point in time influences change in some other construct. Why would Tuesday at 2 be so important, why not Thursday at 4?\
+5. Does not separate within and between person processes.
+
+------------------------------------------------------------------------
+
+![](dgm-clpm.png)
+
+## RI-CLPM
+
+Emphasizes within person effects, by accounting for between
+
+![](ri-clpm.png)
+
+------------------------------------------------------------------------
+
+Three components that could exist
+
+1.  On one extreme, completely state level variance where who you are at one timepoint isn't associated at all with another time point.
+
+2.  The other extreme, is the stable trait component, assumed to be the same across forever.
+
+3.  In the middle, the auto-regressive parameter, one that allows for consistency but also for slow moving change where there is associations between timepoints.
+
+------------------------------------------------------------------------
+
+-   Including this stable-trait component changes the meaning of the autoregressive part of the model.
+
+-   Whereas in the CLPM the cross-lagged paths reflect associations between the X and Y variables over time, in the RI-CLPM, these paths reflect associations among wave-specific deviations from a person's stable- trait level
+
+-   This is what allows for the separation of between- and within-persons associations
+
+------------------------------------------------------------------------
+
+-   The CLPM is nested within the RI-CLPM; the CLPM is equivalent to the RI-CLPM with the random- intercept (or stable-trait) variance constrained to 0
+
+-   Yet the state level is only measured by a residual, which could reflect measurement error versus time specific variance that is meaningful.
+
+-   An extension of the RI-CLPM is the stable trait, autoregressive trait, state (STARTs) model which includes state variance estimation
+
+## STARTs model
+
+![](starts.png)
+
+------------------------------------------------------------------------
+
+If there is meaningful state-level variance, which is often due to measurement error, RI-CLPM can produce spurious cross-lags
+
+![](riclpm-sim.png)
+
+------------------------------------------------------------------------
+
+-   These models cannot get at between person causal effects
+
+-   Within-person effects are based on scores that "only capture temporary fluctuations around individual person means.
+
+-   Is this what development looks like?
+
+## Dynamic panel models
+
+![](dpm.png)
+
+------------------------------------------------------------------------
+
+-   A critical difference between the RI-CLPM is the way that the lagged effects are modeled.
+
+-   In the RI-CLPM, the lagged effects are attached to the within-persons components of the model, which reflect deviations from the stable trait
+
+-   In contrast, in the dynamic panel model the lagged effects are attached directly to the observed variables
+
+-   The path from X2 to Y3 incorporates any association between the time-invariant factor associated with X and change in Y from Wave 2 to 3
+
+## other extensions
+
+-   One major issue with the STARTS and RI-CLPM is that they do not model systematic change the way we have been doing all semester, where growth can be systematic over long periods of time
+
+-   How can we model two "growth" processes?
+
+## growth model with TVCs
+
+-   Estimate of the time-specific, within-person component of the relation between our repeated measure and out covariate
+
+-   Omitting the between-person latent growth process that underlies the TVC at the expense of time specific question
+
+## bivariate growth model
+
+-   Omits all time specific questions, instead only focusing on between person association.
+
+-   In contrast, the growth model with TVC provides a direct estimate of the within-person component of the unidirectional relation between the repeated measure and your covariate (time specific effects).
+
+-   Both of these approaches will not provide a full test of whether there are both person-specific and time-specific developmental links between two constructs over time.
+
+## LCM-SR
+
+-   The Latent Curve Model With Structured Residuals
+-   Like a growth curve, but add cross lags to the residuals. Or like a RI-CLPM, but add a slope factor.
+
+![](unilgmsr.png)
+
+
+## Lets think about residual variances
+
+-   Rarely are these residuals considered of substantive interest beyond defining the optimal covariance structure for a given set of data
+
+-   What does the residual covariance structure look like for a standard univariate growth model?
+
+-   What does the residual covariance structure look like for a bivariate growth model without cross lags?
+
+-   How does this residual covariane structure look like for the univariate LCM-SR?
+
+## Standard types of residual variance
+
+-   Variance component (VC) where covariances are set to zero
+-   Compound symmetry is where all covariances are the same
+-   First auto-regressive (AR1) where lags are constant
+-   Toeplitz is similar to (AR1)
+-   Unstructured where no constraints are put into place
+-   
+
+## Bivariate LCM-SR
+
+
+-   provides simultaneous estimates of between-person processes and time-specific, within-person processes of the over-time relation between two constructs
+
+-   the cross lags do not directly impact the fixed effects
+
+![](LCM-SR.png)
+
+## Bivariate LCM-SR residual structure
+
+-Three repreated measures for two constructs
+
+![](residual-LCM-SR.png)
+
+-   the bivariate growth model and LCM-SR residual matrix are equal if all regression parameters are equal to zero
+
+## alt
+
+-   autoregressive latent change model
+-   "intercept" and "slope" on residuals.
+-   Reflect indirect effects through previous realizations of the process, and reflect the effects of these factors that accumulate over time
+-   the growth factors (LCM-SR) and the accumulating factors of the alt are the same when the autoregressive and crosslagged paths are not present
+
+------------------------------------------------------------------------
+
+![](alt.png)
+
+## Comparison between SR and Alt
+
+-   Alt is the set of repeated measures are a function of the joint contribution of the underlying latent growth factor and the time-specific influences
+
+-   if an earlier measure of one construct is believed to causally influence a later measure of another construct then an ALT (or TVC) is more appropriate
+
+-   if theory suggests over-time relation between the two constructs consists of a unique between-person component and a unique within-person component then LCM-SR is more appropriate
+
+------------------------------------------------------------------------
+
+```{r}
+lcmsr<- read.table("currandemo.dat", col.names = c("id", "gen", "trt", paste0("alc", 1:5), paste0("dep", 1:5)))
+lcmsr
+```
+
+------------------------------------------------------------------------
+
+```{r}
+alc.mod1 <- '
+# ALCOHOL #
+# random intercept
+alc.i =~ 1*alc1 + 1*alc2 + 1*alc3 + 1*alc4 + 1*alc5
+alc.i ~ 1
+alc.i ~~ alc.i
+
+# random slope
+alc.s =~ 0*alc1 + 1*alc2 + 2*alc3 + 3*alc4 + 4*alc5
+alc.s ~ 1
+alc.s ~~ alc.s
+alc.i ~~ alc.s
+
+# create structured residuals
+alc1 ~~ 0*alc1
+alc2 ~~ 0*alc2
+alc3 ~~ 0*alc3
+alc4 ~~ 0*alc4
+alc5 ~~ 0*alc5
+
+salc1 =~ 1*alc1
+salc2 =~ 1*alc2
+salc3 =~ 1*alc3
+salc4 =~ 1*alc4
+salc5 =~ 1*alc5
+
+salc1 ~ 0
+salc2 ~ 0
+salc3 ~ 0
+salc4 ~ 0
+salc5 ~ 0
+
+salc1 ~~ salc1
+salc2 ~~ salc2
+salc3 ~~ salc3
+salc4 ~~ salc4
+salc5 ~~ salc5
+'
+
+alc.fit1 <- lavaan(alc.mod1, lcmsr)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(alc.fit1, fit.measures = T)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+alc.mod2 <- '
+# ALCOHOL #
+# random intercept
+alc.i =~ 1*alc1 + 1*alc2 + 1*alc3 + 1*alc4 + 1*alc5
+alc.i ~ 1
+alc.i ~~ alc.i
+
+# random slope
+alc.s =~ 0*alc1 + 1*alc2 + 2*alc3 + 3*alc4 + 4*alc5
+alc.s ~ 1
+alc.s ~~ alc.s
+alc.i ~~ alc.s
+
+# create structured residuals
+alc1 ~~ 0*alc1
+alc2 ~~ 0*alc2
+alc3 ~~ 0*alc3
+alc4 ~~ 0*alc4
+alc5 ~~ 0*alc5
+
+salc1 =~ 1*alc1
+salc2 =~ 1*alc2
+salc3 =~ 1*alc3
+salc4 =~ 1*alc4
+salc5 =~ 1*alc5
+
+salc1 ~ 0
+salc2 ~ 0
+salc3 ~ 0
+salc4 ~ 0
+salc5 ~ 0
+
+salc1 ~~ salc1
+salc2 ~~ salc2
+salc3 ~~ salc3
+salc4 ~~ salc4
+salc5 ~~ salc5
+
+# add auto-regressive paths
+salc2 ~ pyy*salc1
+salc3 ~ pyy*salc2
+salc4 ~ pyy*salc3
+salc5 ~ pyy*salc4
+'
+alc.fit2 <- lavaan(alc.mod2, lcmsr)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(alc.fit2)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ad.mod1 <- '
+# ---------------------------
+# latent factors
+# ---------------------------
+# ALCOHOL
+# random intercept
+alc.i =~ 1*alc1 + 1*alc2 + 1*alc3 + 1*alc4 + 1*alc5
+alc.i ~ 1
+alc.i ~~ alc.i
+
+# random slope
+alc.s =~ 0*alc1 + 1*alc2 + 2*alc3 + 3*alc4 + 4*alc5
+alc.s ~ 1
+alc.s ~~ alc.s
+alc.i ~~ alc.s
+
+# DEPRESSION
+# random intercept
+dep.i =~ 1*dep1 + 1*dep2 + 1*dep3 + 1*dep4 + 1*dep5
+dep.i ~ 1
+dep.i ~~ dep.i
+dep.i ~~ alc.i
+dep.i ~~ alc.s
+
+# ---------------------------
+# create structured residuals
+# ---------------------------
+# ALCOHOL
+alc1 ~~ 0*alc1
+alc2 ~~ 0*alc2
+alc3 ~~ 0*alc3
+alc4 ~~ 0*alc4
+alc5 ~~ 0*alc5
+
+salc1 =~ 1*alc1
+salc2 =~ 1*alc2
+salc3 =~ 1*alc3
+salc4 =~ 1*alc4
+salc5 =~ 1*alc5
+
+salc1 ~ 0
+salc2 ~ 0
+salc3 ~ 0
+salc4 ~ 0
+salc5 ~ 0
+
+salc1 ~~ salc1
+salc2 ~~ salc2
+salc3 ~~ salc3
+salc4 ~~ salc4
+salc5 ~~ salc5
+
+# DEPRESSION
+dep1 ~~ 0*dep1
+dep2 ~~ 0*dep2
+dep3 ~~ 0*dep3
+dep4 ~~ 0*dep4
+dep5 ~~ 0*dep5
+
+sdep1 =~ 1*dep1
+sdep2 =~ 1*dep2
+sdep3 =~ 1*dep3
+sdep4 =~ 1*dep4
+sdep5 =~ 1*dep5
+
+sdep1 ~ 0
+sdep2 ~ 0
+sdep3 ~ 0
+sdep4 ~ 0
+sdep5 ~ 0
+
+sdep1 ~~ sdep1
+sdep2 ~~ sdep2
+sdep3 ~~ sdep3
+sdep4 ~~ sdep4
+sdep5 ~~ sdep5
+
+salc1 ~~ sdep1
+salc2 ~~ vzy*sdep2
+salc3 ~~ vzy*sdep3
+salc4 ~~ vzy*sdep4
+salc5 ~~ vzy*sdep5
+
+# ---------------------------
+# residual regressions
+# ---------------------------
+# ALCOHOL
+salc2 ~ pyy*salc1
+salc3 ~ pyy*salc2
+salc4 ~ pyy*salc3
+salc5 ~ pyy*salc4
+
+# DEPRESSION
+sdep2 ~ pzz*sdep1
+sdep3 ~ pzz*sdep2
+sdep4 ~ pzz*sdep3
+sdep5 ~ pzz*sdep4
+'
+ad.fit1 <- lavaan(ad.mod1, lcmsr)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(ad.fit1, fit.measures = T)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ad.mod2 <- '
+# ---------------------------
+# latent factors
+# ---------------------------
+# ALCOHOL
+# random intercept
+alc.i =~ 1*alc1 + 1*alc2 + 1*alc3 + 1*alc4 + 1*alc5
+alc.i ~ 1
+alc.i ~~ alc.i
+
+# random slope
+alc.s =~ 0*alc1 + 1*alc2 + 2*alc3 + 3*alc4 + 4*alc5
+alc.s ~ 1
+alc.s ~~ alc.s
+alc.i ~~ alc.s
+
+# DEPRESSION
+# random intercept
+dep.i =~ 1*dep1 + 1*dep2 + 1*dep3 + 1*dep4 + 1*dep5
+dep.i ~ 1
+dep.i ~~ dep.i
+dep.i ~~ alc.i
+dep.i ~~ alc.s
+
+# ---------------------------
+# create structured residuals
+# ---------------------------
+# ALCOHOL
+alc1 ~~ 0*alc1
+alc2 ~~ 0*alc2
+alc3 ~~ 0*alc3
+alc4 ~~ 0*alc4
+alc5 ~~ 0*alc5
+
+salc1 =~ 1*alc1
+salc2 =~ 1*alc2
+salc3 =~ 1*alc3
+salc4 =~ 1*alc4
+salc5 =~ 1*alc5
+
+salc1 ~ 0
+salc2 ~ 0
+salc3 ~ 0
+salc4 ~ 0
+salc5 ~ 0
+
+salc1 ~~ salc1
+salc2 ~~ salc2
+salc3 ~~ salc3
+salc4 ~~ salc4
+salc5 ~~ salc5
+
+# DEPRESSION
+dep1 ~~ 0*dep1
+dep2 ~~ 0*dep2
+dep3 ~~ 0*dep3
+dep4 ~~ 0*dep4
+dep5 ~~ 0*dep5
+
+sdep1 =~ 1*dep1
+sdep2 =~ 1*dep2
+sdep3 =~ 1*dep3
+sdep4 =~ 1*dep4
+sdep5 =~ 1*dep5
+
+sdep1 ~ 0
+sdep2 ~ 0
+sdep3 ~ 0
+sdep4 ~ 0
+sdep5 ~ 0
+
+sdep1 ~~ sdep1
+sdep2 ~~ sdep2
+sdep3 ~~ sdep3
+sdep4 ~~ sdep4
+sdep5 ~~ sdep5
+
+salc1 ~~ sdep1
+salc2 ~~ p1*sdep2
+salc3 ~~ p1*sdep3
+salc4 ~~ p1*sdep4
+salc5 ~~ p1*sdep5
+
+# ---------------------------
+# residual regressions
+# ---------------------------
+# ALCOHOL
+salc2 ~ p2*salc1 + sdep1
+salc3 ~ p2*salc2 + sdep2
+salc4 ~ p2*salc3 + sdep3
+salc5 ~ p2*salc4 + sdep4
+
+# DEPRESSION
+sdep2 ~ p3*sdep1 + salc1 
+sdep3 ~ p3*sdep2 + salc2 
+sdep4 ~ p3*sdep3 + salc3 
+sdep5 ~ p3*sdep4 + salc4 
+'
+ad.fit2 <- lavaan(ad.mod2, lcmsr)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(ad.fit2, fit.measures = T)
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+ad.mod3 <- '
+# ---------------------------
+# latent factors
+# ---------------------------
+# ALCOHOL
+# random intercept
+alc.i =~ 1*alc1 + 1*alc2 + 1*alc3 + 1*alc4 + 1*alc5
+alc.i ~ 1
+alc.i ~~ alc.i
+
+# random slope
+alc.s =~ 0*alc1 + 1*alc2 + 2*alc3 + 3*alc4 + 4*alc5
+alc.s ~ 1
+alc.s ~~ alc.s
+alc.i ~~ alc.s
+
+# DEPRESSION
+# random intercept
+dep.i =~ 1*dep1 + 1*dep2 + 1*dep3 + 1*dep4 + 1*dep5
+dep.i ~ 1
+dep.i ~~ dep.i
+dep.i ~~ alc.i
+dep.i ~~ alc.s
+
+# ---------------------------
+# create structured residuals
+# ---------------------------
+# ALCOHOL
+alc1 ~~ 0*alc1
+alc2 ~~ 0*alc2
+alc3 ~~ 0*alc3
+alc4 ~~ 0*alc4
+alc5 ~~ 0*alc5
+
+salc1 =~ 1*alc1
+salc2 =~ 1*alc2
+salc3 =~ 1*alc3
+salc4 =~ 1*alc4
+salc5 =~ 1*alc5
+
+salc1 ~ 0
+salc2 ~ 0
+salc3 ~ 0
+salc4 ~ 0
+salc5 ~ 0
+
+salc1 ~~ salc1
+salc2 ~~ salc2
+salc3 ~~ salc3
+salc4 ~~ salc4
+salc5 ~~ salc5
+
+# DEPRESSION
+dep1 ~~ 0*dep1
+dep2 ~~ 0*dep2
+dep3 ~~ 0*dep3
+dep4 ~~ 0*dep4
+dep5 ~~ 0*dep5
+
+sdep1 =~ 1*dep1
+sdep2 =~ 1*dep2
+sdep3 =~ 1*dep3
+sdep4 =~ 1*dep4
+sdep5 =~ 1*dep5
+
+sdep1 ~ 0
+sdep2 ~ 0
+sdep3 ~ 0
+sdep4 ~ 0
+sdep5 ~ 0
+
+sdep1 ~~ sdep1
+sdep2 ~~ sdep2
+sdep3 ~~ sdep3
+sdep4 ~~ sdep4
+sdep5 ~~ sdep5
+
+salc1 ~~ sdep1
+salc2 ~~ p1*sdep2
+salc3 ~~ p1*sdep3
+salc4 ~~ p1*sdep4
+salc5 ~~ p1*sdep5
+
+# ---------------------------
+# residual regressions
+# ---------------------------
+# ALCOHOL
+salc2 ~ p2*salc1 + p2c*sdep1
+salc3 ~ p2*salc2 + p2c*sdep2
+salc4 ~ p2*salc3 + p2c*sdep3
+salc5 ~ p2*salc4 + p2c*sdep4
+
+# DEPRESSION
+sdep2 ~ p3*sdep1 + p3c*salc1 
+sdep3 ~ p3*sdep2 + p3c*salc2 
+sdep4 ~ p3*sdep3 + p3c*salc3 
+sdep5 ~ p3*sdep4 + p3c*salc4 
+'
+ad.fit3 <- lavaan(ad.mod3, lcmsr)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+summary(ad.fit3, fit.measures = T)
+```
+
+## Components
+
+-   Unique factors (time specific, not just residuals)
+
+-   Dynamic errors (where the residuals influence later time points)
+
+-   Common factors (intercept and slope, separates btw and within)
+
+-   Accumulating factors (direct and indirect effects from other processes)
+
+-   Do we want to detrend before investigating whether there are lagged relations? Then use common factors
+
+-   If short-term fluctuations are described using the same set of equations as the ones used for long-term behavior of a system then use accumulating factors
+
+## expanding LCM to more than 2 timepoints
+
+-   Latent change models make time-dependent change the outcome of interest as opposed to observed scores. That is change is the DV rather than states
+
+-   This opens up the possibility of more complex hypotheses to be tested (all the while allowing one to simplify back to a standard growth model)
+
+-   Allows to incorporate ideas from dynamical systems to common auto-regressive time series models
+
+## Latent change model
+
+![](lcm.png)
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+#| 
+LCM <- "https://raw.githubusercontent.com/LRI-2/Data/main/GrowthModeling/nlsy_math_wide_R.dat"
+nlsy_data <- read.table(file=url(LCM),na.strings = ".")
+
+#adding names for the columns of the data set
+names(nlsy_data) <- c('id', 'female', 'lb_wght', 'anti_k1', 'math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8', 'age2', 'age3', 'age4', 'age5', 'age6', 'age7', 'age8', 'men2', 'men3', 'men4', 'men5', 'men6', 'men7', 'men8', 'spring2', 'spring3', 'spring4', 'spring5', 'spring6', 'spring7', 'spring8', 'anti2', 'anti3', 'anti4', 'anti5', 'anti6', 'anti7', 'anti8')
+
+#reduce data down to the id variable and the math and reading variables of interest
+nlsy_data <- nlsy_data[ ,c('id', 'math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8')]
+
+library(tidyverse)
+
+data_long <- nlsy_data %>% 
+  pivot_longer(-id, names_to = "grade",names_prefix = "math", values_to = "math")
+
+head(data_long)
+```
+
+
+
+---------
+```{r}
+#| code-fold: true
+ggplot(data = data_long, aes(x = grade, y = math, group = id)) +
+  geom_point() + 
+  geom_line() +
+  xlab("Grade") + 
+  ylab("PIAT Mathematics") 
+```
+
+
+-------
+
+```{r}
+dcm_math <- ' 
+#MATHEMATICS
+  #latent true scores (loadings = 1)
+    lm1 =~ 1*math2
+    lm2 =~ 1*math3
+    lm3 =~ 1*math4
+    lm4 =~ 1*math5
+    lm5 =~ 1*math6
+    lm6 =~ 1*math7
+    lm7 =~ 1*math8
+
+  #latent true score means (initial free, others = 0)  
+    lm1 ~ 1
+    lm2 ~ 0*1
+    lm3 ~ 0*1
+    lm4 ~ 0*1
+    lm5 ~ 0*1
+    lm6 ~ 0*1
+    lm7 ~ 0*1
+
+  #latent true score variances (initial free, others = 0)
+    lm1 ~~ start(15)*lm1
+    lm2 ~~ 0*lm2
+    lm3 ~~ 0*lm3
+    lm4 ~~ 0*lm4
+    lm5 ~~ 0*lm5
+    lm6 ~~ 0*lm6
+    lm7 ~~ 0*lm7
+
+  #observed intercepts (fixed to 0)
+    math2 ~ 0*1
+    math3 ~ 0*1
+    math4 ~ 0*1
+    math5 ~ 0*1
+    math6 ~ 0*1
+    math7 ~ 0*1
+    math8 ~ 0*1
+
+  #observed residual variances (constrained to equality)
+    math2 ~~ sigma2_u*math2
+    math3 ~~ sigma2_u*math3
+    math4 ~~ sigma2_u*math4
+    math5 ~~ sigma2_u*math5
+    math6 ~~ sigma2_u*math6
+    math7 ~~ sigma2_u*math7
+    math8 ~~ sigma2_u*math8
+
+  #autoregressions (fixed = 1)
+    lm2 ~ 1*lm1
+    lm3 ~ 1*lm2
+    lm4 ~ 1*lm3
+    lm5 ~ 1*lm4
+    lm6 ~ 1*lm5
+    lm7 ~ 1*lm6
+
+  #latent change scores (fixed = 1)
+    dm2 =~ 1*lm2
+    dm3 =~ 1*lm3
+    dm4 =~ 1*lm4
+    dm5 =~ 1*lm5
+    dm6 =~ 1*lm6
+    dm7 =~ 1*lm7
+
+  #latent change score means (constrained to 0)  
+    dm2 ~ 0*1
+    dm3 ~ 0*1
+    dm4 ~ 0*1
+    dm5 ~ 0*1
+    dm6 ~ 0*1
+    dm7 ~ 0*1
+
+  #latent change score variances (constrained to 0)  
+    dm2 ~~ 0*dm2
+    dm3 ~~ 0*dm3
+    dm4 ~~ 0*dm4
+    dm5 ~~ 0*dm5
+    dm6 ~~ 0*dm6
+    dm7 ~~ 0*dm7
+
+  #constant change factor (loadings = 1)
+    g2 =~ 1*dm2 + 
+          1*dm3 + 
+          1*dm4 + 
+          1*dm5 + 
+          1*dm6 + 
+          1*dm7 
+
+  #constant change factor mean  
+    g2 ~ start(15)*1
+
+  #constant change factor variance
+    g2 ~~ g2
+
+  #constant change factor covariance with the initial true score
+    g2 ~~ lm1
+
+  #proportional effects (constrained equal)
+    dm2 ~ start(-.2)*pi_m * lm1
+    dm3 ~ start(-.2)*pi_m * lm2
+    dm4 ~ start(-.2)*pi_m * lm3
+    dm5 ~ start(-.2)*pi_m * lm4
+    dm6 ~ start(-.2)*pi_m * lm5
+    dm7 ~ start(-.2)*pi_m * lm6
+'
+
+fit_math <- lavaan(dcm_math, data = nlsy_data,  meanstructure = TRUE,estimator = "ML", missing = "fiml",fixed.x = FALSE, control=list(iter.max=500),verbose=FALSE)
+
+```
+
+
+--------
+
+```{r}
+summary(fit_math, fit.measures = T)
+```
+
+## How to interpret
+
+Change is both a constant (overall change factor) as well as a time specific proportional effect (and thus potentially nonlinear).  This latter estimate is the beta parameter in the figure. Commonly this is called a dual change score model. 
+
+$$\Delta_{math} = 15.222 -0.241(math_{t-1})$$
+
+![](lcm.png)
+
+
+--------
+
+```{r}
+nlsy_predicted <- cbind(nlsy_data$id, as.data.frame(lavPredict(fit_math, type = "yhat")))
+names(nlsy_predicted)[1] <- "id"
+predicted_long <- nlsy_predicted %>% 
+              pivot_longer(-id, names_to = "grade",names_prefix = "math", values_to = "math")
+predicted_long
+```
+
+-------------
+
+```{r}
+#| code-fold: true
+ggplot(data = predicted_long, aes(x = grade, y = math, group = id)) +
+  geom_line(alpha = .15) +
+  xlab("Grade") + 
+  ylab("Predicted PIAT Mathematics") 
+```
+
+
+## bivariate LCM models
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+filepath <- "https://raw.githubusercontent.com/LRI-2/Data/main/GrowthModeling/nlsy_math_hyp_wide_R.dat"
+#read in the text data file using the url() function
+nlsy_data <- read.table(file=url(filepath),na.strings = ".")
+
+#adding names for the columns of the data set
+names(nlsy_data) <- c('id', 'female', 'lb_wght', 'anti_k1', 'math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8', 'comp2', 'comp3', 'comp4', 'comp5', 'comp6', 'comp7', 'comp8', 'rec2', 'rec3', 'rec4', 'rec5', 'rec6', 'rec7', 'rec8', 'bpi2', 'bpi3', 'bpi4', 'bpi5', 'bpi6', 'bpi7', 'bpi8', 'asl2', 'asl3', 'asl4', 'asl5', 'asl6', 'asl7', 'asl8', 'ax2', 'ax3', 'ax4', 'ax5', 'ax6', 'ax7', 'ax8', 'hds2', 'hds3', 'hds4', 'hds5', 'hds6', 'hds7', 'hds8', 'hyp2', 'hyp3', 'hyp4', 'hyp5', 'hyp6', 'hyp7', 'hyp8', 'dpn2', 'dpn3', 'dpn4', 'dpn5', 'dpn6', 'dpn7', 'dpn8', 'wdn2', 'wdn3', 'wdn4', 'wdn5', 'wdn6', 'wdn7', 'wdn8', 'age2', 'age3', 'age4', 'age5', 'age6', 'age7', 'age8', 'men2', 'men3', 'men4', 'men5', 'men6', 'men7', 'men8', 'spring2', 'spring3', 'spring4', 'spring5', 'spring6', 'spring7', 'spring8', 'anti2', 'anti3', 'anti4', 'anti5', 'anti6', 'anti7', 'anti8')
+
+#reduce data down to the id variable and the math and reading variables of interest
+nlsy_data <- nlsy_data[ ,c('id', 'math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8',
+                           'rec2', 'rec3', 'rec4', 'rec5', 'rec6', 'rec7', 'rec8')]
+
+data_long <- reshape(data=nlsy_data,
+                    varying = c('math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8',
+                           'rec2', 'rec3', 'rec4', 'rec5', 'rec6', 'rec7', 'rec8'),
+                    timevar=c("grade"), 
+                    idvar=c("id"),
+                    direction="long", sep="")
+
+data_long <- data_long[order(data_long$id,data_long$grade), ]
+
+ggplot(data = data_long, aes(x = rec, y = math, group = id)) +
+  geom_point(alpha=.1) + 
+  geom_line(alpha=.3, arrow = arrow(length = unit(0.1, "cm"))) +
+  xlab("Reading Recognition") + 
+  ylab("Mathematics")
+
+```
+
+Individual trajectories in the bivariate space. Our general research goal is to describe how movement in the horizontal direction is coupled with movement in the vertical direction.
+
+--------------------
+
+![](F5.large.jpg)
+
+Major new component are the "Coupling" parameters
+
+----------
+
+```{r}
+bdcm_lavaan <- ' #opening quote
+#MATHEMATICS
+  #latent true scores (loadings = 1)
+    lm1 =~ 1*math2
+    lm2 =~ 1*math3
+    lm3 =~ 1*math4
+    lm4 =~ 1*math5
+    lm5 =~ 1*math6
+    lm6 =~ 1*math7
+    lm7 =~ 1*math8
+
+  #latent true score means (initial free, others = 0)  
+    lm1 ~ 1
+    lm2 ~ 0*1
+    lm3 ~ 0*1
+    lm4 ~ 0*1
+    lm5 ~ 0*1
+    lm6 ~ 0*1
+    lm7 ~ 0*1
+
+  #latent true score variances (initial free, others = 0)
+    lm1 ~~ start(15)*lm1
+    lm2 ~~ 0*lm2
+    lm3 ~~ 0*lm3
+    lm4 ~~ 0*lm4
+    lm5 ~~ 0*lm5
+    lm6 ~~ 0*lm6
+    lm7 ~~ 0*lm7
+
+  #observed intercepts (fixed to 0)
+    math2 ~ 0*1
+    math3 ~ 0*1
+    math4 ~ 0*1
+    math5 ~ 0*1
+    math6 ~ 0*1
+    math7 ~ 0*1
+    math8 ~ 0*1
+
+  #observed residual variances (constrained to equality)
+    math2 ~~ sigma2_u*math2
+    math3 ~~ sigma2_u*math3
+    math4 ~~ sigma2_u*math4
+    math5 ~~ sigma2_u*math5
+    math6 ~~ sigma2_u*math6
+    math7 ~~ sigma2_u*math7
+    math8 ~~ sigma2_u*math8
+
+  #autoregressions (fixed = 1)
+    lm2 ~ 1*lm1
+    lm3 ~ 1*lm2
+    lm4 ~ 1*lm3
+    lm5 ~ 1*lm4
+    lm6 ~ 1*lm5
+    lm7 ~ 1*lm6
+
+  #latent change scores (fixed = 1)
+    dm2 =~ 1*lm2
+    dm3 =~ 1*lm3
+    dm4 =~ 1*lm4
+    dm5 =~ 1*lm5
+    dm6 =~ 1*lm6
+    dm7 =~ 1*lm7
+
+  #latent change score means (constrained to 0)  
+    dm2 ~ 0*1
+    dm3 ~ 0*1
+    dm4 ~ 0*1
+    dm5 ~ 0*1
+    dm6 ~ 0*1
+    dm7 ~ 0*1
+
+  #latent change score variances (constrained to 0)  
+    dm2 ~~ 0*dm2
+    dm3 ~~ 0*dm3
+    dm4 ~~ 0*dm4
+    dm5 ~~ 0*dm5
+    dm6 ~~ 0*dm6
+    dm7 ~~ 0*dm7
+
+  #constant change factor (loadings = 1)
+    g2 =~ 1*dm2 + 
+          1*dm3 + 
+          1*dm4 + 
+          1*dm5 + 
+          1*dm6 + 
+          1*dm7 
+
+  #constant change factor mean  
+    g2 ~ start(15)*1
+
+  #constant change factor variance
+    g2 ~~ g2
+
+  #constant change factor covariance with the initial true score
+    g2 ~~ lm1
+
+  #proportional effects (constrained equal)
+    dm2 ~ start(-.2)*pi_m * lm1
+    dm3 ~ start(-.2)*pi_m * lm2
+    dm4 ~ start(-.2)*pi_m * lm3
+    dm5 ~ start(-.2)*pi_m * lm4
+    dm6 ~ start(-.2)*pi_m * lm5
+    dm7 ~ start(-.2)*pi_m * lm6
+
+#READING RECOGNITION
+  #latent true scores (loadings = 1)
+    lr1 =~ 1*rec2
+    lr2 =~ 1*rec3
+    lr3 =~ 1*rec4
+    lr4 =~ 1*rec5
+    lr5 =~ 1*rec6
+    lr6 =~ 1*rec7
+    lr7 =~ 1*rec8
+
+  #latent true score means (initial free, others = 0)    
+    lr1 ~ 1
+    lr2 ~ 0*1
+    lr3 ~ 0*1
+    lr4 ~ 0*1
+    lr5 ~ 0*1
+    lr6 ~ 0*1
+    lr7 ~ 0*1
+
+  #latent true score variances (initial free, others = 0)
+    lr1 ~~ start(15)*lr1
+    lr2 ~~ 0*lr2
+    lr3 ~~ 0*lr3
+    lr4 ~~ 0*lr4
+    lr5 ~~ 0*lr5
+    lr6 ~~ 0*lr6
+    lr7 ~~ 0*lr7
+
+  #observed intercept variances (fixed = 0)
+    rec2 ~ 0*1
+    rec3 ~ 0*1
+    rec4 ~ 0*1
+    rec5 ~ 0*1
+    rec6 ~ 0*1
+    rec7 ~ 0*1
+    rec8 ~ 0*1
+
+  #observed residual variances (constrained to eqaulity)
+    rec2 ~~ sigma2_s*rec2
+    rec3 ~~ sigma2_s*rec3
+    rec4 ~~ sigma2_s*rec4
+    rec5 ~~ sigma2_s*rec5
+    rec6 ~~ sigma2_s*rec6
+    rec7 ~~ sigma2_s*rec7
+    rec8 ~~ sigma2_s*rec8
+
+  #autoregressions (fixed = 1)
+    lr2 ~ 1*lr1
+    lr3 ~ 1*lr2
+    lr4 ~ 1*lr3
+    lr5 ~ 1*lr4
+    lr6 ~ 1*lr5
+    lr7 ~ 1*lr6
+
+  #latent change scores (ficed = 1)
+    dr2 =~ 1*lr2
+    dr3 =~ 1*lr3
+    dr4 =~ 1*lr4
+    dr5 =~ 1*lr5
+    dr6 =~ 1*lr6
+    dr7 =~ 1*lr7
+
+  #latent change score means (fixed = 0)  
+    dr2 ~ 0*1
+    dr3 ~ 0*1
+    dr4 ~ 0*1
+    dr5 ~ 0*1
+    dr6 ~ 0*1
+    dr7 ~ 0*1
+
+  #latent change score variances (fixed = 0)
+    dr2 ~~ 0*dr2
+    dr3 ~~ 0*dr3
+    dr4 ~~ 0*dr4
+    dr5 ~~ 0*dr5
+    dr6 ~~ 0*dr6
+    dr7 ~~ 0*dr7
+
+  #constant change factor (fixed = 1)
+    j2 =~ 1*dr2 + 
+          1*dr3 + 
+          1*dr4 + 
+          1*dr5 + 
+          1*dr6 + 
+          1*dr7 
+
+  #constant change factor mean  
+    j2 ~ start(10)*1
+
+  #constant change factor variance
+    j2 ~~ j2
+
+  #constant change factor covariance with the initial true score
+    j2 ~~ lr1
+
+  #proportional effects (constrained to equality)
+    dr2 ~ start(-.2)*pi_r * lr1 
+    dr3 ~ start(-.2)*pi_r * lr2 
+    dr4 ~ start(-.2)*pi_r * lr3 
+    dr5 ~ start(-.2)*pi_r * lr4 
+    dr6 ~ start(-.2)*pi_r * lr5 
+    dr7 ~ start(-.2)*pi_r * lr6 
+
+#BIVARIATE INFORMATION
+
+  #covariances between the latent growth factors
+    lm1 ~~ lr1
+    lm1 ~~ j2
+    lr1 ~~ g2
+    j2 ~~ g2 
+
+
+  #residual covariances
+    math2 ~~ sigma_su*rec2
+    math3 ~~ sigma_su*rec3
+    math4 ~~ sigma_su*rec4
+    math5 ~~ sigma_su*rec5
+    math6 ~~ sigma_su*rec6
+    math7 ~~ sigma_su*rec7
+
+#COUPLING PARMETERS
+  
+  #math to changes in reading
+    dr2 ~ delta_r*lm1
+    dr3 ~ delta_r*lm2
+    dr4 ~ delta_r*lm3
+    dr5 ~ delta_r*lm4
+    dr6 ~ delta_r*lm5
+    dr7 ~ delta_r*lm6
+
+  #reading to changes in math
+    dm2 ~ delta_m*lr1
+    dm3 ~ delta_m*lr2
+    dm4 ~ delta_m*lr3
+    dm5 ~ delta_m*lr4
+    dm6 ~ delta_m*lr5
+    dm7 ~ delta_m*lr6
+'
+
+dcs_fullcoupling <- lavaan.fit <- lavaan(bdcm_lavaan, data = nlsy_data, meanstructure = TRUE,
+                estimator = "ML", missing = "fiml",fixed.x = FALSE,
+                control=list(iter.max=500), verbose=FALSE)
+
+```
+
+
+-----------
+
+```{r}
+summary(dcs_fullcoupling, fit.measures=TRUE)
+```
+
+
+--------
+
+Interpretation: 
+
+Change in Math: Δmath=15.09−0.293(matht−1)+0.053(rect−1)
+Change in Reading Recognition: Δrec=10.89−0.495(rect−1)+0.391(matht−1)
+
+The different coupling parameters (math to change in reading, reading to change in math) can each be constrained to zero in order to test the relative fit of models with unidirectional coupling and no coupling
+
+## Vector Fields
+
+```{r, echo = FALSE}
+nlsy_predicted <- cbind(nlsy_data$id, as.data.frame(lavPredict(dcs_fullcoupling, type = "yhat")))
+names(nlsy_predicted)[1] <- "id"
+predicted_long <- reshape(data=nlsy_predicted,
+                    varying = c('math2', 'math3', 'math4', 'math5', 'math6', 'math7', 'math8',
+                           'rec2', 'rec3', 'rec4', 'rec5', 'rec6', 'rec7', 'rec8'),
+                    timevar=c("grade"), 
+                    idvar=c("id"),
+                    direction="long", sep="")
+df <- expand.grid(math=seq(10, 90, 5), rec=seq(10, 90, 5))
+
+#calculating change scores for each starting value 
+#changes in math based on output from model
+df$dm <- with(df, 15.09 - 0.293*math + 0.053*rec)
+#changes in reading based on output from model
+df$dr <- with(df, 10.89 - 0.495*rec + 0.391*math)
+
+
+#Plotting vector field with .25 unit time change 
+ggplot(data = df, aes(x = rec, y = math)) +
+  geom_point(data=data_long, aes(x=rec, y=math), alpha=.1) + 
+  stat_ellipse(data=data_long, aes(x=rec, y=math)) +
+  geom_segment(aes(x = rec, y = math, xend = rec+.25*dr, yend = math+.25*dm), arrow = arrow(length = unit(0.1, "cm"))) +
+  xlab("Reading Recognition") + 
+  ylab("Mathematics") +
+  scale_x_continuous(limits=c(10,90), breaks=seq(10,90,by=10)) +
+  scale_y_continuous(limits=c(10,90), breaks=seq(10,90,by=10))
+
+
+```
+
+
+------
+
+Limitations are that these models do not explicitly separate within and between variance
+
+
+## Multilevel SEM (MSEM) and dynamic SEM (dSEM)
+
+Take two greats, combine them, and make everything better. 
+
+- MLM is wonderful for intensive longitudinal data. Yet, two downsides remain: 
+
+1. No measurement model. 
+2. Not easily multivariate. (Similarly, a parameter derived in the model e.g., slope, can not be used to predict values within the model)
+
+
+-----
+
+MSEM: MLM + SEM. 
+
+dSEM: MLM + SEM + timeseries
+
+
+## MSEM
+
+![](dsem1.png)
+
+
+--------
+
+![](dsem4.png)
+
+
+## n = 1 dsem timeseries
+
+![](dsem2.png)
+
+
+
+
+## mlm dsem
+
+![](dsem3.png)
+
+--------
+
+- dots on within indicate random parameters
+- x(b) and y(b) are means
+- Beta random cross lags
+- Phi are random auto-regressive paths
+- Log(Psi) are residual variances
+
+
+## Within person model
+
+![](dsem5.png)
+
+## Between person model
+
+![](dsem6.png)
+
+
+## Model 3
+
+![](dsem7.png)
+
+
+---------
+
+Between model changes, the within is the same: 
+
+![](dsem8.png)
+
+## Continuous time models
