@@ -11,13 +11,16 @@ html:
 ---
 
 
+
 How do we model our repeated measures? 
+
 
 ```{r, eval = FALSE}
 lm(change_score ~ group, data = df) # difference score
 
 lm(t2 ~ t1 + group, data = df) # residualized change
 ```
+
 
 Equivalent if assumed everyone starts the same. But does not easily scale to more than 2 occasions, among other pitfalls 
 
@@ -31,6 +34,7 @@ Equivalent if assumed everyone starts the same. But does not easily scale to mor
 
 
 ----------------
+
 
 ```{r}
 #| code-fold: true
@@ -57,7 +61,9 @@ df_long <- df |>
     names_prefix = "t"  )
 ```
 
+
 --------
+
 
 
 ```{r}
@@ -68,6 +74,7 @@ mod.1 <- glmmTMB(value ~ 1+ (1 | id), data = df_long)
 summary(mod.1)
 
 ```
+
 
 
 ------------
@@ -82,14 +89,13 @@ $${U}_{0i} \sim\mathcal{N}(0, \tau_{00}^{2})$$ $${e}_{ti} \sim\mathcal{N}(0, \si
 
 ----------------
 
+
 ```{r}
 #| code-fold: true
 library(readr)
 mlm <- read_csv("https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/example.csv")
 mlm 
 ```
-
-
 
 ```{r}
 #| code-fold: true
@@ -109,6 +115,7 @@ sample_n_of <- function(data, size, ...) {
 }
 ```
 
+
 ------------------------------------------------------------------------
 
 
@@ -126,6 +133,7 @@ $${e}_{ti} \sim\mathcal{N}(0, \sigma^{2})$$
 
 ------------------------------------------------------------------------
 
+
 ```{r}
 #| code-fold: true
 
@@ -134,6 +142,7 @@ mlm %>%
   sample_n_of(8, ID) %>% 
 ggplot(aes(x = week, y = CON, group = ID)) + geom_point(aes(color = factor(ID))) + stat_smooth(aes(color = factor(ID)), method = "lm", formula=y~1, se = FALSE) + xlab("time") + ylab("Y") + theme(legend.position = "none")
 ```
+
 
 $${Y}_{ti} = \gamma_{00} + U_{0i}  + \varepsilon_{ti}$$
 
@@ -157,6 +166,7 @@ What if people had more than 1 DV, like we do with time? What do you do with mul
 Two options: 1. Collapse and average across.
 
 ## Example
+
 
 ```{r}
 #| code-fold: true
@@ -183,9 +193,11 @@ ggplot(aes(x=study, y=test.score)) +
     geom_point(aes(colour = factor(group)))
 ```
 
+
 ------------------------------------------------------------------------
 
 Could aggragate across group
+
 
 ```{r, echo = FALSE}
 simp.1<- tribble(
@@ -205,7 +217,9 @@ ggplot(aes(x=study, y=test.score)) +
   geom_point(data = simp, aes(colour = factor(group)))
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r, echo = FALSE}
 simp %>% 
@@ -213,6 +227,7 @@ ggplot(aes(x=study, y=test.score, group = group)) +
     geom_point(aes(colour = factor(group))) +   
     geom_smooth(aes(colour = factor(group)),method=lm,se=FALSE)
 ```
+
 
 
 ## 1. Aggregation obscures hypotheses
@@ -377,6 +392,7 @@ Where does $U_{0i}$ come from? If we calculated each by hand, through taking the
 
 Ignores any dependency. Doesn't learn from others, assumes everyone is the same. Underfits the model.
 
+
 ```{r}
 #| code-fold: true
 
@@ -385,9 +401,11 @@ ggplot(mlm, aes(x = week, y = SMN7)) + geom_point() + stat_smooth(method="lm") +
 
 ```
 
+
 ## No Pooling
 
 Everyone is unique and we cannot learn from others. Leads to overfitting
+
 
 ```{r}
 #| code-fold: true
@@ -396,7 +414,9 @@ ggplot(mlm, aes(x = week, y = SMN7, group = ID)) + geom_line() +  geom_point() +
 
 ```
 
+
 ## Partial pooling aka shrinkage aka regularization
+
 
 ```{r}
 #| code-fold: true
@@ -417,6 +437,7 @@ ggplot() +
             aes(x = week, y = estimate),
             size = 2, color = "black")
 ```
+
 
 ------------------------------------------------------------------------
 
@@ -452,6 +473,7 @@ ICC can also be interpreted as the average (or expected) correlation within a ne
 
 
 ## GSOEP EXAMPLE
+
 
 ```{r}
 #| code-fold: true
@@ -509,7 +531,9 @@ b5_soep_long <- soep_long %>%
 str(b5_soep_long)
 ```
 
+
 --------------
+
 
 
 ```{r}
@@ -528,20 +552,22 @@ b5_long <-b5_long %>%
   ungroup(ID)
 ```
 
-
-
 ```{r, echo = TRUE}
 str(b5_long)
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 
 mod.1 <- glmmTMB(C ~ 1 + (1 | ID), data=b5_long)
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 summary(mod.1)
@@ -549,7 +575,9 @@ summary(mod.1)
 
 
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 library(parameters) 
@@ -557,16 +585,20 @@ library(parameters)
 model_parameters(mod.1)
 ```
 
+
 ------------------------------------------------------------------------
 
 ICC By hand or
+
 
 ```{r}
 library(performance) 
 model_performance(mod.1)
 ```
 
+
 ## what do the random effects look like?
+
 
 ```{r}
 #| code-fold: true
@@ -576,7 +608,9 @@ head(random)
 
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 #| code-fold: true
@@ -587,6 +621,7 @@ plot(.)
 ```
 
 
+
 ## Predicted scores
 
 Predictors are super important for evaluating our model as well as graphing. Lots of packages have these capabilities. My favorites are tidybayes (for brms), modelr (for all), marginaleffects (for all), and modelbased (for all).
@@ -595,6 +630,7 @@ These extend the flexibility of predict (base) and similar functions from emmean
 
 ------------------------------------------------------------------------
 
+
 ```{r, echo = TRUE}
 library(modelbased)
 estimate_prediction(mod.1) %>% 
@@ -602,7 +638,9 @@ estimate_prediction(mod.1) %>%
 ```
 
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 library(marginaleffects)
@@ -612,11 +650,14 @@ predictions(mod.1) %>%  head()
 
 
 
+
 ------
+
 
 ```{r}
 predictions(mod.1, newdata = datagrid(ID = c(901, 2301)))
 ```
+
 
 
 
@@ -683,13 +724,16 @@ $${\beta}_{1i} = \gamma_{10}$$
 
 ## Growth curve example
 
+
 ```{r}
 #| code-fold: true
 mod.2 <- glmmTMB(C ~ 1 + year + (1 | ID), data=b5_long)
 summary(mod.2)
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 #| code-fold: true
@@ -701,9 +745,11 @@ summary(mod.3)
 
 ```
 
+
 ------------------------------------------------------------------------
 
 ### The importance of scaling time
+
 
 ```{r}
 #| code-fold: true
@@ -716,9 +762,11 @@ summary(mod.4)
 
 ```
 
+
 ## Visualizing results (quickly)
 
 There are many ways to do this. The parameters package paired with the see package, both from the easystats package, are useful in this regard.
+
 
 ```{r}
 #| code-fold: true
@@ -729,19 +777,24 @@ result <- model_parameters(mod.4)
 result
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 plot(result)
 ```
 
+
 ------------------------------------------------------------------------
+
 
 ```{r}
 #| code-fold: true
 result2 <- simulate_parameters(mod.4)
 plot(result2, show_intercept = FALSE)
 ```
+
 
 
 
@@ -763,6 +816,7 @@ $$\hat{Y}_{ti} = [\gamma_{00}] + [\gamma_{10}   ]  * Time_{ti}$$ No random effec
 
 Some packages do so much behind the scenes it is hard to know what is happening
 
+
 ```{r}
 #| code-fold: true
 library(ggeffects)
@@ -770,17 +824,21 @@ p.mod4<-ggpredict(mod.4, "year.c")
 p.mod4
 ```
 
+
 Automatically chooses levels \[0,4,8\]
 
 ------------------------------------------------------------------------
+
 
 ```{r}
 plot(p.mod4)
 ```
 
+
 ------------------------------------------------------------------------
 
 If you want you can also get predicted lines for a particular individual. I really like the package marignaleffects as it is more flexible than ggeffects
+
 
 ```{r}
 #| code-fold: true
@@ -795,9 +853,11 @@ p.r.mod2
 ```
 
 
+
 $$\hat{Y}_{ti} = [\gamma_{00} + U_{0i}] + [\gamma_{10}+U_{1i} ]  * Time_{ti}$$
 
 ------------------------------------------------------------------------
+
 
 ```{r}
 #| code-fold: true
@@ -808,7 +868,9 @@ ggplot(aes(year.c, estimate, level = ID)) +
 ```
 
 
+
 -----------
+
 
 ```{r}
 #| code-fold: true
@@ -821,6 +883,7 @@ predictions(mod.4,
   geom_line()
 
 ```
+
 
 
 
@@ -971,6 +1034,7 @@ Slope at level 1 is the expected change relative to a person's average.
 
 ## 0 as starting
 
+
 ```{r}
 #| code-fold: true
 # grand mean centering
@@ -984,7 +1048,9 @@ mod.6 <- lmer(C ~ 1 + year.c + (1 + year.c  | ID), data=b5_long)
 summary(mod.6)
 ```
 
+
 ## 0 as mid
+
 
 ```{r}
 #| code-fold: true
@@ -997,6 +1063,7 @@ mod.7 <- lmer(C ~ 1 + year.cM + (1 + year.cM | ID), data=b5_long)
 summary(mod.7)
 
 ```
+
 
 
 ## Smushing variance
@@ -1067,10 +1134,12 @@ Comparing 2 models is called a likelihood ration test. Need to have:
 
 Distributed as chi-square with df equal to constraint differences between models. 
 
+
 ```{r}
 #| code-fold: true
 anova(mod.2, mod.1)
 ```
+
 
 
 
@@ -1124,6 +1193,7 @@ Depending on your DV, you might not want to have a Gaussian sampling distributio
 
 -----------------
 
+
 ```{r}
 #| code-fold: true
 set.seed(123)
@@ -1147,7 +1217,9 @@ acc.model <- lmer(Outcome ~ Time * Cohort_Start_Age + (Time | ID), data = df)
 summary(acc.model)
 ```
 
+
 -------------
+
 
 ```{r}
 #| code-fold: true
@@ -1175,6 +1247,7 @@ ggplot(pred_grid, aes(x = Chronological_Age,
   theme_minimal() +
   scale_color_brewer(palette = "Dark2")
 ```
+
 
 
 
@@ -1241,6 +1314,7 @@ $${\beta}_{1i} = \gamma_{10} + \gamma_{11}G_{i} + U_{1i}$$
 $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (time_{ti}) + \gamma_{11}(G_{i}*time_{ti}) +  U_{0j} + U_{1i}(time_{ti}) + \varepsilon_{ti}$$
 
 $${Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(time_{ti})] + \varepsilon_{ti}$$
+
 
 
 

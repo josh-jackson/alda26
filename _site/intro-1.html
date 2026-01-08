@@ -941,23 +941,13 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <span id="cb24-10"><a href="#cb24-10"></a></span>
 <span id="cb24-11"><a href="#cb24-11"></a>df<span class="sc">$</span>change_score <span class="ot">&lt;-</span> df<span class="sc">$</span>t2 <span class="sc">-</span> df<span class="sc">$</span>t1</span>
 <span id="cb24-12"><a href="#cb24-12"></a></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="fu">aggregate</span>(<span class="fu">cbind</span>(t1, t2, change_score) <span class="sc">~</span> group, <span class="at">data =</span> df, mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>    group       t1       t2 change_score
-1 Control 90.36802 92.22086     1.852841
-2      Tx 49.17035 59.25648    10.086126</code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>mod_change <span class="ot">&lt;-</span> <span class="fu">lm</span>(change_score <span class="sc">~</span> group, <span class="at">data =</span> df)</span>
-<span id="cb26-2"><a href="#cb26-2"></a></span>
-<span id="cb26-3"><a href="#cb26-3"></a>mod_resid <span class="ot">&lt;-</span> <span class="fu">lm</span>(t2 <span class="sc">~</span> t1 <span class="sc">+</span> group, <span class="at">data =</span> df)</span>
-<span id="cb26-4"><a href="#cb26-4"></a></span>
-<span id="cb26-5"><a href="#cb26-5"></a></span>
-<span id="cb26-6"><a href="#cb26-6"></a>df <span class="sc">%&gt;%</span></span>
-<span id="cb26-7"><a href="#cb26-7"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
-<span id="cb26-8"><a href="#cb26-8"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">c</span>(t1, t2,change_score), mean)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-13"><a href="#cb24-13"></a>mod_change <span class="ot">&lt;-</span> <span class="fu">lm</span>(change_score <span class="sc">~</span> group, <span class="at">data =</span> df)</span>
+<span id="cb24-14"><a href="#cb24-14"></a></span>
+<span id="cb24-15"><a href="#cb24-15"></a>mod_resid <span class="ot">&lt;-</span> <span class="fu">lm</span>(t2 <span class="sc">~</span> t1 <span class="sc">+</span> group, <span class="at">data =</span> df)</span>
+<span id="cb24-16"><a href="#cb24-16"></a></span>
+<span id="cb24-17"><a href="#cb24-17"></a>df <span class="sc">%&gt;%</span></span>
+<span id="cb24-18"><a href="#cb24-18"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb24-19"><a href="#cb24-19"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">c</span>(t1, t2,change_score), mean)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 4
@@ -973,7 +963,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">tidy</span>(mod_change)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">tidy</span>(mod_change)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
@@ -986,7 +976,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">tidy</span>(mod_resid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">tidy</span>(mod_resid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
@@ -1004,25 +994,25 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> t1, <span class="at">y =</span> t2, <span class="at">color =</span> group)) <span class="sc">+</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb32-3"><a href="#cb32-3"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, </span>
-<span id="cb32-4"><a href="#cb32-4"></a>                  <span class="at">linetype =</span> <span class="st">"Change Model"</span>), </span>
-<span id="cb32-5"><a href="#cb32-5"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb32-6"><a href="#cb32-6"></a>  </span>
-<span id="cb32-7"><a href="#cb32-7"></a>  <span class="co"># geom_smooth(method = "lm", se = FALSE, </span></span>
-<span id="cb32-8"><a href="#cb32-8"></a>              <span class="co"># aes(group = 1, linetype = "Residualized"), </span></span>
-<span id="cb32-9"><a href="#cb32-9"></a>              <span class="co"># color = "black", size = 1.2) +</span></span>
-<span id="cb32-10"><a href="#cb32-10"></a>  </span>
-<span id="cb32-11"><a href="#cb32-11"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tx"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
-<span id="cb32-12"><a href="#cb32-12"></a>                                <span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
-<span id="cb32-13"><a href="#cb32-13"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">name =</span> <span class="st">"Model Assumptions"</span>,</span>
-<span id="cb32-14"><a href="#cb32-14"></a>                        <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Change Model"</span> <span class="ot">=</span> <span class="st">"dashed"</span>, </span>
-<span id="cb32-15"><a href="#cb32-15"></a>                                   <span class="st">"Residualized"</span> <span class="ot">=</span> <span class="st">"solid"</span>)) <span class="sc">+</span></span>
-<span id="cb32-16"><a href="#cb32-16"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Visualizing Lord's Paradox"</span>,</span>
-<span id="cb32-17"><a href="#cb32-17"></a>       <span class="at">x =</span> <span class="st">"Time 1 (Baseline)"</span>,</span>
-<span id="cb32-18"><a href="#cb32-18"></a>       <span class="at">y =</span> <span class="st">"Time 2 (Follow-up)"</span>) <span class="sc">+</span></span>
-<span id="cb32-19"><a href="#cb32-19"></a>  <span class="fu">theme_minimal</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> t1, <span class="at">y =</span> t2, <span class="at">color =</span> group)) <span class="sc">+</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, </span>
+<span id="cb30-4"><a href="#cb30-4"></a>                  <span class="at">linetype =</span> <span class="st">"Change Model"</span>), </span>
+<span id="cb30-5"><a href="#cb30-5"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a>  </span>
+<span id="cb30-7"><a href="#cb30-7"></a>  <span class="co"># geom_smooth(method = "lm", se = FALSE, </span></span>
+<span id="cb30-8"><a href="#cb30-8"></a>              <span class="co"># aes(group = 1, linetype = "Residualized"), </span></span>
+<span id="cb30-9"><a href="#cb30-9"></a>              <span class="co"># color = "black", size = 1.2) +</span></span>
+<span id="cb30-10"><a href="#cb30-10"></a>  </span>
+<span id="cb30-11"><a href="#cb30-11"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tx"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
+<span id="cb30-12"><a href="#cb30-12"></a>                                <span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
+<span id="cb30-13"><a href="#cb30-13"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">name =</span> <span class="st">"Model Assumptions"</span>,</span>
+<span id="cb30-14"><a href="#cb30-14"></a>                        <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Change Model"</span> <span class="ot">=</span> <span class="st">"dashed"</span>, </span>
+<span id="cb30-15"><a href="#cb30-15"></a>                                   <span class="st">"Residualized"</span> <span class="ot">=</span> <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb30-16"><a href="#cb30-16"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Visualizing Lord's Paradox"</span>,</span>
+<span id="cb30-17"><a href="#cb30-17"></a>       <span class="at">x =</span> <span class="st">"Time 1 (Baseline)"</span>,</span>
+<span id="cb30-18"><a href="#cb30-18"></a>       <span class="at">y =</span> <span class="st">"Time 2 (Follow-up)"</span>) <span class="sc">+</span></span>
+<span id="cb30-19"><a href="#cb30-19"></a>  <span class="fu">theme_minimal</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -1033,25 +1023,25 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> t1, <span class="at">y =</span> t2, <span class="at">color =</span> group)) <span class="sc">+</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, </span>
-<span id="cb33-4"><a href="#cb33-4"></a>                  <span class="at">linetype =</span> <span class="st">"Change Model"</span>), </span>
-<span id="cb33-5"><a href="#cb33-5"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb33-7"><a href="#cb33-7"></a>              <span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"Residualized"</span>), </span>
-<span id="cb33-8"><a href="#cb33-8"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb33-9"><a href="#cb33-9"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tx"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
-<span id="cb33-10"><a href="#cb33-10"></a>                                <span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
-<span id="cb33-11"><a href="#cb33-11"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">name =</span> <span class="st">"Model Assumptions"</span>,</span>
-<span id="cb33-12"><a href="#cb33-12"></a>                        <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Change Model"</span> <span class="ot">=</span> <span class="st">"dashed"</span>, </span>
-<span id="cb33-13"><a href="#cb33-13"></a>                                   <span class="st">"Residualized"</span> <span class="ot">=</span> <span class="st">"solid"</span>)) <span class="sc">+</span></span>
-<span id="cb33-14"><a href="#cb33-14"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Visualizing Lord's Paradox"</span>,</span>
-<span id="cb33-15"><a href="#cb33-15"></a>       <span class="at">x =</span> <span class="st">"Time 1 (Baseline)"</span>,</span>
-<span id="cb33-16"><a href="#cb33-16"></a>       <span class="at">y =</span> <span class="st">"Time 2 (Follow-up)"</span>) <span class="sc">+</span></span>
-<span id="cb33-17"><a href="#cb33-17"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb33-18"><a href="#cb33-18"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb33-19"><a href="#cb33-19"></a>        <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> t1, <span class="at">y =</span> t2, <span class="at">color =</span> group)) <span class="sc">+</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">slope =</span> <span class="dv">1</span>, </span>
+<span id="cb31-4"><a href="#cb31-4"></a>                  <span class="at">linetype =</span> <span class="st">"Change Model"</span>), </span>
+<span id="cb31-5"><a href="#cb31-5"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb31-7"><a href="#cb31-7"></a>              <span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"Residualized"</span>), </span>
+<span id="cb31-8"><a href="#cb31-8"></a>              <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Tx"</span> <span class="ot">=</span> <span class="st">"blue"</span>, </span>
+<span id="cb31-10"><a href="#cb31-10"></a>                                <span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11"></a>  <span class="fu">scale_linetype_manual</span>(<span class="at">name =</span> <span class="st">"Model Assumptions"</span>,</span>
+<span id="cb31-12"><a href="#cb31-12"></a>                        <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Change Model"</span> <span class="ot">=</span> <span class="st">"dashed"</span>, </span>
+<span id="cb31-13"><a href="#cb31-13"></a>                                   <span class="st">"Residualized"</span> <span class="ot">=</span> <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb31-14"><a href="#cb31-14"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Visualizing Lord's Paradox"</span>,</span>
+<span id="cb31-15"><a href="#cb31-15"></a>       <span class="at">x =</span> <span class="st">"Time 1 (Baseline)"</span>,</span>
+<span id="cb31-16"><a href="#cb31-16"></a>       <span class="at">y =</span> <span class="st">"Time 2 (Follow-up)"</span>) <span class="sc">+</span></span>
+<span id="cb31-17"><a href="#cb31-17"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-18"><a href="#cb31-18"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb31-19"><a href="#cb31-19"></a>        <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -1061,6 +1051,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <ul>
 <li><p>Approaches differ on how much we care about accounting for T1 differences.</p></li>
 <li><p>What we want to do is create a model that is flexible enough for us to implement this assumption (and address others – no measurement error).</p></li>
+<li><p>One type of change can be equivalent to another, depending</p></li>
 <li><p>Both of these models are not easily adapted to more than 2 waves and or for use with multivariate questions. We need a new approach.</p></li>
 </ul>
 </section>
@@ -1092,9 +1083,9 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <h2>tidyr pivot functions</h2>
 <p>For longitudinal/repeated measures data, each row is an observation. Each person will have multiple rows.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>long<span class="ot">&lt;-</span>example <span class="sc">%&gt;%</span> </span>
-<span id="cb34-2"><a href="#cb34-2"></a>  <span class="fu">select</span>(ID, wave, group, DAN)</span>
-<span id="cb34-3"><a href="#cb34-3"></a>long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>long<span class="ot">&lt;-</span>example <span class="sc">%&gt;%</span> </span>
+<span id="cb32-2"><a href="#cb32-2"></a>  <span class="fu">select</span>(ID, wave, group, DAN)</span>
+<span id="cb32-3"><a href="#cb32-3"></a>long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 225 × 4
       ID  wave group   DAN
@@ -1117,9 +1108,9 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <h2>pivot_wider</h2>
 <p>The pivot_wider() function takes two arguments: names_from which is the variable whose values will be converted to column names and values_from whose values will be cell values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>wide.ex <span class="ot">&lt;-</span> long <span class="sc">%&gt;%</span> </span>
-<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> wave, <span class="at">values_from =</span> DAN) </span>
-<span id="cb36-3"><a href="#cb36-3"></a>wide.ex</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>wide.ex <span class="ot">&lt;-</span> long <span class="sc">%&gt;%</span> </span>
+<span id="cb34-2"><a href="#cb34-2"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> wave, <span class="at">values_from =</span> DAN) </span>
+<span id="cb34-3"><a href="#cb34-3"></a>wide.ex</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 91 × 6
       ID group    `1`    `2`    `3`   `4`
@@ -1141,9 +1132,9 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>wide.ex <span class="ot">&lt;-</span> long <span class="sc">%&gt;%</span> </span>
-<span id="cb38-2"><a href="#cb38-2"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> wave, <span class="at">values_from =</span> DAN, <span class="at">names_prefix =</span> <span class="st">"T"</span>) </span>
-<span id="cb38-3"><a href="#cb38-3"></a>wide.ex</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>wide.ex <span class="ot">&lt;-</span> long <span class="sc">%&gt;%</span> </span>
+<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> wave, <span class="at">values_from =</span> DAN, <span class="at">names_prefix =</span> <span class="st">"T"</span>) </span>
+<span id="cb36-3"><a href="#cb36-3"></a>wide.ex</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 91 × 6
       ID group     T1     T2     T3    T4
@@ -1174,10 +1165,10 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>wide.ex <span class="sc">%&gt;%</span> </span>
-<span id="cb40-2"><a href="#cb40-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="st">'T1'</span><span class="sc">:</span><span class="st">'T4'</span>, </span>
-<span id="cb40-3"><a href="#cb40-3"></a>               <span class="at">names_to =</span> <span class="st">"wave"</span>, </span>
-<span id="cb40-4"><a href="#cb40-4"></a>               <span class="at">values_to =</span> <span class="st">"DAN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>wide.ex <span class="sc">%&gt;%</span> </span>
+<span id="cb38-2"><a href="#cb38-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="st">'T1'</span><span class="sc">:</span><span class="st">'T4'</span>, </span>
+<span id="cb38-3"><a href="#cb38-3"></a>               <span class="at">names_to =</span> <span class="st">"wave"</span>, </span>
+<span id="cb38-4"><a href="#cb38-4"></a>               <span class="at">values_to =</span> <span class="st">"DAN"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 364 × 4
       ID group wave     DAN
@@ -1203,13 +1194,13 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <li><p>One common way to represent longitudinal data is to name the variable with a wave signifier.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>wide<span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb42-2"><a href="#cb42-2"></a>  <span class="sc">~</span>ID, <span class="sc">~</span>ext_1, <span class="sc">~</span>ext_2, <span class="sc">~</span>ext_3,</span>
-<span id="cb42-3"><a href="#cb42-3"></a>  <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">4</span>,<span class="dv">4</span>,</span>
-<span id="cb42-4"><a href="#cb42-4"></a>  <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">5</span>,<span class="dv">4</span>,</span>
-<span id="cb42-5"><a href="#cb42-5"></a>  <span class="dv">3</span>, <span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span></span>
-<span id="cb42-6"><a href="#cb42-6"></a>)</span>
-<span id="cb42-7"><a href="#cb42-7"></a>wide</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>wide<span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb40-2"><a href="#cb40-2"></a>  <span class="sc">~</span>ID, <span class="sc">~</span>ext_1, <span class="sc">~</span>ext_2, <span class="sc">~</span>ext_3,</span>
+<span id="cb40-3"><a href="#cb40-3"></a>  <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">4</span>,<span class="dv">4</span>,</span>
+<span id="cb40-4"><a href="#cb40-4"></a>  <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">5</span>,<span class="dv">4</span>,</span>
+<span id="cb40-5"><a href="#cb40-5"></a>  <span class="dv">3</span>, <span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span></span>
+<span id="cb40-6"><a href="#cb40-6"></a>)</span>
+<span id="cb40-7"><a href="#cb40-7"></a>wide</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
      ID ext_1 ext_2 ext_3
@@ -1223,8 +1214,8 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>wide <span class="sc">%&gt;%</span> </span>
-<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, <span class="at">names_to =</span> <span class="st">"time"</span>, <span class="at">values_to =</span> <span class="st">"EXT"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>wide <span class="sc">%&gt;%</span> </span>
+<span id="cb42-2"><a href="#cb42-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, <span class="at">names_to =</span> <span class="st">"time"</span>, <span class="at">values_to =</span> <span class="st">"EXT"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 3
      ID time    EXT
@@ -1249,11 +1240,11 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>wide <span class="sc">%&gt;%</span> </span>
-<span id="cb46-2"><a href="#cb46-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
-<span id="cb46-3"><a href="#cb46-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
-<span id="cb46-4"><a href="#cb46-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb46-5"><a href="#cb46-5"></a>  <span class="fu">separate</span>(time, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"time"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>wide <span class="sc">%&gt;%</span> </span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
+<span id="cb44-3"><a href="#cb44-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
+<span id="cb44-4"><a href="#cb44-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb44-5"><a href="#cb44-5"></a>  <span class="fu">separate</span>(time, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"variable"</span>, <span class="st">"time"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 4
@@ -1276,7 +1267,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <p>In terms of setting up your data, it is often helpful to include markers that separate parts of the variable eg “_” or “.” A variable that is ext_1 is easier to separate than ext1.</p>
 <p>Also that the time column is a character rather than numeric. We need to change this so as to use time continuously in our models. There are a few ways to do it, but this is perhaps the most straightforward.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>long<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(long<span class="sc">$</span>time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>long<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(long<span class="sc">$</span>time)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
@@ -1284,23 +1275,23 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <p>Something that is a little more elegant is to do both the separating AND the making into numeric in the original pivot_longer function</p>
 <p>names_prefix omits what is in there from the new cell names. Previously we had ext_1, ext_2, etc, which we had to separate with a different function, but this does it within pivot_longer</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>wide <span class="sc">%&gt;%</span> </span>
-<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
-<span id="cb49-3"><a href="#cb49-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
-<span id="cb49-4"><a href="#cb49-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>, </span>
-<span id="cb49-5"><a href="#cb49-5"></a>               <span class="at">names_prefix =</span> <span class="st">"ext_"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>wide <span class="sc">%&gt;%</span> </span>
+<span id="cb47-2"><a href="#cb47-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
+<span id="cb47-3"><a href="#cb47-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
+<span id="cb47-4"><a href="#cb47-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>, </span>
+<span id="cb47-5"><a href="#cb47-5"></a>               <span class="at">names_prefix =</span> <span class="st">"ext_"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <p>names_transform does any transformations within the variables. Here instead of a separate call, we can make our variables numeric.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>wide <span class="sc">%&gt;%</span> </span>
-<span id="cb50-2"><a href="#cb50-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
-<span id="cb50-3"><a href="#cb50-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
-<span id="cb50-4"><a href="#cb50-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>, </span>
-<span id="cb50-5"><a href="#cb50-5"></a>               <span class="at">names_prefix =</span> <span class="st">"ext_"</span>, </span>
-<span id="cb50-6"><a href="#cb50-6"></a>               <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">time =</span> as.numeric)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>wide <span class="sc">%&gt;%</span> </span>
+<span id="cb48-2"><a href="#cb48-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> ext_1<span class="sc">:</span>ext_3, </span>
+<span id="cb48-3"><a href="#cb48-3"></a>               <span class="at">names_to =</span> <span class="st">"time"</span>, </span>
+<span id="cb48-4"><a href="#cb48-4"></a>               <span class="at">values_to =</span> <span class="st">"EXT"</span>, </span>
+<span id="cb48-5"><a href="#cb48-5"></a>               <span class="at">names_prefix =</span> <span class="st">"ext_"</span>, </span>
+<span id="cb48-6"><a href="#cb48-6"></a>               <span class="at">names_transform =</span> <span class="fu">list</span>(<span class="at">time =</span> as.numeric)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 9 × 3
      ID  time   EXT
@@ -1321,14 +1312,14 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 
 <p>Another common problem that we often face is the need to unite two variables into one. Enter, the creatively titled unite function. Sometimes this happens when our time metric is entered in separate columns.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>df<span class="ot">&lt;-</span><span class="fu">tibble</span>(</span>
-<span id="cb52-2"><a href="#cb52-2"></a>      <span class="at">ID =</span> <span class="fu">c</span>(<span class="dv">1</span>,   <span class="dv">2</span>,  <span class="dv">3</span>),</span>
-<span id="cb52-3"><a href="#cb52-3"></a>      <span class="at">year  =</span> <span class="fu">c</span>(<span class="dv">2020</span>,  <span class="dv">2020</span>, <span class="dv">2020</span>),</span>
-<span id="cb52-4"><a href="#cb52-4"></a>      <span class="at">month  =</span> <span class="fu">c</span>(<span class="dv">1</span>,  <span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb52-5"><a href="#cb52-5"></a>      <span class="at">day  =</span> <span class="fu">c</span>(<span class="dv">1</span>,  <span class="dv">1</span>, <span class="dv">1</span>),</span>
-<span id="cb52-6"><a href="#cb52-6"></a>      <span class="at">hour   =</span> <span class="fu">c</span>(<span class="dv">4</span>,  <span class="dv">2</span>, <span class="dv">5</span>),</span>
-<span id="cb52-7"><a href="#cb52-7"></a>      <span class="at">min   =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">17</span>, <span class="dv">23</span>))</span>
-<span id="cb52-8"><a href="#cb52-8"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>df<span class="ot">&lt;-</span><span class="fu">tibble</span>(</span>
+<span id="cb50-2"><a href="#cb50-2"></a>      <span class="at">ID =</span> <span class="fu">c</span>(<span class="dv">1</span>,   <span class="dv">2</span>,  <span class="dv">3</span>),</span>
+<span id="cb50-3"><a href="#cb50-3"></a>      <span class="at">year  =</span> <span class="fu">c</span>(<span class="dv">2020</span>,  <span class="dv">2020</span>, <span class="dv">2020</span>),</span>
+<span id="cb50-4"><a href="#cb50-4"></a>      <span class="at">month  =</span> <span class="fu">c</span>(<span class="dv">1</span>,  <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb50-5"><a href="#cb50-5"></a>      <span class="at">day  =</span> <span class="fu">c</span>(<span class="dv">1</span>,  <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb50-6"><a href="#cb50-6"></a>      <span class="at">hour   =</span> <span class="fu">c</span>(<span class="dv">4</span>,  <span class="dv">2</span>, <span class="dv">5</span>),</span>
+<span id="cb50-7"><a href="#cb50-7"></a>      <span class="at">min   =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">17</span>, <span class="dv">23</span>))</span>
+<span id="cb50-8"><a href="#cb50-8"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 6
      ID  year month   day  hour   min
@@ -1345,8 +1336,8 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb54-2"><a href="#cb54-2"></a>  <span class="fu">unite</span>(<span class="at">col =</span> time, <span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">sep=</span><span class="st">":"</span>, <span class="at">remove =</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">unite</span>(<span class="at">col =</span> time, <span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">sep=</span><span class="st">":"</span>, <span class="at">remove =</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 5
@@ -1361,19 +1352,19 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section id="date-time-metrics" class="slide level2">
 <h2>Date time metrics</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">library</span>(lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>A date-time is a date plus a time: it uniquely identifies an instant in time (typically to the nearest second). These are called POSIXct in R.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">today</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="fu">today</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "2026-01-05"</code></pre>
+<pre><code>[1] "2026-01-07"</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">now</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">now</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "2026-01-05 10:54:07 CST"</code></pre>
+<pre><code>[1] "2026-01-07 10:45:37 CST"</code></pre>
 </div>
 </div>
 </section>
@@ -1381,15 +1372,15 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 
 <p>Bringing these into R from some outside place (excel, spss) can lead to confusion, as they can be formatted differently</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">ymd</span>(<span class="st">"2017-01-31"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">ymd</span>(<span class="st">"2017-01-31"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2017-01-31"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">mdy</span>(<span class="st">"January 31st, 2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a><span class="fu">mdy</span>(<span class="st">"January 31st, 2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2017-01-31"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">dmy</span>(<span class="st">"31-Jan-2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">dmy</span>(<span class="st">"31-Jan-2017"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2017-01-31"</code></pre>
 </div>
@@ -1399,11 +1390,11 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 
 <p>You can create these relatively straight forwardly…by hand</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">ymd_hms</span>(<span class="st">"2017-01-31 20:11:59"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a><span class="fu">ymd_hms</span>(<span class="st">"2017-01-31 20:11:59"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2017-01-31 20:11:59 UTC"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">mdy_hm</span>(<span class="st">"01/31/2017 08:01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">mdy_hm</span>(<span class="st">"01/31/2017 08:01"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2017-01-31 08:01:00 UTC"</code></pre>
 </div>
@@ -1413,8 +1404,8 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>df <span class="sc">%&gt;%</span> </span>
-<span id="cb71-2"><a href="#cb71-2"></a>  <span class="fu">mutate</span>(<span class="at">t_1 =</span> <span class="fu">make_datetime</span>(year, month, day, hour, min))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>df <span class="sc">%&gt;%</span> </span>
+<span id="cb69-2"><a href="#cb69-2"></a>  <span class="fu">mutate</span>(<span class="at">t_1 =</span> <span class="fu">make_datetime</span>(year, month, day, hour, min))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 7
      ID  year month   day  hour   min t_1                
@@ -1437,29 +1428,33 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 
 <p>The main reason I am going over this is because too much of the code I see looks like this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="fu">mutate</span>(<span class="at">score_mean1 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1a"</span>, <span class="st">"Score2a"</span>, <span class="st">"Score3a"</span>, <span class="st">"Score4a"</span>)]))</span>
-<span id="cb73-2"><a href="#cb73-2"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-3"><a href="#cb73-3"></a>  <span class="fu">mutate</span>(<span class="at">score_mean2 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1b"</span>, <span class="st">"Score2b"</span>, <span class="st">"Score3b"</span>, <span class="st">"Score4b"</span>)]))</span>
-<span id="cb73-4"><a href="#cb73-4"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-5"><a href="#cb73-5"></a>  <span class="fu">mutate</span>(<span class="at">score_mean3 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1c"</span>, <span class="st">"Score2c"</span>, <span class="st">"Score3c"</span>, <span class="st">"Score4c"</span>)]))</span>
-<span id="cb73-6"><a href="#cb73-6"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-7"><a href="#cb73-7"></a>  <span class="fu">mutate</span>(<span class="at">score_mean4 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1d"</span>, <span class="st">"Score2d"</span>, <span class="st">"Score3d"</span>, <span class="st">"Score4d"</span>)]))</span>
-<span id="cb73-8"><a href="#cb73-8"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-9"><a href="#cb73-9"></a>  <span class="fu">mutate</span>(<span class="at">score_mean5 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1e"</span>, <span class="st">"Score2e"</span>, <span class="st">"Score3e"</span>, <span class="st">"Score4e"</span>)]))</span>
-<span id="cb73-10"><a href="#cb73-10"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-11"><a href="#cb73-11"></a>  <span class="fu">mutate</span>(<span class="at">score_mean6 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1f"</span>, <span class="st">"Score2f"</span>, <span class="st">"Score3f"</span>, <span class="st">"Score4f"</span>)]))</span>
-<span id="cb73-12"><a href="#cb73-12"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-13"><a href="#cb73-13"></a>  <span class="fu">mutate</span>(<span class="at">score_mean7 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1g"</span>, <span class="st">"Score2g"</span>, <span class="st">"Score3g"</span>, <span class="st">"Score4g"</span>)]))</span>
-<span id="cb73-14"><a href="#cb73-14"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-15"><a href="#cb73-15"></a>  <span class="fu">mutate</span>(<span class="at">score_mean8 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1h"</span>, <span class="st">"Score2h"</span>, <span class="st">"Score3h"</span>, <span class="st">"Score4h"</span>)]))</span>
-<span id="cb73-16"><a href="#cb73-16"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
-<span id="cb73-17"><a href="#cb73-17"></a>  <span class="fu">mutate</span>(<span class="at">score_mean9 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1i"</span>, <span class="st">"Score2i"</span>, <span class="st">"Score3i"</span>, <span class="st">"Score4i"</span>)]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="fu">mutate</span>(<span class="at">score_mean1 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1a"</span>, <span class="st">"Score2a"</span>, <span class="st">"Score3a"</span>, <span class="st">"Score4a"</span>)]))</span>
+<span id="cb71-2"><a href="#cb71-2"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-3"><a href="#cb71-3"></a>  <span class="fu">mutate</span>(<span class="at">score_mean2 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1b"</span>, <span class="st">"Score2b"</span>, <span class="st">"Score3b"</span>, <span class="st">"Score4b"</span>)]))</span>
+<span id="cb71-4"><a href="#cb71-4"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-5"><a href="#cb71-5"></a>  <span class="fu">mutate</span>(<span class="at">score_mean3 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1c"</span>, <span class="st">"Score2c"</span>, <span class="st">"Score3c"</span>, <span class="st">"Score4c"</span>)]))</span>
+<span id="cb71-6"><a href="#cb71-6"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-7"><a href="#cb71-7"></a>  <span class="fu">mutate</span>(<span class="at">score_mean4 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1d"</span>, <span class="st">"Score2d"</span>, <span class="st">"Score3d"</span>, <span class="st">"Score4d"</span>)]))</span>
+<span id="cb71-8"><a href="#cb71-8"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-9"><a href="#cb71-9"></a>  <span class="fu">mutate</span>(<span class="at">score_mean5 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1e"</span>, <span class="st">"Score2e"</span>, <span class="st">"Score3e"</span>, <span class="st">"Score4e"</span>)]))</span>
+<span id="cb71-10"><a href="#cb71-10"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-11"><a href="#cb71-11"></a>  <span class="fu">mutate</span>(<span class="at">score_mean6 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1f"</span>, <span class="st">"Score2f"</span>, <span class="st">"Score3f"</span>, <span class="st">"Score4f"</span>)]))</span>
+<span id="cb71-12"><a href="#cb71-12"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-13"><a href="#cb71-13"></a>  <span class="fu">mutate</span>(<span class="at">score_mean7 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1g"</span>, <span class="st">"Score2g"</span>, <span class="st">"Score3g"</span>, <span class="st">"Score4g"</span>)]))</span>
+<span id="cb71-14"><a href="#cb71-14"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-15"><a href="#cb71-15"></a>  <span class="fu">mutate</span>(<span class="at">score_mean8 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1h"</span>, <span class="st">"Score2h"</span>, <span class="st">"Score3h"</span>, <span class="st">"Score4h"</span>)]))</span>
+<span id="cb71-16"><a href="#cb71-16"></a>data <span class="ot">&lt;-</span> import <span class="sc">%&gt;%</span></span>
+<span id="cb71-17"><a href="#cb71-17"></a>  <span class="fu">mutate</span>(<span class="at">score_mean9 =</span> <span class="fu">rowMeans</span>(data[ ,<span class="fu">c</span>(<span class="st">"Score1i"</span>, <span class="st">"Score2i"</span>, <span class="st">"Score3i"</span>, <span class="st">"Score4i"</span>)]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section class="slide level2">
-
-<p>What these help to do is create a chain of processing where you start with RAW data and end up with the cleaned data. Importantly you can always start over from the raw data. This is important for people wanting to reproduce your findings and or your future self figuring out where a certain variable came from.</p>
-<p>We start creating the chain of processing by documenting all of your code. To do so we will be using rmarkdown or quarto documents, as the language is easier than LaTeX and more helpful than plaintext.</p>
+<section id="data-and-code-wantsneeds" class="slide level2">
+<h2>Data and code wants/NEEDS:</h2>
+<ul>
+<li><p>Chain of processing where you start with RAW data and end up with the cleaned data.</p></li>
+<li><p>Know what variable names refer to in terms of item content and response scale</p></li>
+<li><p>Know how any manipulations were made (composites, reverse scores, omitting values)</p></li>
+<li><p>Code that is efficient and documented, using for loops/purrr rather than copy/paste or integrating existing codebooks</p></li>
+</ul>
 </section>
 <section class="slide level2">
 
@@ -1477,17 +1472,17 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <h2>Packages</h2>
 <p>Packages seems like the most basic step, but it is actually very important. Depending on what gets loaded you might overwrite functions from other packages. (Note: I will often reload or not follow this advice within lectures for didactic reasons, choosing to put library calls above the code)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="co"># load packages</span></span>
-<span id="cb74-2"><a href="#cb74-2"></a><span class="fu">library</span>(psych)</span>
-<span id="cb74-3"><a href="#cb74-3"></a><span class="fu">library</span>(plyr)</span>
-<span id="cb74-4"><a href="#cb74-4"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="co"># load packages</span></span>
+<span id="cb72-2"><a href="#cb72-2"></a><span class="fu">library</span>(psych)</span>
+<span id="cb72-3"><a href="#cb72-3"></a><span class="fu">library</span>(plyr)</span>
+<span id="cb72-4"><a href="#cb72-4"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="codebook" class="slide level2">
 <h2>Codebook</h2>
 <p>Arguably, this is the first step because you should <em>create</em> the codebook long before you open <code>R</code>.</p>
 <p>Why a codebook? Because you have a lot of variables and you will not be able to remember all the details that go into each one of them.</p>
-<p>This codebook will serve as a means to document RAW code. It will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices.</p>
+<p>It will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices. It is a “CODE”book after all.</p>
 </section>
 <section class="slide level2">
 
@@ -1535,7 +1530,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 </section>
 <section class="slide level2">
 
-<p>All longitudinal datasets are horrible in some way. Doing this makes them less horrible. Is it some upfront work? Yes. Will it ultimately save you time? Yes. Also, if you know this prior to running a study you are making some sort of code book anyways, right, right? Might as well kill two birds with one stone.</p>
+<p>All longitudinal datasets are horrible in some way. Doing this makes them less horrible. Is it some upfront work? Yes. Will it ultimately save you time? Yes. Also, if you know this prior to running a study you are making some sort of code book anyways, right? Right?!? Might as well kill two birds with one stone.</p>
 <p>You can make the codebook anyway you want, but the two best options are miscrosoft excel and google pages. Not because they are necessarily the best functioning but because they are relatively ubiquitous and are easy to share.</p>
 </section>
 <section class="slide level2">
@@ -1545,12 +1540,12 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>codebook <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/alda24/main/codebook.csv"</span>)</span>
-<span id="cb75-2"><a href="#cb75-2"></a></span>
-<span id="cb75-3"><a href="#cb75-3"></a>codebook <span class="ot">&lt;-</span> codebook <span class="sc">%&gt;%</span> </span>
-<span id="cb75-4"><a href="#cb75-4"></a>    <span class="fu">mutate</span>(<span class="at">old_name =</span> <span class="fu">str_to_lower</span>(old_name)) <span class="co"># converts to lower case</span></span>
-<span id="cb75-5"><a href="#cb75-5"></a></span>
-<span id="cb75-6"><a href="#cb75-6"></a>codebook</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a>codebook <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/alda24/main/codebook.csv"</span>)</span>
+<span id="cb73-2"><a href="#cb73-2"></a></span>
+<span id="cb73-3"><a href="#cb73-3"></a>codebook <span class="ot">&lt;-</span> codebook <span class="sc">%&gt;%</span> </span>
+<span id="cb73-4"><a href="#cb73-4"></a>    <span class="fu">mutate</span>(<span class="at">old_name =</span> <span class="fu">str_to_lower</span>(old_name)) <span class="co"># converts to lower case</span></span>
+<span id="cb73-5"><a href="#cb73-5"></a></span>
+<span id="cb73-6"><a href="#cb73-6"></a>codebook</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    dataset old_name                            item_text
@@ -2178,11 +2173,11 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a>old.names <span class="ot">&lt;-</span> codebook<span class="sc">$</span>old_name <span class="co"># get old column names</span></span>
-<span id="cb77-2"><a href="#cb77-2"></a>new.names <span class="ot">&lt;-</span> codebook<span class="sc">$</span>new_name <span class="co"># get new column names</span></span>
-<span id="cb77-3"><a href="#cb77-3"></a></span>
-<span id="cb77-4"><a href="#cb77-4"></a>soep <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/soepdata.csv"</span>)</span>
-<span id="cb77-5"><a href="#cb77-5"></a>soep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1"></a>old.names <span class="ot">&lt;-</span> codebook<span class="sc">$</span>old_name <span class="co"># get old column names</span></span>
+<span id="cb75-2"><a href="#cb75-2"></a>new.names <span class="ot">&lt;-</span> codebook<span class="sc">$</span>new_name <span class="co"># get new column names</span></span>
+<span id="cb75-3"><a href="#cb75-3"></a></span>
+<span id="cb75-4"><a href="#cb75-4"></a>soep <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/soepdata.csv"</span>)</span>
+<span id="cb75-5"><a href="#cb75-5"></a>soep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    persnr  hhnr bap15901 bap15904 bap15907 bap15913 bap15916 bap15919 bap15922
@@ -13966,10 +13961,10 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a> soep <span class="ot">&lt;-</span>  soep <span class="sc">%&gt;%</span> </span>
-<span id="cb79-2"><a href="#cb79-2"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(old.names)) <span class="sc">%&gt;%</span> <span class="co"># select the columns from our codebook</span></span>
-<span id="cb79-3"><a href="#cb79-3"></a>  <span class="fu">setNames</span>(new.names) <span class="co"># rename columns with our new names</span></span>
-<span id="cb79-4"><a href="#cb79-4"></a>soep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a> soep <span class="ot">&lt;-</span>  soep <span class="sc">%&gt;%</span> </span>
+<span id="cb77-2"><a href="#cb77-2"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(old.names)) <span class="sc">%&gt;%</span> <span class="co"># select the columns from our codebook</span></span>
+<span id="cb77-3"><a href="#cb77-3"></a>  <span class="fu">setNames</span>(new.names) <span class="co"># rename columns with our new names</span></span>
+<span id="cb77-4"><a href="#cb77-4"></a>soep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>    Procedural__SID Procedural__household Demographic__DOB Demographic__Sex
@@ -50619,10 +50614,10 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a><span class="fu">library</span>(plyr)</span>
-<span id="cb81-2"><a href="#cb81-2"></a>soep <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
-<span id="cb81-3"><a href="#cb81-3"></a>  <span class="fu">mutate_all</span>(<span class="sc">~</span><span class="fu">as.numeric</span>(<span class="fu">mapvalues</span>(., <span class="at">from =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">1</span>), <span class="at">to =</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">7</span>), <span class="at">warn_missing =</span> F)))</span>
-<span id="cb81-4"><a href="#cb81-4"></a><span class="fu">head</span>(soep)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1"></a><span class="fu">library</span>(plyr)</span>
+<span id="cb79-2"><a href="#cb79-2"></a>soep <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
+<span id="cb79-3"><a href="#cb79-3"></a>  <span class="fu">mutate_all</span>(<span class="sc">~</span><span class="fu">as.numeric</span>(<span class="fu">mapvalues</span>(., <span class="at">from =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">1</span>), <span class="at">to =</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">7</span>), <span class="at">warn_missing =</span> F)))</span>
+<span id="cb79-4"><a href="#cb79-4"></a><span class="fu">head</span>(soep)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Procedural__SID Procedural__household Demographic__DOB Demographic__Sex
@@ -51016,12 +51011,12 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
-<span id="cb83-2"><a href="#cb83-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
-<span id="cb83-3"><a href="#cb83-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
-<span id="cb83-4"><a href="#cb83-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
-<span id="cb83-5"><a href="#cb83-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb83-6"><a href="#cb83-6"></a><span class="fu">str</span>(soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
+<span id="cb81-2"><a href="#cb81-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
+<span id="cb81-3"><a href="#cb81-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
+<span id="cb81-4"><a href="#cb81-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
+<span id="cb81-5"><a href="#cb81-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb81-6"><a href="#cb81-6"></a><span class="fu">str</span>(soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>tibble [471,722 × 6] (S3: tbl_df/tbl/data.frame)
@@ -51034,7 +51029,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a><span class="fu">head</span>(soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1"></a><span class="fu">head</span>(soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 6
   Procedural__SID Procedural__household Demographic__DOB Demographic__Sex item  
@@ -51055,13 +51050,13 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
-<span id="cb87-2"><a href="#cb87-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
-<span id="cb87-3"><a href="#cb87-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
-<span id="cb87-4"><a href="#cb87-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
-<span id="cb87-5"><a href="#cb87-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb87-6"><a href="#cb87-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) </span>
-<span id="cb87-7"><a href="#cb87-7"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
+<span id="cb85-2"><a href="#cb85-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
+<span id="cb85-3"><a href="#cb85-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
+<span id="cb85-4"><a href="#cb85-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
+<span id="cb85-5"><a href="#cb85-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb85-6"><a href="#cb85-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) </span>
+<span id="cb85-7"><a href="#cb85-7"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 9
@@ -51083,16 +51078,16 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
-<span id="cb89-2"><a href="#cb89-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
-<span id="cb89-3"><a href="#cb89-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
-<span id="cb89-4"><a href="#cb89-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
-<span id="cb89-5"><a href="#cb89-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb89-6"><a href="#cb89-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) <span class="sc">%&gt;%</span> </span>
-<span id="cb89-7"><a href="#cb89-7"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"__"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb89-8"><a href="#cb89-8"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"item"</span>, <span class="st">"year"</span>), <span class="at">sep =</span> <span class="st">"[.]"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb89-9"><a href="#cb89-9"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"trait"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"_"</span>) </span>
-<span id="cb89-10"><a href="#cb89-10"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
+<span id="cb87-2"><a href="#cb87-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
+<span id="cb87-3"><a href="#cb87-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
+<span id="cb87-4"><a href="#cb87-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
+<span id="cb87-5"><a href="#cb87-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb87-6"><a href="#cb87-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-7"><a href="#cb87-7"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"__"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-8"><a href="#cb87-8"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"item"</span>, <span class="st">"year"</span>), <span class="at">sep =</span> <span class="st">"[.]"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-9"><a href="#cb87-9"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"trait"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"_"</span>) </span>
+<span id="cb87-10"><a href="#cb87-10"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 12
@@ -51109,7 +51104,7 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a><span class="do">## almost half a million rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1"></a><span class="do">## almost half a million rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -51119,19 +51114,19 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
-<span id="cb92-2"><a href="#cb92-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
-<span id="cb92-3"><a href="#cb92-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
-<span id="cb92-4"><a href="#cb92-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
-<span id="cb92-5"><a href="#cb92-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb92-6"><a href="#cb92-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) <span class="sc">%&gt;%</span> </span>
-<span id="cb92-7"><a href="#cb92-7"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"__"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb92-8"><a href="#cb92-8"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"item"</span>, <span class="st">"year"</span>), <span class="at">sep =</span> <span class="st">"[.]"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb92-9"><a href="#cb92-9"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"trait"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb92-10"><a href="#cb92-10"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">as.numeric</span>(value), <span class="co"># change to numeric</span></span>
-<span id="cb92-11"><a href="#cb92-11"></a>         <span class="at">value =</span> <span class="fu">ifelse</span>(reverse <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, </span>
-<span id="cb92-12"><a href="#cb92-12"></a>            <span class="fu">reverse.code</span>(<span class="sc">-</span><span class="dv">1</span>, value, <span class="at">mini =</span> mini, <span class="at">maxi =</span> maxi), value))</span>
-<span id="cb92-13"><a href="#cb92-13"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>soep_long <span class="ot">&lt;-</span> soep <span class="sc">%&gt;%</span></span>
+<span id="cb90-2"><a href="#cb90-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Procedural"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Demographic"</span>)),</span>
+<span id="cb90-3"><a href="#cb90-3"></a>               <span class="at">names_to =</span> <span class="st">"item"</span>, </span>
+<span id="cb90-4"><a href="#cb90-4"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>, </span>
+<span id="cb90-5"><a href="#cb90-5"></a>               <span class="at">values_drop_na =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb90-6"><a href="#cb90-6"></a>  <span class="fu">left_join</span>(codebook <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">item =</span> new_name, reverse, mini, maxi)) <span class="sc">%&gt;%</span> </span>
+<span id="cb90-7"><a href="#cb90-7"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"type"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"__"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb90-8"><a href="#cb90-8"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"item"</span>, <span class="st">"year"</span>), <span class="at">sep =</span> <span class="st">"[.]"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb90-9"><a href="#cb90-9"></a>  <span class="fu">separate</span>(item, <span class="fu">c</span>(<span class="st">"trait"</span>, <span class="st">"item"</span>), <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb90-10"><a href="#cb90-10"></a>  <span class="fu">mutate</span>(<span class="at">value =</span> <span class="fu">as.numeric</span>(value), <span class="co"># change to numeric</span></span>
+<span id="cb90-11"><a href="#cb90-11"></a>         <span class="at">value =</span> <span class="fu">ifelse</span>(reverse <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>, </span>
+<span id="cb90-12"><a href="#cb90-12"></a>            <span class="fu">reverse.code</span>(<span class="sc">-</span><span class="dv">1</span>, value, <span class="at">mini =</span> mini, <span class="at">maxi =</span> maxi), value))</span>
+<span id="cb90-13"><a href="#cb90-13"></a><span class="fu">head</span>(soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 12
@@ -51157,27 +51152,27 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a><span class="co"># this but for each wave by each construct times</span></span>
-<span id="cb94-2"><a href="#cb94-2"></a></span>
-<span id="cb94-3"><a href="#cb94-3"></a>soep<span class="sc">$</span>C<span class="fl">.2005</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2005</span><span class="st">`</span>, </span>
-<span id="cb94-4"><a href="#cb94-4"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2005</span><span class="st">`</span>, </span>
-<span id="cb94-5"><a href="#cb94-5"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2005</span><span class="st">`</span>), </span>
-<span id="cb94-6"><a href="#cb94-6"></a><span class="at">na.rm =</span> T)) </span>
-<span id="cb94-7"><a href="#cb94-7"></a></span>
-<span id="cb94-8"><a href="#cb94-8"></a>soep<span class="sc">$</span>C<span class="fl">.2009</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2009</span><span class="st">`</span>, </span>
-<span id="cb94-9"><a href="#cb94-9"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2009</span><span class="st">`</span>, </span>
-<span id="cb94-10"><a href="#cb94-10"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2009</span><span class="st">`</span>), </span>
-<span id="cb94-11"><a href="#cb94-11"></a><span class="at">na.rm =</span> T)) </span>
-<span id="cb94-12"><a href="#cb94-12"></a></span>
-<span id="cb94-13"><a href="#cb94-13"></a>soep<span class="sc">$</span>C<span class="fl">.2013</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2013</span><span class="st">`</span>, </span>
-<span id="cb94-14"><a href="#cb94-14"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2013</span><span class="st">`</span>, </span>
-<span id="cb94-15"><a href="#cb94-15"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2013</span><span class="st">`</span>), </span>
-<span id="cb94-16"><a href="#cb94-16"></a><span class="at">na.rm =</span> T)) </span>
-<span id="cb94-17"><a href="#cb94-17"></a></span>
-<span id="cb94-18"><a href="#cb94-18"></a>soep<span class="sc">$</span>C<span class="fl">.2013</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2021</span><span class="st">`</span>, </span>
-<span id="cb94-19"><a href="#cb94-19"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2021</span><span class="st">`</span>, </span>
-<span id="cb94-20"><a href="#cb94-20"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2012</span><span class="st">`</span>), </span>
-<span id="cb94-21"><a href="#cb94-21"></a><span class="at">na.rm =</span> T)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1"></a><span class="co"># this but for each wave by each construct times</span></span>
+<span id="cb92-2"><a href="#cb92-2"></a></span>
+<span id="cb92-3"><a href="#cb92-3"></a>soep<span class="sc">$</span>C<span class="fl">.2005</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2005</span><span class="st">`</span>, </span>
+<span id="cb92-4"><a href="#cb92-4"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2005</span><span class="st">`</span>, </span>
+<span id="cb92-5"><a href="#cb92-5"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2005</span><span class="st">`</span>), </span>
+<span id="cb92-6"><a href="#cb92-6"></a><span class="at">na.rm =</span> T)) </span>
+<span id="cb92-7"><a href="#cb92-7"></a></span>
+<span id="cb92-8"><a href="#cb92-8"></a>soep<span class="sc">$</span>C<span class="fl">.2009</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2009</span><span class="st">`</span>, </span>
+<span id="cb92-9"><a href="#cb92-9"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2009</span><span class="st">`</span>, </span>
+<span id="cb92-10"><a href="#cb92-10"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2009</span><span class="st">`</span>), </span>
+<span id="cb92-11"><a href="#cb92-11"></a><span class="at">na.rm =</span> T)) </span>
+<span id="cb92-12"><a href="#cb92-12"></a></span>
+<span id="cb92-13"><a href="#cb92-13"></a>soep<span class="sc">$</span>C<span class="fl">.2013</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2013</span><span class="st">`</span>, </span>
+<span id="cb92-14"><a href="#cb92-14"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2013</span><span class="st">`</span>, </span>
+<span id="cb92-15"><a href="#cb92-15"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2013</span><span class="st">`</span>), </span>
+<span id="cb92-16"><a href="#cb92-16"></a><span class="at">na.rm =</span> T)) </span>
+<span id="cb92-17"><a href="#cb92-17"></a></span>
+<span id="cb92-18"><a href="#cb92-18"></a>soep<span class="sc">$</span>C<span class="fl">.2013</span> <span class="ot">&lt;-</span> <span class="fu">with</span>(soep, <span class="fu">rowMeans</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">Big 5__C_thorough.2021</span><span class="st">`</span>, </span>
+<span id="cb92-19"><a href="#cb92-19"></a><span class="st">`</span><span class="at">Big 5__C_lazy.2021</span><span class="st">`</span>, </span>
+<span id="cb92-20"><a href="#cb92-20"></a><span class="st">`</span><span class="at">Big 5__C_efficient.2012</span><span class="st">`</span>), </span>
+<span id="cb92-21"><a href="#cb92-21"></a><span class="at">na.rm =</span> T)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>DO NOT COPY AND PASTE IN YOUR CODE</p>
 </section>
@@ -51188,9 +51183,9 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a>b5_soep_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb95-2"><a href="#cb95-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>)</span>
-<span id="cb95-3"><a href="#cb95-3"></a><span class="fu">str</span>(b5_soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>b5_soep_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb93-2"><a href="#cb93-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>)</span>
+<span id="cb93-3"><a href="#cb93-3"></a><span class="fu">str</span>(b5_soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>tibble [452,104 × 12] (S3: tbl_df/tbl/data.frame)
@@ -51214,11 +51209,11 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>b5_soep_long<span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb97-2"><a href="#cb97-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb97-3"><a href="#cb97-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait, year) <span class="sc">%&gt;%</span> </span>
-<span id="cb97-4"><a href="#cb97-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> T)) </span>
-<span id="cb97-5"><a href="#cb97-5"></a><span class="fu">head</span>(b5_soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a>b5_soep_long<span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb95-2"><a href="#cb95-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb95-3"><a href="#cb95-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb95-4"><a href="#cb95-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> T)) </span>
+<span id="cb95-5"><a href="#cb95-5"></a><span class="fu">head</span>(b5_soep_long)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
@@ -51240,16 +51235,16 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>b5_soep_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb99-2"><a href="#cb99-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb99-3"><a href="#cb99-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait, year) <span class="sc">%&gt;%</span> </span>
-<span id="cb99-4"><a href="#cb99-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> </span>
-<span id="cb99-5"><a href="#cb99-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb99-6"><a href="#cb99-6"></a>  <span class="fu">left_join</span>(soep_long <span class="sc">%&gt;%</span> </span>
-<span id="cb99-7"><a href="#cb99-7"></a>    <span class="fu">select</span>(Procedural__SID, <span class="at">DOB =</span> Demographic__DOB, <span class="at">Sex =</span> Demographic__Sex) <span class="sc">%&gt;%</span></span>
-<span id="cb99-8"><a href="#cb99-8"></a>    <span class="fu">distinct</span>())</span>
-<span id="cb99-9"><a href="#cb99-9"></a></span>
-<span id="cb99-10"><a href="#cb99-10"></a><span class="fu">head</span>(b5_soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>b5_soep_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb97-2"><a href="#cb97-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Big 5"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb97-3"><a href="#cb97-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait, year) <span class="sc">%&gt;%</span> </span>
+<span id="cb97-4"><a href="#cb97-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">mean</span>(value, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> </span>
+<span id="cb97-5"><a href="#cb97-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb97-6"><a href="#cb97-6"></a>  <span class="fu">left_join</span>(soep_long <span class="sc">%&gt;%</span> </span>
+<span id="cb97-7"><a href="#cb97-7"></a>    <span class="fu">select</span>(Procedural__SID, <span class="at">DOB =</span> Demographic__DOB, <span class="at">Sex =</span> Demographic__Sex) <span class="sc">%&gt;%</span></span>
+<span id="cb97-8"><a href="#cb97-8"></a>    <span class="fu">distinct</span>())</span>
+<span id="cb97-9"><a href="#cb97-9"></a></span>
+<span id="cb97-10"><a href="#cb97-10"></a><span class="fu">head</span>(b5_soep_long) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 6
@@ -51273,10 +51268,10 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a><span class="fu">library</span>(psych)</span>
-<span id="cb101-2"><a href="#cb101-2"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb101-3"><a href="#cb101-3"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) </span>
-<span id="cb101-4"><a href="#cb101-4"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb99-2"><a href="#cb99-2"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb99-3"><a href="#cb99-3"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) </span>
+<span id="cb99-4"><a href="#cb99-4"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
@@ -51296,10 +51291,10 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb103-2"><a href="#cb103-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span>  </span>
-<span id="cb103-3"><a href="#cb103-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) </span>
-<span id="cb103-4"><a href="#cb103-4"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb101-2"><a href="#cb101-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span>  </span>
+<span id="cb101-3"><a href="#cb101-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) </span>
+<span id="cb101-4"><a href="#cb101-4"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 18
@@ -51321,11 +51316,11 @@ res.change 0.9388281 0.9388281  1.0000000</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long  <span class="sc">%&gt;%</span></span>
-<span id="cb105-2"><a href="#cb105-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-3"><a href="#cb105-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span>tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
-<span id="cb105-4"><a href="#cb105-4"></a>  <span class="fu">describe</span>(.) </span>
-<span id="cb105-5"><a href="#cb105-5"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>b5_soep_long_des <span class="ot">&lt;-</span> b5_soep_long  <span class="sc">%&gt;%</span></span>
+<span id="cb103-2"><a href="#cb103-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb103-3"><a href="#cb103-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span>tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb103-4"><a href="#cb103-4"></a>  <span class="fu">describe</span>(.) </span>
+<span id="cb103-5"><a href="#cb103-5"></a><span class="fu">head</span>(b5_soep_long_des)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                vars     n       mean          sd     median    trimmed
@@ -51348,12 +51343,12 @@ A_2013                0.49    1        7        6 -0.04     0.80     0.01</code>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a><span class="fu">library</span>(easystats)</span>
-<span id="cb107-2"><a href="#cb107-2"></a>b5_soep_long  <span class="sc">%&gt;%</span></span>
-<span id="cb107-3"><a href="#cb107-3"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-4"><a href="#cb107-4"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span>tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-5"><a href="#cb107-5"></a>  <span class="fu">report_table</span>(.) <span class="sc">%&gt;%</span> </span>
-<span id="cb107-6"><a href="#cb107-6"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a><span class="fu">library</span>(easystats)</span>
+<span id="cb105-2"><a href="#cb105-2"></a>b5_soep_long  <span class="sc">%&gt;%</span></span>
+<span id="cb105-3"><a href="#cb105-3"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-4"><a href="#cb105-4"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span>tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-5"><a href="#cb105-5"></a>  <span class="fu">report_table</span>(.) <span class="sc">%&gt;%</span> </span>
+<span id="cb105-6"><a href="#cb105-6"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Variable        | n_Obs |     Mean |       SD |   Median |      MAD |     Min
 -----------------------------------------------------------------------------
@@ -51381,9 +51376,9 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>events_long  <span class="ot">&lt;-</span>soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb109-2"><a href="#cb109-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Life Event"</span>) </span>
-<span id="cb109-3"><a href="#cb109-3"></a><span class="fu">head</span>(events_long )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>events_long  <span class="ot">&lt;-</span>soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb107-2"><a href="#cb107-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Life Event"</span>) </span>
+<span id="cb107-3"><a href="#cb107-3"></a><span class="fu">head</span>(events_long )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 12
@@ -51403,11 +51398,11 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>events_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb111-2"><a href="#cb111-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Life Event"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb111-3"><a href="#cb111-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait) <span class="sc">%&gt;%</span> </span>
-<span id="cb111-4"><a href="#cb111-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> T),<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
-<span id="cb111-5"><a href="#cb111-5"></a><span class="fu">head</span>(events_long )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>events_long <span class="ot">&lt;-</span> soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb109-2"><a href="#cb109-2"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Life Event"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-3"><a href="#cb109-3"></a>  <span class="fu">group_by</span>(Procedural__SID, trait) <span class="sc">%&gt;%</span> </span>
+<span id="cb109-4"><a href="#cb109-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">value =</span> <span class="fu">sum</span>(value, <span class="at">na.rm =</span> T),<span class="at">value =</span> <span class="fu">ifelse</span>(value <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb109-5"><a href="#cb109-5"></a><span class="fu">head</span>(events_long )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
 # Groups:   Procedural__SID [5]
@@ -51432,9 +51427,9 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a>events_long <span class="sc">%&gt;%</span></span>
-<span id="cb113-2"><a href="#cb113-2"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
-<span id="cb113-3"><a href="#cb113-3"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>events_long <span class="sc">%&gt;%</span></span>
+<span id="cb111-2"><a href="#cb111-2"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
+<span id="cb111-3"><a href="#cb111-3"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 20 × 3
@@ -51469,11 +51464,11 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a>events_long <span class="sc">%&gt;%</span></span>
-<span id="cb115-2"><a href="#cb115-2"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
-<span id="cb115-3"><a href="#cb115-3"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb115-4"><a href="#cb115-4"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb115-5"><a href="#cb115-5"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> value, <span class="at">values_from =</span> N) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a>events_long <span class="sc">%&gt;%</span></span>
+<span id="cb113-2"><a href="#cb113-2"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
+<span id="cb113-3"><a href="#cb113-3"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb113-4"><a href="#cb113-4"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb113-5"><a href="#cb113-5"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> value, <span class="at">values_from =</span> N) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 3
@@ -51497,16 +51492,16 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb117-2"><a href="#cb117-2"></a>events_long <span class="sc">%&gt;%</span></span>
-<span id="cb117-3"><a href="#cb117-3"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
-<span id="cb117-4"><a href="#cb117-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
-<span id="cb117-5"><a href="#cb117-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb117-6"><a href="#cb117-6"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> value, <span class="at">values_from =</span> N, <span class="at">names_prefix =</span> <span class="st">"T"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb117-7"><a href="#cb117-7"></a>  <span class="fu">mutate</span>(<span class="st">'No Event'</span> <span class="ot">=</span> T0) <span class="sc">%&gt;%</span> </span>
-<span id="cb117-8"><a href="#cb117-8"></a>  <span class="fu">mutate</span>(<span class="at">Event =</span> T1) <span class="sc">%&gt;%</span> </span>
-<span id="cb117-9"><a href="#cb117-9"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(T0, T1)) <span class="sc">%&gt;%</span> </span>
-<span id="cb117-10"><a href="#cb117-10"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> T) <span class="sc">%&gt;%</span> <span class="fu">kable_styling</span>(<span class="at">latex_options =</span> <span class="st">"striped"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb115-2"><a href="#cb115-2"></a>events_long <span class="sc">%&gt;%</span></span>
+<span id="cb115-3"><a href="#cb115-3"></a>  <span class="fu">group_by</span>(trait, value) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-4"><a href="#cb115-4"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">N =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb115-5"><a href="#cb115-5"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb115-6"><a href="#cb115-6"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> value, <span class="at">values_from =</span> N, <span class="at">names_prefix =</span> <span class="st">"T"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-7"><a href="#cb115-7"></a>  <span class="fu">mutate</span>(<span class="st">'No Event'</span> <span class="ot">=</span> T0) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-8"><a href="#cb115-8"></a>  <span class="fu">mutate</span>(<span class="at">Event =</span> T1) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-9"><a href="#cb115-9"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(T0, T1)) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-10"><a href="#cb115-10"></a>  <span class="fu">kbl</span>(<span class="at">booktabs =</span> T) <span class="sc">%&gt;%</span> <span class="fu">kable_styling</span>(<span class="at">latex_options =</span> <span class="st">"striped"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table" data-quarto-postprocess="true" style="margin-left: auto; margin-right: auto;">
@@ -51581,12 +51576,12 @@ A_2013          |     7.00 |    -0.04 |     0.80 |              42.97</code></pr
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a>b5_soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb118-2"><a href="#cb118-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb118-3"><a href="#cb118-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
-<span id="cb118-4"><a href="#cb118-4"></a>  <span class="fu">select</span>(<span class="sc">-</span>Procedural__SID) <span class="sc">%&gt;%</span></span>
-<span id="cb118-5"><a href="#cb118-5"></a>  <span class="fu">cor</span>(., <span class="at">use =</span> <span class="st">"pairwise"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb118-6"><a href="#cb118-6"></a>  <span class="fu">round</span>(., <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1"></a>b5_soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb116-2"><a href="#cb116-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-3"><a href="#cb116-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb116-4"><a href="#cb116-4"></a>  <span class="fu">select</span>(<span class="sc">-</span>Procedural__SID) <span class="sc">%&gt;%</span></span>
+<span id="cb116-5"><a href="#cb116-5"></a>  <span class="fu">cor</span>(., <span class="at">use =</span> <span class="st">"pairwise"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-6"><a href="#cb116-6"></a>  <span class="fu">round</span>(., <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         DOB   Sex A_2005 A_2009 A_2013 C_2005 C_2009 C_2013 E_2005 E_2009
@@ -51628,7 +51623,7 @@ O_2013   0.35   0.05   0.03   0.15   0.55   0.61   1.00</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1"></a>result <span class="ot">&lt;-</span> <span class="fu">correlation</span>(iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a>result <span class="ot">&lt;-</span> <span class="fu">correlation</span>(iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -51637,12 +51632,12 @@ O_2013   0.35   0.05   0.03   0.15   0.55   0.61   1.00</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1"></a>corrs <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
-<span id="cb121-2"><a href="#cb121-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb121-3"><a href="#cb121-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
-<span id="cb121-4"><a href="#cb121-4"></a>  <span class="fu">select</span>(<span class="sc">-</span>Procedural__SID) <span class="sc">%&gt;%</span></span>
-<span id="cb121-5"><a href="#cb121-5"></a>  <span class="fu">correlation</span>() <span class="co"># from easystat correlation package</span></span>
-<span id="cb121-6"><a href="#cb121-6"></a>corrs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1"></a>corrs <span class="ot">&lt;-</span> b5_soep_long <span class="sc">%&gt;%</span></span>
+<span id="cb119-2"><a href="#cb119-2"></a>  <span class="fu">unite</span>(tmp, trait, year, <span class="at">sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb119-3"><a href="#cb119-3"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> tmp, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb119-4"><a href="#cb119-4"></a>  <span class="fu">select</span>(<span class="sc">-</span>Procedural__SID) <span class="sc">%&gt;%</span></span>
+<span id="cb119-5"><a href="#cb119-5"></a>  <span class="fu">correlation</span>() <span class="co"># from easystat correlation package</span></span>
+<span id="cb119-6"><a href="#cb119-6"></a>corrs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># Correlation Matrix (pearson-method)
@@ -51794,7 +51789,7 @@ Observations: 5024-16719</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1"></a><span class="fu">plot</span>(<span class="fu">summary</span>(corrs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1"></a><span class="fu">plot</span>(<span class="fu">summary</span>(corrs))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
 <img data-src="intro-1_files/figure-revealjs/unnamed-chunk-66-1.png" width="960" class="r-stretch"></section>

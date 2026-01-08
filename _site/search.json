@@ -200,7 +200,7 @@
     "href": "intro-1.html#timepoint-summary",
     "title": "intro",
     "section": "2 timepoint summary",
-    "text": "2 timepoint summary\n\nApproaches differ on how much we care about accounting for T1 differences.\nWhat we want to do is create a model that is flexible enough for us to implement this assumption (and address others – no measurement error).\nBoth of these models are not easily adapted to more than 2 waves and or for use with multivariate questions. We need a new approach."
+    "text": "2 timepoint summary\n\nApproaches differ on how much we care about accounting for T1 differences.\nWhat we want to do is create a model that is flexible enough for us to implement this assumption (and address others – no measurement error).\nOne type of change can be equivalent to another, depending\nBoth of these models are not easily adapted to more than 2 waves and or for use with multivariate questions. We need a new approach."
   },
   {
     "objectID": "intro-1.html#data-1",
@@ -249,7 +249,7 @@
     "href": "intro-1.html#date-time-metrics",
     "title": "intro",
     "section": "Date time metrics",
-    "text": "Date time metrics\n\nlibrary(lubridate)\n\nA date-time is a date plus a time: it uniquely identifies an instant in time (typically to the nearest second). These are called POSIXct in R.\n\ntoday()\n\n[1] \"2026-01-05\"\n\n\n\nnow()\n\n[1] \"2026-01-05 10:54:07 CST\""
+    "text": "Date time metrics\n\nlibrary(lubridate)\n\nA date-time is a date plus a time: it uniquely identifies an instant in time (typically to the nearest second). These are called POSIXct in R.\n\ntoday()\n\n[1] \"2026-01-07\"\n\n\n\nnow()\n\n[1] \"2026-01-07 10:45:37 CST\""
   },
   {
     "objectID": "intro-1.html#projects-and-rmarkdown",
@@ -270,7 +270,7 @@
     "href": "intro-1.html#codebook",
     "title": "intro",
     "section": "Codebook",
-    "text": "Codebook\nArguably, this is the first step because you should create the codebook long before you open R.\nWhy a codebook? Because you have a lot of variables and you will not be able to remember all the details that go into each one of them.\nThis codebook will serve as a means to document RAW code. It will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices."
+    "text": "Codebook\nArguably, this is the first step because you should create the codebook long before you open R.\nWhy a codebook? Because you have a lot of variables and you will not be able to remember all the details that go into each one of them.\nIt will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices. It is a “CODE”book after all."
   },
   {
     "objectID": "intro-1.html#data-2",
@@ -403,7 +403,7 @@
     "href": "mlm-2.html#variance-decomposition",
     "title": "MLM",
     "section": "4. Variance decomposition",
-    "text": "4. Variance decomposition\nFor standard regression, we think of error as existing in one big bucket called \\(\\varepsilon\\) . Everything that we do not know goes into that bucket, from measurement error to missing variables.\nFor MLMs we will be breaking up ( \\(\\varepsilon\\) ) into multiple buckets (Us; random/varying effects) that reflect person level deviations.\nIf we are interested in individual differences in intraindividual change, we must have a model that is capable of person specific predictions."
+    "text": "4. Variance decomposition\nFor standard regression, we think of error as existing in one big bucket called \\(\\varepsilon\\) . Everything that we do not know goes into that bucket, from measurement error to missing variables.\nFor MLMs we will be breaking up ( \\(\\varepsilon\\) ) into multiple buckets (Us; random/varying effects) that reflect person level deviations across.\nIf we are interested in individual differences in intraindividual change, we must have a model that is capable of person specific predictions."
   },
   {
     "objectID": "mlm-2.html#shrinkagepartial-pooling",
@@ -458,8 +458,8 @@
     "objectID": "mlm-2.html#error-structure",
     "href": "mlm-2.html#error-structure",
     "title": "MLM",
-    "section": "Error structure",
-    "text": "Error structure\nThe residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.\n\\[\\begin{pmatrix} {U}_{0i} \\\\ {U}_{1i} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]\nNote that it is possible to have a different error structure for the random effects\n\\[{e}_{ti} \\sim \\mathcal{N}(0, \\sigma^{2})\\]"
+    "section": "Error Structure",
+    "text": "Error Structure\nThe residual structure, where the random effects are again normally distributed with a mean of zero, but this time one must also consider covariance in addition to variance.\nG matrix (books term, some call tau matrix) \\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix}\n\\sim \\mathcal{N} \\begin{pmatrix}\n  0,      \\tau_{00}^{2} & \\tau_{01}\\\\\n  0,  \\tau_{01} & \\tau_{10}^{2}\n\\end{pmatrix}\\]"
   },
   {
     "objectID": "mlm-2.html#multiple-level-1-predictors",
@@ -480,21 +480,21 @@
     "href": "mlm-2.html#cross-level-interactions",
     "title": "MLM",
     "section": "Cross level interactions",
-    "text": "Cross level interactions\nlevel 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}X_{ij} + \\varepsilon_{ij}\\] Level 2: \\[{\\beta}_{0j} = \\gamma_{00} + \\gamma_{01}G_{j} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} + \\gamma_{11}G_{j} + U_{1j}\\]\n\\[{Y}_{ij} = \\gamma_{00} + \\gamma_{01}G_{j}+  \\gamma_{10} (X_{ij}) + \\gamma_{11}(G_{j}*X{ij}) +  U_{0j} + U_{1j}(X{ij}) + \\varepsilon_{ij}\\]\n\\[{Y}_{ij} = [\\gamma_{00} + U_{0j} +\\gamma_{01}G_{j}] + [(\\gamma_{10}  + \\gamma_{11}G_{j}+  U_{1j})(X{ij})] + \\varepsilon_{ij}\\]"
+    "text": "Cross level interactions\nlevel 1: \\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}time_{ti} + \\varepsilon_{ti}\\] Level 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + \\gamma_{11}G_{i} + U_{1i}\\]\n\\[{Y}_{ti} = \\gamma_{00} + \\gamma_{01}G_{i}+  \\gamma_{10} (time_{ti}) + \\gamma_{11}(G_{i}*time_{ti}) +  U_{0j} + U_{1i}(time_{ti}) + \\varepsilon_{ti}\\]\n\\[{Y}_{ti} = [\\gamma_{00} + U_{0i} +\\gamma_{01}G_{i}] + [(\\gamma_{10}  + \\gamma_{11}G_{i}+  U_{1i})(time_{ti})] + \\varepsilon_{ti}\\]"
   },
   {
     "objectID": "mlm-2.html#centering",
     "href": "mlm-2.html#centering",
     "title": "MLM",
     "section": "Centering",
-    "text": "Centering\nAs a rule, each level-1 predictor is really 2 predictor variables. It is important to separate within-group from between group variance. Failing to do so will “smush” between and within variance to level 1.\nExample: student SES at level 1, with schools at level 2. Some kids have more money than other kids in their school Some schools have more money than other schools\nFortunately it is easy to separate this"
+    "text": "Centering\nBecause mlms are regressions, and because mlms involve interactions, it is important to consider how your predictors zero point is defined.\nHow do you want your intercept interpreted? How do you want lower order terms in an interaction interpreted?\nWe will use these extensively to help disentangle within and between person variance."
   },
   {
     "objectID": "mlm-2.html#mlm-as-default-and-make-it-maximum",
     "href": "mlm-2.html#mlm-as-default-and-make-it-maximum",
     "title": "MLM",
     "section": "MLM as default and make it maximum",
-    "text": "MLM as default and make it maximum\nIf you have data like this you should analyze like this! If you don’t, then you are losing information (GEE being a potential exception).\nThe question often is about which random effects to fit. There are multiple opinions, but mine is to start maximum, and then work downward (ie simplify) if necessary/consistent with theory. It doesn’t really hurt to include them, especially with new estimation advances (Bayesian estimation)"
+    "text": "MLM as default and make it maximum\nIf you don’t include all random effects then you are losing information (GEE being a potential exception).\nThe question often is necessitated by model convergence. There are multiple opinions, but mine is to start maximum, and then work downward (ie simplify) if necessary/consistent with theory. It doesn’t really hurt to include them, especially with new estimation advances (Bayesian estimation)"
   },
   {
     "objectID": "mlm-2.html#basic-longitudinal-models",
@@ -543,7 +543,7 @@
     "href": "mlm-2.html#what-do-the-random-effects-look-like",
     "title": "MLM",
     "section": "what do the random effects look like?",
-    "text": "what do the random effects look like?\n\n\nCode\nlibrary(modelbased)\nrandom &lt;- estimate_grouplevel(mod.1) \nhead(random)\n\n\nGroup | Level |   Parameter | Coefficient |   SE |        95% CI\n----------------------------------------------------------------\nID    |   901 | (Intercept) |        0.14 | 0.24 | [-0.33, 0.61]\nID    |  2301 | (Intercept) |        0.33 | 0.24 | [-0.14, 0.80]\nID    |  2302 | (Intercept) |        0.27 | 0.24 | [-0.20, 0.74]\nID    |  4701 | (Intercept) |       -0.04 | 0.27 | [-0.57, 0.48]\nID    |  4901 | (Intercept) |        0.01 | 0.24 | [-0.46, 0.48]\nID    |  5201 | (Intercept) |        0.59 | 0.24 | [ 0.12, 1.06]"
+    "text": "what do the random effects look like?\n\n\nCode\nlibrary(modelbased)\nrandom &lt;- estimate_grouplevel(mod.1) \nhead(random)\n\n\nGroup | Level |   Parameter | Coefficient |   SE |        95% CI |   Component\n------------------------------------------------------------------------------\nID    |   901 | (Intercept) |        0.14 | 0.24 | [-0.33, 0.61] | conditional\nID    |  2301 | (Intercept) |        0.33 | 0.24 | [-0.14, 0.80] | conditional\nID    |  2302 | (Intercept) |        0.27 | 0.24 | [-0.20, 0.74] | conditional\nID    |  4701 | (Intercept) |       -0.04 | 0.27 | [-0.57, 0.48] | conditional\nID    |  4901 | (Intercept) |        0.01 | 0.24 | [-0.46, 0.48] | conditional\nID    |  5201 | (Intercept) |        0.59 | 0.24 | [ 0.12, 1.06] | conditional"
   },
   {
     "objectID": "mlm-2.html#base-r-dealing-with-random-effects",
@@ -578,7 +578,7 @@
     "href": "mlm-2.html#growth-model",
     "title": "MLM",
     "section": "Growth model",
-    "text": "Growth model\nWe are going to fit a simple longitudinal model: a growth model. Growth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person.\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}X_{ti} + \\varepsilon_{ti}\\] Notice on the subscript of X that these predictors vary across group (i) and within the group (t) So if your grouping (i) is people, then t refers to different observations."
+    "text": "Growth model\nGrowth model is just a fancy term for including TIME as our level 1 predictor where we are now creating lines for each person.\nLevel 1: \\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\] Because we have a level 1 time predictor in the model, we are now asking the question, how does time influence scores on our DV? Because all regressions are linear by default, it asks if there is an association such that as time increases does the DV?"
   },
   {
     "objectID": "mlm-2.html#a-predictor-in-level-1",
@@ -620,7 +620,7 @@
     "href": "mlm-2.html#visualizing-results-quickly",
     "title": "MLM",
     "section": "Visualizing results (quickly)",
-    "text": "Visualizing results (quickly)\nThere are many ways to do this. The parameters package paired with the see package, both from the easystats package, are useful in this regard.\n\n\nCode\nlibrary(parameters)\nlibrary(see)\n\nresult &lt;- model_parameters(mod.4)"
+    "text": "Visualizing results (quickly)\nThere are many ways to do this. The parameters package paired with the see package, both from the easystats package, are useful in this regard.\n\n\nCode\nlibrary(parameters)\nlibrary(see)\n\nresult &lt;- model_parameters(mod.4)\nresult\n\n\n# Fixed Effects\n\nParameter   | Coefficient |       SE |        95% CI | t(22077) |      p\n------------------------------------------------------------------------\n(Intercept) |        4.75 | 7.09e-03 | [ 4.74, 4.77] |   670.62 | &lt; .001\nyear c      |    1.85e-03 | 1.22e-03 | [ 0.00, 0.00] |     1.52 | 0.128 \n\n# Random Effects\n\nParameter          | Coefficient\n--------------------------------\nSD (Intercept: ID) |        0.37\nSD (Residual)      |        0.55"
   },
   {
     "objectID": "mlm-2.html#adding-a-random-slope",
@@ -641,7 +641,7 @@
     "href": "mlm-2.html#decomposing-variance-for-random-intercept-model",
     "title": "MLM",
     "section": "Decomposing variance for random intercept model",
-    "text": "Decomposing variance for random intercept model\n\\[\\text{Total variance CS} = \\begin{pmatrix}\n       \\tau_{00}^{2} + \\sigma^{2}& \\tau_{00}^{2} & \\tau_{00}^{2}\\\\\n       \\tau_{00}^{2} &  \\tau_{00}^{2} + \\sigma^{2} &  \\tau_{00}^{2}\\\\\n       \\tau_{00}^{2} & \\tau_{00}^{2} &   \\tau_{00}^{2} + \\sigma^{2}\n\\end{pmatrix}\\]"
+    "text": "Decomposing variance for random intercept model\nV matrix = R + G matrices (technically \\(V_i = Z_iG_iZ{_i}^T + R_i\\) where Z = N waves x number of random effects)\nTypical assumption is whats called compound symmetry. For an intercept only model the reason waves are correlated are only because of the random effect differences in means.\n\\[\\text{Total variance CS} = \\begin{pmatrix}\n       \\tau_{00}^{2} + \\sigma^{2}& \\tau_{00}^{2} & \\tau_{00}^{2}\\\\\n       \\tau_{00}^{2} &  \\tau_{00}^{2} + \\sigma^{2} &  \\tau_{00}^{2}\\\\\n       \\tau_{00}^{2} & \\tau_{00}^{2} &   \\tau_{00}^{2} + \\sigma^{2}\n\\end{pmatrix}\\]\nIf people change at different rates, the variances and covariances over time have to change, too."
   },
   {
     "objectID": "mlm-2.html#error-assumptions",
@@ -683,14 +683,14 @@
     "href": "mlm-2.html#as-starting",
     "title": "MLM",
     "section": "0 as starting",
-    "text": "0 as starting\n\nb5_long&lt;- b5_long %&gt;%  \n  mutate(year.c = (year - 2005))\n  \n  \nmod.6 &lt;- lmer(C ~ 1 + year.c + (1 + year.c  | ID), data=b5_long)\n\nsummary(mod.6)\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: C ~ 1 + year.c + (1 + year.c | ID)\n   Data: b5_long\n\nREML criterion at convergence: 42714\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-6.0085 -0.4685  0.0460  0.4376  4.8649 \n\nRandom effects:\n Groups   Name        Variance Std.Dev. Corr\n ID       (Intercept) 0.105121 0.32422      \n          year.c      0.000287 0.01694  0.75\n Residual             0.296605 0.54461      \nNumber of obs: 22081, groups:  ID, 8565\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept) 4.753235   0.006766  702.56\nyear.c      0.001783   0.001230    1.45\n\nCorrelation of Fixed Effects:\n       (Intr)\nyear.c -0.591"
+    "text": "0 as starting\n\n\nCode\n# grand mean centering\n\nb5_long&lt;- b5_long %&gt;%  \n  mutate(year.c = (year - 2005))\n  \n  \nmod.6 &lt;- lmer(C ~ 1 + year.c + (1 + year.c  | ID), data=b5_long)\n\nsummary(mod.6)\n\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: C ~ 1 + year.c + (1 + year.c | ID)\n   Data: b5_long\n\nREML criterion at convergence: 42714\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-6.0085 -0.4685  0.0460  0.4376  4.8649 \n\nRandom effects:\n Groups   Name        Variance Std.Dev. Corr\n ID       (Intercept) 0.105121 0.32422      \n          year.c      0.000287 0.01694  0.75\n Residual             0.296605 0.54461      \nNumber of obs: 22081, groups:  ID, 8565\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept) 4.753235   0.006766  702.56\nyear.c      0.001783   0.001230    1.45\n\nCorrelation of Fixed Effects:\n       (Intr)\nyear.c -0.591"
   },
   {
     "objectID": "mlm-2.html#as-mid",
     "href": "mlm-2.html#as-mid",
     "title": "MLM",
     "section": "0 as mid",
-    "text": "0 as mid\n\nb5_long&lt;- b5_long %&gt;%  \n  mutate(year.cM = (year - 2009))\n  \n  \nmod.7 &lt;- lmer(C ~ 1 + year.cM + (1 + year.cM | ID), data=b5_long)\n\nsummary(mod.7)\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: C ~ 1 + year.cM + (1 + year.cM | ID)\n   Data: b5_long\n\nREML criterion at convergence: 42714\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-6.0085 -0.4685  0.0461  0.4376  4.8649 \n\nRandom effects:\n Groups   Name        Variance  Std.Dev. Corr\n ID       (Intercept) 0.1426960 0.37775      \n          year.cM     0.0002854 0.01689  0.83\n Residual             0.2966298 0.54464      \nNumber of obs: 22081, groups:  ID, 8565\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept) 4.760368   0.005535  860.07\nyear.cM     0.001783   0.001230    1.45\n\nCorrelation of Fixed Effects:\n        (Intr)\nyear.cM 0.166"
+    "text": "0 as mid\n\n\nCode\nb5_long&lt;- b5_long %&gt;%  \n  mutate(year.cM = (year - 2009))\n  \n  \nmod.7 &lt;- lmer(C ~ 1 + year.cM + (1 + year.cM | ID), data=b5_long)\n\nsummary(mod.7)\n\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: C ~ 1 + year.cM + (1 + year.cM | ID)\n   Data: b5_long\n\nREML criterion at convergence: 42714\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-6.0085 -0.4685  0.0461  0.4376  4.8649 \n\nRandom effects:\n Groups   Name        Variance  Std.Dev. Corr\n ID       (Intercept) 0.1426960 0.37775      \n          year.cM     0.0002854 0.01689  0.83\n Residual             0.2966298 0.54464      \nNumber of obs: 22081, groups:  ID, 8565\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept) 4.760368   0.005535  860.07\nyear.cM     0.001783   0.001230    1.45\n\nCorrelation of Fixed Effects:\n        (Intr)\nyear.cM 0.166"
   },
   {
     "objectID": "mlm-2.html#estimation",
@@ -704,7 +704,7 @@
     "href": "mlm-2.html#ml-vs-reml",
     "title": "MLM",
     "section": "ML vs REML",
-    "text": "ML vs REML\nREML = Restricted maximum likelihood\nSimilar to sample vs population estimates of SD where we do or don’t divide by n-1, ML downward biased random effect estimates.\nREML maximizes the likelihood of the residuals, so models with different fixed effects are not on the same scale and are not comparable. As a result, you cannot compare fixed models with likleihood metrics (aic) with REML. You can compare variance differences."
+    "text": "ML vs REML\nREML = Restricted maximum likelihood\nSimilar to sample vs population estimates of SD where we do or don’t divide by n-1, ML downward biases random effect estimates.\nREML maximizes the likelihood of the residuals, so models with different fixed effects are not on the same scale and are not comparable. As a result, you cannot compare fixed models with likleihood metrics (aic) with REML. You can compare variance differences."
   },
   {
     "objectID": "mlm-2.html#testing-significance",
@@ -725,7 +725,7 @@
     "href": "mlm-2.html#likelhiood-ratio-test-1",
     "title": "MLM",
     "section": "Likelhiood ratio test",
-    "text": "Likelhiood ratio test\nComparing 2 models is called a likelihood ration test. Need to have: 1. same data 2. nested models (think of constraining a parameter to zero)\nDistributed as chi-square with df equal to constraint differences between models.\n\nanova(mod.2, mod.1)\n\nData: b5_long\nModels:\nmod.1: C ~ 1 + (1 | ID)\nmod.2: C ~ 1 + year + (1 | ID)\n      npar   AIC   BIC logLik -2*log(L)  Chisq Df Pr(&gt;Chisq)\nmod.1    3 42778 42802 -21386     42772                     \nmod.2    5 42780 42820 -21385     42770 2.4256  2     0.2974"
+    "text": "Likelhiood ratio test\nComparing 2 models is called a likelihood ration test. Need to have: 1. same data 2. nested models (think of constraining a parameter to zero)\nDistributed as chi-square with df equal to constraint differences between models.\n\n\nCode\nanova(mod.2, mod.1)\n\n\nData: b5_long\nModels:\nmod.1: C ~ 1 + (1 | ID), zi=~0, disp=~1\nmod.2: C ~ 1 + year + (1 | ID), zi=~0, disp=~1\n      Df   AIC   BIC logLik deviance  Chisq Chi Df Pr(&gt;Chisq)\nmod.1  3 42778 42802 -21386    42772                         \nmod.2  5 42780 42820 -21385    42770 2.4256      2     0.2974"
   },
   {
     "objectID": "mlm-2.html#correlations-among-random-effects",
@@ -1076,5 +1076,89 @@
     "title": "SEM",
     "section": "effect coding",
     "text": "effect coding\n\n\nCode\nsec.order &lt;- '\n## define latent variables\nPos1 =~ NA*PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31\nPos2 =~ NA*PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32\nPos3 =~ NA*PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33\n\n## intercepts\nPosAFF11 ~ t1*1\nPosAFF21 ~ t2*1\nPosAFF31 ~ t3*1\n\nPosAFF12 ~ t1*1\nPosAFF22 ~ t2*1\nPosAFF32 ~ t3*1\n\nPosAFF13 ~ t1*1\nPosAFF23 ~ t2*1\nPosAFF33 ~ t3*1\n\n\n## correlated residuals across time\nPosAFF11 ~~ PosAFF12 + PosAFF13\nPosAFF12 ~~ PosAFF13\nPosAFF21 ~~ PosAFF22 + PosAFF23\nPosAFF22 ~~ PosAFF23\nPosAFF31 ~~ PosAFF32 + PosAFF33\nPosAFF32 ~~ PosAFF33\n\n\n## latent variable intercepts\nPos1 ~ 0*1\nPos2  ~ 0*1\nPos3  ~ 0*1\n\n#model constraints for effect coding\n## loadings must average to 1\nL1 == 3 - L2 - L3\n## means must average to 0\nt1 == 0 - t2 - t3\n\ni =~ 1*Pos1 + 1*Pos2 + 1*Pos3 \ns =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '\n\n\nfit.sec.order &lt;- growth(sec.order, data=wide, missing = \"ML\")"
+  },
+  {
+    "objectID": "intro-1.html#data-and-code-wantsneeds",
+    "href": "intro-1.html#data-and-code-wantsneeds",
+    "title": "intro",
+    "section": "Data and code wants/NEEDS:",
+    "text": "Data and code wants/NEEDS:\n\nChain of processing where you start with RAW data and end up with the cleaned data.\nKnow what variable names refer to in terms of item content and response scale\nKnow how any manipulations were made (composites, reverse scores, omitting values)\nCode that is efficient and documented, using for loops/purrr rather than copy/paste or integrating existing codebooks"
+  },
+  {
+    "objectID": "syllabus.html",
+    "href": "syllabus.html",
+    "title": "Syllabus",
+    "section": "",
+    "text": "Class hours:\n215A Somers\nMonday & Wednesday 1 - 2:20\n\n\nInstructor:\nJoshua Jackson\n\n\nOffice:\n315b\n\n\nOffice hours:\nMonday after class and by appt\nThis course covers modern methods of handling longitudinal, repeated measures. The class will introduce the rationale of measuring change and stability over time to study phenomena, as well as how within-person designs can increase statistical power and precision compared to more traditional designs. Most the course will use multi-level models and latent (growth) curve models to specify patterns of change across time. Additional topics include: visualization, measurement invariance, time-to- event models and power. PREREQ: Use of R will be required, Familiarity with MLM and/or Structural Equation Models.\n\n\nClass textbooks\nHoffman, Lesa. (2015). Longitudinal Analysis: Modeling Within-Person Fluctuation and Change. (referred to as LA)\nSinger & Willett (2003). Applied Longitudinal Applied Longitudinal Data Analysis: Modeling Change and Event Occurrence. (referred to as SA)\nLittle, T. D. (2013). Longitudinal structural equation modeling. (referred to as LSEM)\nI have PDFs available if you do not want to purchase the textbook.\nI find these textbooks quite readable, but if you are struggling I have additional recommendations for intro MLM and SEM that may fill in the gaps. Additionally, if there are topics that you are interested in and want to know more about please let me know as there are a number of textbooks devoted to a single topic.\n\n\nGrading\nGrading consists of 3 aspects:\n\nSemi-weekly “pop” quiz. Quizzes consist of 1-3 questions based on the previous lecture and readings. They will always occur on Wednesdays.\nHomework take homes. Homework will be (typically) due 1 week later.\nFinal project. Everyone needs to do a longitudinal data analysis from start to finish. Preferably you have your own data, but if you do not then let me know and I can give you some. More details on this later.\n\nGrading breakdown is 1/3 for each of these components.\n\n\nSchedule\nThis will likely change based on our pace and what we want to cover more/less in depth. Optional readings are in parentheses\n\n\n\n\n\n\n\n\n\nWeek\nDate\nTopic\nReadings\n\n\n\n\n1\n1/12\nMotivation and data\nLA Ch 1,2 LSEM 2 (SW 1-2)\n\n\n2\n1/19\nLongitudinal MLM\nLA Ch 3, 5 (SW 3,4)\n\n\n3\n1/26\nLongitudinal SEM\nLSEM 3 - 5\n\n\n4\n2/2\nLongitudinal SEM\nLSEM 5,6\n\n\n5\n2/9\nCurves that bend\nSW 6\n\n\n6\n2/19\nGAMs\n\n\n\n7\n2/23\nPredictors of change\nLA 6\n\n\n8\n3/2\nPredictors of change\nLSEM 7,9\n\n\n9\n3/9\nSpring Break\n\n\n\n10\n3/16\nIntensive longitudinal designs\nLA4\n\n\n11\n3/23\nIntensive longitudinal designs\nLA 8\n\n\n12\n3/30\nSEM redux\nLA 9\n\n\n13\n4/6\nMultivariate change\nLSEM 8\n\n\n14\n4/13\nMultivariate change\n\n\n\n15\n4/20\nMixture Models\n\n\n\n\nOther topics: Multilevel SEM, longitudinal mediation, time to event analyses, power, …?"
+  },
+  {
+    "objectID": "mlm-2.html#within-person-empty-null-model",
+    "href": "mlm-2.html#within-person-empty-null-model",
+    "title": "MLM",
+    "section": "Within person empty null model",
+    "text": "Within person empty null model\n\\[{Y}_{ti} = \\gamma_{00} + U_{0i}  + \\varepsilon_{ti}\\]\nThis model is helpful in producing the simplest longitudinal model, one where it states: there is an average value \\(\\gamma_{00}\\) that people differ along \\(U_{0i}\\) . Because time is not in the model it assumes people do not change. \\(\\varepsilon_{ti}\\) reflects variation around each person’s predicted score ( \\(\\gamma_{00} + U_{0i}\\) )."
+  },
+  {
+    "objectID": "mlm-2.html#growth-curve-example",
+    "href": "mlm-2.html#growth-curve-example",
+    "title": "MLM",
+    "section": "Growth curve example",
+    "text": "Growth curve example\n\n\nCode\nmod.2 &lt;- glmmTMB(C ~ 1 + year + (1 | ID), data=b5_long)\nsummary(mod.2)\n\n\n Family: gaussian  ( identity )\nFormula:          C ~ 1 + year + (1 | ID)\nData: b5_long\n\n      AIC       BIC    logLik -2*log(L)  df.resid \n  42779.9   42819.9  -21385.0   42769.9     22076 \n\nRandom effects:\n\nConditional model:\n Groups   Name        Variance Std.Dev.\n ID       (Intercept) 0.1378   0.3712  \n Residual             0.3008   0.5485  \nNumber of obs: 22081, groups:  ID, 8565\n\nDispersion estimate for gaussian family (sigma^2): 0.301 \n\nConditional model:\n            Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept) 4.752544   0.007566   628.2   &lt;2e-16 ***\nyear2009    0.009781   0.008756     1.1    0.264    \nyear2013    0.014583   0.009774     1.5    0.136    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+  },
+  {
+    "objectID": "mlm-2.html#feed-our-model",
+    "href": "mlm-2.html#feed-our-model",
+    "title": "MLM",
+    "section": "Feed our model",
+    "text": "Feed our model\n\nThese graphs however just take your summary output and make it look nice.\nIf we want to say, plot the predicted line we need to do an additional step and FEED the data back into the model. Same as with graphing simple regressions\nThe logic is simple: 1. fit model. 2. create grid that defines points to plot 3. feed grid into model to create predictions"
+  },
+  {
+    "objectID": "mlm-2.html#revisit-2-wave-assessment",
+    "href": "mlm-2.html#revisit-2-wave-assessment",
+    "title": "MLM",
+    "section": "Revisit 2 wave assessment",
+    "text": "Revisit 2 wave assessment\nWhere is our error for a 2 wave model and:\n\nAssuming random slopes\nAssuming no random slopes"
+  },
+  {
+    "objectID": "mlm-2.html#other-centering-approaches",
+    "href": "mlm-2.html#other-centering-approaches",
+    "title": "MLM",
+    "section": "other centering approaches",
+    "text": "other centering approaches\n\ncan also center around specific events eg time until death or time before and after graduation where graduation is now coded as zero"
+  },
+  {
+    "objectID": "mlm-2.html#smushing-variance",
+    "href": "mlm-2.html#smushing-variance",
+    "title": "MLM",
+    "section": "Smushing variance",
+    "text": "Smushing variance\nEach level-1 predictor that is NOT TIME is really 2 predictor variables. It is important to separate within-person from between person variance. Failing to do so will “smush” between and within variance to level 1."
+  },
+  {
+    "objectID": "mlm-2.html#accelerated-longitudinal-designs",
+    "href": "mlm-2.html#accelerated-longitudinal-designs",
+    "title": "MLM",
+    "section": "Accelerated longitudinal designs",
+    "text": "Accelerated longitudinal designs\n\nWant to track the trend of a construct across the lifespan, using data that do not cover an entire lifespan (eg. made up of people who have some longitudinal data)\nTime needs to be set as age. Cannot do time since baseline as our time metric."
+  },
+  {
+    "objectID": "mlm-2.html#fixed-effects",
+    "href": "mlm-2.html#fixed-effects",
+    "title": "MLM",
+    "section": "Fixed effects",
+    "text": "Fixed effects\nOther fields model dependencies differently. Econometrics for example often uses “fixed effects” for panel studies where you add Person ID as a categorical predictor rather than account for dependencies via random effects.\nWhile it adequately controls for person dependencies it does not allow prediction of why individual differences occurred"
+  },
+  {
+    "objectID": "readings.html",
+    "href": "readings.html",
+    "title": "readings",
+    "section": "",
+    "text": "Extra readings will go here"
+  },
+  {
+    "objectID": "homeworks.html",
+    "href": "homeworks.html",
+    "title": "homeworks",
+    "section": "",
+    "text": "Longitudinal MLM homework #1"
   }
 ]

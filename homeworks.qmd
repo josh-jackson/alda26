@@ -4,4 +4,3 @@ title: "homeworks"
 
 1.  [Longitudinal MLM homework #1](hw1.qmd)
 
-2.  [HW #2](hw2.qmd)

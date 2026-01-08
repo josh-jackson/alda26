@@ -51,25 +51,25 @@ Grading breakdown is 1/3 for each of these components.
 
 ### Schedule
 
-This will likely change based on our pace and what we want to cover more/less in depth
+This will likely change based on our pace and what we want to cover more/less in depth. Optional readings are in parentheses
 
 | Week | Date | Topic                                    | Readings             |
 |-----------------|-----------------|-----------------------|-----------------|
-| 1    | 1/12 | Motivation and data                      | LA Ch 1 (2 optional) |
-| 2    | 1/19 | Longitudinal MLM                         | LA Ch 3, 5           |
-| 3    | 1/26 | Longitudinal SEM                        |                      |
-| 4    | 2/2  | Measurement invariance and treating time            | LSEM 1,3             |
-| 5    | 2/9  | Curves that bend                  | LSEM 8               |
-| 6    | 2/19 | GAMs          | LSEM 7               |
-| 7    | 2/23 | Predictors of change                        | LA 6                 |
-| 8    | 3/2  |                        |                      |
-| 9    | 3/9  | Spring Break                   |                      |
-| 10   | 3/16 | Predictors of change                              | LA 7                 |
-| 11   | 3/23 | Intensive longitudinal designs           | LA 8                 |
-| 12   | 3/30 | Intensive longitudinal designs           | LA 9                 |
-| 13   | 4/6  | Multivariate change                      |                      |
-| 14   | 4/13 | Multivariate change                        |                      |
-| 15   | 4/20 | Mixture Models                            |                      |
+| 1    | 1/12 | Motivation and data    | LA Ch 1,2 LSEM 2 (SW 1-2)    |
+| 2    | 1/19 | Longitudinal MLM       | LA Ch 3, 5 (SW 3,4)            |
+| 3    | 1/26 | Longitudinal SEM       | LSEM 3 - 5                   |
+| 4    | 2/2  | Longitudinal SEM       | LSEM 5,6               |
+| 5    | 2/9  | Curves that bend       | SW 6                |
+| 6    | 2/19 | GAMs                   |                  |
+| 7    | 2/23 | Predictors of change   | LA 6                 |
+| 8    | 3/2  | Predictors of change  |  LSEM 7,9           |
+| 9    | 3/9  | Spring Break           |                      |
+| 10   | 3/16 | Intensive longitudinal designs    | LA4                 |
+| 11   | 3/23 | Intensive longitudinal designs | LA 8                 |
+| 12   | 3/30 | SEM redux | LA 9                 |
+| 13   | 4/6  | Multivariate change    |   LSEM 8                   |
+| 14   | 4/13 | Multivariate change   |                      |
+| 15   | 4/20 | Mixture Models        |                      |
 
 
-Other topics: Longitudinal mediation (and multilevel mediation), time to event analyses, power,  ...?
+Other topics: Multilevel SEM, longitudinal mediation, time to event analyses, power,  ...?

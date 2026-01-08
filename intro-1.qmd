@@ -458,18 +458,15 @@ df$t2 <- 20 + (0.8 * df$t1) + rnorm(2*n, mean=0, sd=5)
 
 df$change_score <- df$t2 - df$t1
 
-aggregate(cbind(t1, t2, change_score) ~ group, data = df, mean)
-
 mod_change <- lm(change_score ~ group, data = df)
 
 mod_resid <- lm(t2 ~ t1 + group, data = df)
 
-
 df %>%
   group_by(group) %>%
   summarise(across(c(t1, t2,change_score), mean)) 
-
 ```
+
 
 
 ----------------
@@ -544,6 +541,8 @@ ggplot(df, aes(x = t1, y = t2, color = group)) +
 -   Approaches differ on how much we care about accounting for T1 differences. 
 
 - What we want to do is create a model that is flexible enough for us to implement this assumption (and address others -- no measurement error). 
+
+- One type of change can be equivalent to another, depending 
 
 - Both of these models are not easily adapted to more than 2 waves and or for use with multivariate questions. We need a new approach. 
 
@@ -807,11 +806,15 @@ data <- import %>%
   mutate(score_mean9 = rowMeans(data[ ,c("Score1i", "Score2i", "Score3i", "Score4i")]))
 ```
 
-------------------------------------------------------------------------
+## Data and code wants/NEEDS:
 
-What these help to do is create a chain of processing where you start with RAW data and end up with the cleaned data. Importantly you can always start over from the raw data. This is important for people wanting to reproduce your findings and or your future self figuring out where a certain variable came from.
+- Chain of processing where you start with RAW data and end up with the cleaned data. 
 
-We start creating the chain of processing by documenting all of your code. To do so we will be using rmarkdown or quarto documents, as the language is easier than LaTeX and more helpful than plaintext.
+- Know what variable names refer to in terms of item content and response scale
+
+- Know how any manipulations were made (composites, reverse scores, omitting values)
+
+- Code that is efficient and documented, using for loops/purrr rather than copy/paste or integrating existing codebooks
 
 ------------------------------------------------------------------------
 
@@ -840,7 +843,7 @@ Arguably, this is the first step because you should *create* the codebook long b
 
 Why a codebook? Because you have a lot of variables and you will not be able to remember all the details that go into each one of them.
 
-This codebook will serve as a means to document RAW code. It will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices.
+It will also allow us to automate some tasks that are somewhat cumbersome and facilitate open data practices. It is a "CODE"book after all. 
 
 ------------------------------------------------------------------------
 
@@ -892,7 +895,7 @@ Here are additional columns that will make our lives easier or are applicable to
 
 ------------------------------------------------------------------------
 
-All longitudinal datasets are horrible in some way. Doing this makes them less horrible. Is it some upfront work? Yes. Will it ultimately save you time? Yes. Also, if you know this prior to running a study you are making some sort of code book anyways, right, right? Might as well kill two birds with one stone.
+All longitudinal datasets are horrible in some way. Doing this makes them less horrible. Is it some upfront work? Yes. Will it ultimately save you time? Yes. Also, if you know this prior to running a study you are making some sort of code book anyways, right? Right?!? Might as well kill two birds with one stone.
 
 You can make the codebook anyway you want, but the two best options are miscrosoft excel and google pages. Not because they are necessarily the best functioning but because they are relatively ubiquitous and are easy to share.
 
