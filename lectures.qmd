@@ -13,4 +13,4 @@ editor: visual
 
 5.  [Conditional](conditional-5.qmd)
 
-6.  [Advanced SEM](sem2-6.qmd)
+6.  [Multivariate](sem2-6.qmd)
