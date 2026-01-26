@@ -809,14 +809,14 @@
     "href": "sem-3.html#path-diagrams",
     "title": "SEM",
     "section": "Path diagrams",
-    "text": "Path diagrams\nCircles = latent variables\nBoxes = observed indicator variables\nTwo headed arrows = correlations/covariances/variances\nSingle head arrows = regressions\nTriangle = means"
+    "text": "Path diagrams\nCircles = latent variables\nBoxes = observed indicator variables\nTwo headed arrows = correlations/covariances/variances\nSingle head arrows = regressions\nTriangle = means\n\n\nCode\n# generate data dataset:\nX &lt;- rnorm(100, 5, 5)\nM &lt;- rnorm(100)\nY &lt;- rnorm(100, 0, 1) \ndata &lt;- data.frame(X, Y, M)\n\nres1 &lt;- 'Y ~  1 + X'\n\nfit.1 &lt;- sem(res1, data=data)\nsummary(fit.1)\n\n\nlavaan 0.6-19 ended normally after 1 iteration\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                         3\n\n  Number of observations                           100\n\nModel Test User Model:\n                                                      \n  Test statistic                                 0.000\n  Degrees of freedom                                 0\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nRegressions:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  Y ~                                                 \n    X                 0.014    0.022    0.611    0.541\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .Y                -0.108    0.160   -0.675    0.500\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .Y                 1.050    0.149    7.071    0.000"
   },
   {
     "objectID": "sem-3.html#classical-test-theory-interpretation",
     "href": "sem-3.html#classical-test-theory-interpretation",
     "title": "SEM",
     "section": "Classical test theory interpretation",
-    "text": "Classical test theory interpretation\n\nLatent construct = what the indicators share in common\nIndicators represent the sum of True Score variance + Item specific variance + Random error\nVariance of the latent variable represents the amount of common information. Variance represents that meaningful differences btwn people.\nThe residual errors (disturbances) represent the amount of information unique to each indicator. A combination of error and item-specific variance.\nThe extent of the connection between the latent variable and the indicators is represented as a factor loading."
+    "text": "Classical test theory interpretation\n\nLatent construct = what the indicators share in common\nIndicators represent the sum of True Score variance + Item specific variance + Random error\nVariance of the latent variable represents the amount of common information. Variance represents that meaningful differences between people.\nThe residual errors (disturbances) represent the amount of information unique to each indicator. A combination of error and item-specific variance.\nThe extent of the connection between the latent variable and the indicators is represented as a factor loading."
   },
   {
     "objectID": "sem-3.html#generizability-interpretation-of-latent-variables",
@@ -844,7 +844,7 @@
     "href": "sem-3.html#path-model",
     "title": "SEM",
     "section": "Path model",
-    "text": "Path model\n\nThe path model component can be in addition to a measurement model or separate from them.\nYou have already worked with path models as a simple regression is a path model, so is a standard mediation.\nYou can make the path models more complex than these though, by specifying relationships among many variables."
+    "text": "Path model\n\nOnce we have a measurement model, we can examine the associations between constructs\nThe path model component can be in addition to a measurement model or separate from them.\nYou have already worked with path models as a simple regression is a path model, so is a standard mediation.\nYou can make the path models more complex than these though, by specifying relationships among many variables."
   },
   {
     "objectID": "sem-3.html#path-model-with-measurement-model",
@@ -865,21 +865,21 @@
     "href": "sem-3.html#fit-indices",
     "title": "SEM",
     "section": "Fit Indices",
-    "text": "Fit Indices\n\nresiduals. Good to check.\nmodification indices. Check to see if missing parameters that residuals may suggest you didn’t include or should include.\nchi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.\nRMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable\nCFI, TFI (Relative fit models). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually &gt;.9 is okay. Some care about &gt; .95"
+    "text": "Fit Indices\n\nresiduals. Good to check.\nmodification indices. Check to see if missing parameters that residuals may suggest you didn’t include or should include.\nchi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.\nRMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good\nCFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually &gt;.9 is okay. Some care about &gt; .95"
   },
   {
     "objectID": "sem-3.html#identification",
     "href": "sem-3.html#identification",
     "title": "SEM",
     "section": "Identification",
-    "text": "Identification\n\nWe have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.\nIf you are asking too much you canconstrain parameters to be the same, which reduces the number of parameters.\nCompare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable\nThe covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable."
+    "text": "Identification\n\nWe have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.\nIf you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.\nCompare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable\nThe covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable which sets the scale."
   },
   {
     "objectID": "sem-3.html#setting-the-scale",
     "href": "sem-3.html#setting-the-scale",
     "title": "SEM",
     "section": "Setting the scale",
-    "text": "Setting the scale\n\nWe are trying to measure clouds. Need to define the scale of a latent variable because there is no inherent scale of measurement.\nLargely irrelevant as to what scale is chosen just as centering or standardizing yield no substantive changes.\nInstead, scaling serves to establish a point of reference so as to interpret other parameters."
+    "text": "Setting the scale\n\nNeed to define the scale of a latent variable because there is no inherent scale of measurement.\nLargely irrelevant as to what scale is chosen as they are algebraic equivalent, similar to centering or standardizing. Reproduces same VarCov matrix.\nScaling serves to establish a point of reference so as to interpret other parameters."
   },
   {
     "objectID": "sem-3.html#types-of-identification",
@@ -907,14 +907,14 @@
     "href": "sem-3.html#regarding-means",
     "title": "SEM",
     "section": "Regarding means",
-    "text": "Regarding means\n\nSEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e means are not necessary.\n\nThis is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.\nGiven we are interested in change across time,we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on. We can standardize them, use the original metric, and more!"
+    "text": "Regarding means\n\nSEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e. means are not necessary.\nThis is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.\nGiven we are interested in change across time, we will be interested in means."
   },
   {
     "objectID": "sem-3.html#types-of-longitudinal-sem-models",
     "href": "sem-3.html#types-of-longitudinal-sem-models",
     "title": "SEM",
     "section": "Types of longitudinal SEM models",
-    "text": "Types of longitudinal SEM models\n\nGrowth models\nLongitudinal CFA\nCross lag panel model\nLongitudinal mediation\nGrowth models + cross lags\nLatent change/difference score models\nMixture or class based longitudinal models"
+    "text": "Types of longitudinal SEM models\n** not an actual taxonomy\n\nGrowth models\nLongitudinal CFA\nCross lag panel model\nLongitudinal mediation\nGrowth models + cross lags\nLatent change/difference score models\nMixture or class based longitudinal models\nDynamic factor and dSEM models."
   },
   {
     "objectID": "sem-3.html#lavaan",
@@ -977,7 +977,7 @@
     "href": "sem-3.html#plotting",
     "title": "SEM",
     "section": "Plotting",
-    "text": "Plotting\n\nlavPredict(fit.1,type=\"lv\")\n\n          i      s\n [1,] 1.673  0.151\n [2,] 0.016  0.420\n [3,] 1.037  0.892\n [4,] 0.155  0.808\n [5,] 0.012  0.096\n [6,] 2.857  0.058\n [7,] 1.700 -0.140\n [8,] 0.012  0.096\n [9,] 0.094  1.294\n[10,] 0.960  0.066\n[11,] 0.024  1.120\n[12,] 0.895  0.228\n[13,] 0.020  0.744\n[14,] 2.747  0.069\n[15,] 1.691  0.314\n[16,] 0.990  0.231\n[17,] 0.080  0.171\n[18,] 1.886 -0.309\n[19,] 0.012  0.096\n[20,] 3.167 -0.733\n[21,] 1.013  0.358\n[22,] 2.686 -0.582\n[23,] 0.963  0.303\n[24,] 0.080  0.171\n[25,] 2.719 -0.260\n[26,] 0.085  0.629\n[27,] 2.647 -0.631\n[28,] 0.012  0.096\n[29,] 0.016  0.420\n[30,] 1.031  0.378\n[31,] 1.776  0.529\n[32,] 1.630 -0.217\n[33,] 0.085  0.629\n[34,] 0.084  0.495\n[35,] 0.956 -0.258\n[36,] 0.964  0.390\n[37,] 1.093  0.904\n[38,] 0.138  0.874\n[39,] 0.012  0.096\n[40,] 0.012  0.096\n[41,] 1.259  0.137\n[42,] 0.012  0.096\n[43,] 0.012  0.096\n[44,] 0.120  1.174\n[45,] 2.135  0.276\n[46,] 0.017  0.554\n[47,] 0.080  0.171\n[48,] 0.012  0.096\n[49,] 0.012  0.096\n[50,] 0.012  0.096\n[51,] 0.012  0.096\n[52,] 0.080  0.171\n[53,] 0.012  0.096\n[54,] 0.016  0.420\n[55,] 0.012  0.096\n[56,] 0.118  1.060\n[57,] 0.012  0.096\n[58,] 0.994  0.567\n[59,] 0.022  0.953\n[60,] 0.085  0.629\n[61,] 1.924  0.053\n[62,] 0.012  0.096\n[63,] 0.012  0.096\n[64,] 0.157  0.971\n[65,] 0.085  0.629\n[66,] 1.498  0.721\n[67,] 0.888 -0.334\n[68,] 0.080  0.171\n[69,] 0.012  0.096\n[70,] 1.832 -0.688\n[71,] 0.012  0.096\n[72,] 0.012  0.096\n[73,] 0.012  0.096\n[74,] 0.138  0.951\n[75,] 0.012  0.096\n[76,] 0.012  0.096\n[77,] 0.119  1.119\n[78,] 0.012  0.096\n[79,] 1.046  0.293\n[80,] 0.963  0.303\n[81,] 0.012  0.096\n[82,] 0.112  0.526"
+    "text": "Plotting\n\nhead(lavPredict(fit.1,type=\"lv\"))\n\n              i          s\n[1,] 1.67339200 0.15061147\n[2,] 0.01577357 0.41987762\n[3,] 1.03717373 0.89157072\n[4,] 0.15472328 0.80763226\n[5,] 0.01182452 0.09588422\n[6,] 2.85697940 0.05794456"
   },
   {
     "objectID": "sem-3.html#what-is-measurement-invariance",
@@ -1180,14 +1180,14 @@
     "href": "mlm-2.html#pl-rasch-model",
     "title": "MLM",
     "section": "1-PL (Rasch Model)",
-    "text": "1-PL (Rasch Model)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) = \\beta_0 + \\theta_p + \\delta_i \\]\n(usually difficulty is defined as \\(\\theta_p\\) - \\(\\delta_i\\))\n\\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\]"
+    "text": "1-PL (Rasch Model)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) = \\beta_0 + \\theta_p + \\delta_i \\]\n(usually difficulty is defined as \\(\\theta_p\\) - \\(\\delta_i\\))"
   },
   {
     "objectID": "mlm-2.html#accounting-for-measurement-error",
     "href": "mlm-2.html#accounting-for-measurement-error",
     "title": "MLM",
     "section": "Accounting for measurement error",
-    "text": "Accounting for measurement error\nWith likert scales we can also estimate an IRT model. Will use cumulative likelihood aka ordered categorical.\nWe want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. Otherwise similar to before.\n\\[\\ln\\left(\\dfrac{Pr(y_i)}{Pr(y_i)}\\right)=\\ln\\left(\\dfrac{Pr(y_i \\leq k)}{1-Pr(y_i \\leq k)}\\right)= \\alpha_k\\]"
+    "text": "Accounting for measurement error\n\nThese are our first “latent” models for measuring change. Latent in the sense that there is some growth process that is hidden.\nLatent =/= construct. We are interested in constructs, but constructs are more theoretical. Latent has to do with decreasing measurement error.\nObserved = true + error"
   },
   {
     "objectID": "mlm-2.html#discrimination",
@@ -1202,5 +1202,40 @@
     "title": "MLM",
     "section": "graded response model growth model",
     "text": "graded response model growth model\n\\[\\ln \\left( \\frac{P(Y_{ipt} \\ge k)}{1 - P(Y_{ipt} \\ge k)} \\right) = \\alpha_i (\\theta_{pt} - \\beta_{ik})\\]\n\\(\\alpha_i\\): The discrimination (slope) for item \\(i\\).\\(\\beta_{ik}\\): The category threshold (difficulty) for responding \\(k\\) or higher on item \\(i\\).\\(\\theta_{pt}\\): The latent ability of person \\(p\\) at time \\(t\\).\n\\[\\theta_{pt} = \\eta_{0p} + \\eta_{1p} \\cdot \\text{Time}_{t} + \\zeta_{pt}\\]"
+  },
+  {
+    "objectID": "sem-3.html#how-does-this-work",
+    "href": "sem-3.html#how-does-this-work",
+    "title": "SEM",
+    "section": "How does this work?",
+    "text": "How does this work?\nIn Classical Test Theory (CTT), any observed variable \\(X\\) is a composite of a True Score (\\(T\\)) and random Error (\\(E\\)):\\[X = T + E\\]\nIf you calculate the variance of \\(X\\), assuming error is uncorrelated with the true score, you get:\\[Var(X) = Var(T) + Var(E)\\]\nThe observed correlation (\\(r_{obs}\\)) is always smaller than the true correlation (\\(r_{true}\\)) because it is multiplied by the square root of the reliabilities (\\(\\rho\\)):\\[r_{obs} = r_{true} \\sqrt{\\rho_X \\rho_Y}\\]"
+  },
+  {
+    "objectID": "sem-3.html#means",
+    "href": "sem-3.html#means",
+    "title": "SEM",
+    "section": "Means",
+    "text": "Means"
+  },
+  {
+    "objectID": "sem-3.html#heteroscedasticity",
+    "href": "sem-3.html#heteroscedasticity",
+    "title": "SEM",
+    "section": "heteroscedasticity",
+    "text": "heteroscedasticity\nWhat is the same, what is different? One notable difference is there is no residual. Instead of a single residual/sigma that we have with MLM here we have separate residuals.\nThe default of MLM is that these residuals are the same across measurement occasions. How could we model that here?"
+  },
+  {
+    "objectID": "mlm-2.html#pl-adds-discrimination",
+    "href": "mlm-2.html#pl-adds-discrimination",
+    "title": "MLM",
+    "section": "2-PL adds Discrimination",
+    "text": "2-PL adds Discrimination\nHow well items can differentiate a person who has high theta levels from a person who has low theta levels? Related to how strongly the item is associated with the latent construct. Is it a good item? Does it have construct irrelevant content?\nAkin to item construct correlation. Or item factor loadings.\nPositive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta."
+  },
+  {
+    "objectID": "mlm-2.html#likert-irt",
+    "href": "mlm-2.html#likert-irt",
+    "title": "MLM",
+    "section": "Likert IRT",
+    "text": "Likert IRT\nWith likert scales we can also estimate an IRT model. We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc."
   }
 ]

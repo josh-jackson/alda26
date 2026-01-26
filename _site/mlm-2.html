@@ -1763,7 +1763,6 @@ mod.2  5 42780 42820 -21385    42770 2.4256      2     0.2974</code></pre>
 <h2>1-PL (Rasch Model)</h2>
 <p><span class="math display">\[ y_{pi}  \sim  \text{Bernoulli}(p_{pi})\]</span> <span class="math display">\[ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i \]</span></p>
 <p>(usually difficulty is defined as <span class="math inline">\(\theta_p\)</span> - <span class="math inline">\(\delta_i\)</span>)</p>
-<p><span class="math display">\[ \theta_p  \sim \text{Normal}(0, \sigma_\theta)\]</span> <span class="math display">\[ \delta_i  \sim \text{Normal}(0, \sigma_\delta)\]</span></p>
 </section>
 <section class="slide level2">
 
@@ -1871,8 +1870,8 @@ Time        -0.323</code></pre>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a>item_params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb65-2"><a href="#cb65-2"></a>  <span class="at">Item =</span> <span class="fu">c</span>(<span class="st">"Item 5 (Easy)"</span>, <span class="st">"Item 7 (Medium)"</span>, <span class="st">"Item 6 (Hard)"</span>),</span>
-<span id="cb65-3"><a href="#cb65-3"></a>  <span class="at">Difficulty =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.79240</span>, <span class="sc">-</span><span class="fl">0.10075</span>, <span class="fl">2.02202</span>), <span class="co"># The 'b' parameter</span></span>
-<span id="cb65-4"><a href="#cb65-4"></a>  <span class="at">Discrimination =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)   <span class="co"># The 'a' parameter (Set to 1 for Rasch)</span></span>
+<span id="cb65-3"><a href="#cb65-3"></a>  <span class="at">Difficulty =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.79240</span>, <span class="sc">-</span><span class="fl">0.10075</span>, <span class="fl">2.02202</span>), </span>
+<span id="cb65-4"><a href="#cb65-4"></a>  <span class="at">Discrimination =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)   </span>
 <span id="cb65-5"><a href="#cb65-5"></a>)</span>
 <span id="cb65-6"><a href="#cb65-6"></a></span>
 <span id="cb65-7"><a href="#cb65-7"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
@@ -1897,26 +1896,202 @@ Time        -0.323</code></pre>
 
 </div>
 <img data-src="mlm-2_files/figure-revealjs/unnamed-chunk-44-1.png" width="960" class="r-stretch"></section>
-<section id="accounting-for-measurement-error" class="slide level2">
-<h2>Accounting for measurement error</h2>
-<p>With likert scales we can also estimate an IRT model. Will use cumulative likelihood aka ordered categorical.</p>
-<p>We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. Otherwise similar to before.</p>
-<p><span class="math display">\[\ln\left(\dfrac{Pr(y_i)}{Pr(y_i)}\right)=\ln\left(\dfrac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)}\right)= \alpha_k\]</span></p>
-</section>
-<section class="slide level2">
-
-
-<img data-src="grm1.png" class="r-stretch"></section>
-<section id="discrimination" class="slide level2">
-<h2>Discrimination</h2>
+<section id="pl-adds-discrimination" class="slide level2">
+<h2>2-PL adds Discrimination</h2>
 <p>How well items can differentiate a person who has high theta levels from a person who has low theta levels? Related to how strongly the item is associated with the latent construct. Is it a good item? Does it have construct irrelevant content?</p>
 <p>Akin to item construct correlation. Or item factor loadings.</p>
 <p>Positive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta.</p>
 </section>
 <section class="slide level2">
 
+<p><span class="math display">\[ y_{pi}  \sim  \text{Bernoulli}(p_{pi})\]</span></p>
+<p><span class="math display">\[logit(p_{pi}) =  \alpha_i(\theta_p + \delta_i)\]</span></p>
+<p>Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons.</p>
+</section>
+<section class="slide level2">
+
 
 <img data-src="2pl.png" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb66-2"><a href="#cb66-2"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb66-3"><a href="#cb66-3"></a>n_people <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb66-4"><a href="#cb66-4"></a>n_items <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb66-5"><a href="#cb66-5"></a>n_waves <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb66-6"><a href="#cb66-6"></a></span>
+<span id="cb66-7"><a href="#cb66-7"></a>item_discriminations <span class="ot">&lt;-</span> <span class="fu">rlnorm</span>(n_items, <span class="at">meanlog =</span> <span class="dv">0</span>, <span class="at">sdlog =</span> <span class="fl">0.25</span>)</span>
+<span id="cb66-8"><a href="#cb66-8"></a>item_difficulties <span class="ot">&lt;-</span> <span class="fu">runif</span>(n_items, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb66-9"><a href="#cb66-9"></a></span>
+<span id="cb66-10"><a href="#cb66-10"></a>person_intercepts <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_people, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>) </span>
+<span id="cb66-11"><a href="#cb66-11"></a>person_slopes <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_people, <span class="at">mean =</span> <span class="fl">0.5</span>, <span class="at">sd =</span> <span class="fl">0.2</span>) </span>
+<span id="cb66-12"><a href="#cb66-12"></a></span>
+<span id="cb66-13"><a href="#cb66-13"></a>df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span>n_people, </span>
+<span id="cb66-14"><a href="#cb66-14"></a>                  <span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span>(n_waves<span class="dv">-1</span>), </span>
+<span id="cb66-15"><a href="#cb66-15"></a>                  <span class="at">Item =</span> <span class="dv">1</span><span class="sc">:</span>n_items)</span>
+<span id="cb66-16"><a href="#cb66-16"></a></span>
+<span id="cb66-17"><a href="#cb66-17"></a>df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span>   </span>
+<span id="cb66-18"><a href="#cb66-18"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb66-19"><a href="#cb66-19"></a>    <span class="at">Theta =</span> person_intercepts[ID] <span class="sc">+</span> (person_slopes[ID] <span class="sc">*</span> Time),</span>
+<span id="cb66-20"><a href="#cb66-20"></a>    <span class="at">Discrimination =</span> item_discriminations[Item],</span>
+<span id="cb66-21"><a href="#cb66-21"></a>    <span class="at">Difficulty =</span> item_difficulties[Item],</span>
+<span id="cb66-22"><a href="#cb66-22"></a>    <span class="at">Logit =</span> Discrimination <span class="sc">*</span> (Theta <span class="sc">-</span> Difficulty),</span>
+<span id="cb66-23"><a href="#cb66-23"></a>    <span class="at">Prob =</span> <span class="fu">plogis</span>(Logit),</span>
+<span id="cb66-24"><a href="#cb66-24"></a>    <span class="at">Response =</span> <span class="fu">rbinom</span>(<span class="fu">n</span>(), <span class="dv">1</span>, Prob),</span>
+<span id="cb66-25"><a href="#cb66-25"></a>    <span class="at">Item_Factor =</span> <span class="fu">factor</span>(Item),</span>
+<span id="cb66-26"><a href="#cb66-26"></a>    <span class="at">ID_Factor =</span> <span class="fu">factor</span>(ID))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a>brms_formula <span class="ot">&lt;-</span> <span class="fu">bf</span>(</span>
+<span id="cb67-2"><a href="#cb67-2"></a>  Response <span class="sc">~</span> <span class="fu">exp</span>(logalpha) <span class="sc">*</span> theta <span class="sc">+</span> delta,</span>
+<span id="cb67-3"><a href="#cb67-3"></a>  theta <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> Time <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Time <span class="sc">|</span> ID_Factor),</span>
+<span id="cb67-4"><a href="#cb67-4"></a>  logalpha <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item_Factor),</span>
+<span id="cb67-5"><a href="#cb67-5"></a>  delta <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Item_Factor),</span>
+<span id="cb67-6"><a href="#cb67-6"></a>  <span class="at">nl =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb67-7"><a href="#cb67-7"></a></span>
+<span id="cb67-8"><a href="#cb67-8"></a></span>
+<span id="cb67-9"><a href="#cb67-9"></a>priors <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb67-10"><a href="#cb67-10"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">nlpar =</span> <span class="st">"theta"</span>),    </span>
+<span id="cb67-11"><a href="#cb67-11"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">nlpar =</span> <span class="st">"logalpha"</span>), </span>
+<span id="cb67-12"><a href="#cb67-12"></a>  <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">3</span>), <span class="at">nlpar =</span> <span class="st">"delta"</span>))</span>
+<span id="cb67-13"><a href="#cb67-13"></a></span>
+<span id="cb67-14"><a href="#cb67-14"></a></span>
+<span id="cb67-15"><a href="#cb67-15"></a>irt_growth_2pl <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb67-16"><a href="#cb67-16"></a>  <span class="at">formula =</span> brms_formula,</span>
+<span id="cb67-17"><a href="#cb67-17"></a>  <span class="at">data =</span> df,</span>
+<span id="cb67-18"><a href="#cb67-18"></a>  <span class="at">family =</span> <span class="fu">bernoulli</span>(<span class="st">"logit"</span>),</span>
+<span id="cb67-19"><a href="#cb67-19"></a>  <span class="at">prior =</span> priors,</span>
+<span id="cb67-20"><a href="#cb67-20"></a>  <span class="at">chains =</span> <span class="dv">2</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb67-21"><a href="#cb67-21"></a>  <span class="at">iter =</span> <span class="dv">2000</span>,</span>
+<span id="cb67-22"><a href="#cb67-22"></a>  <span class="at">file =</span> <span class="st">"2plgrowth"</span>)</span>
+<span id="cb67-23"><a href="#cb67-23"></a></span>
+<span id="cb67-24"><a href="#cb67-24"></a><span class="fu">summary</span>(irt_growth_2pl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: bernoulli 
+  Links: mu = logit 
+Formula: Response ~ exp(logalpha) * theta + delta 
+         theta ~ 1 + Time + (1 + Time | ID_Factor)
+         logalpha ~ 1 + (1 | Item_Factor)
+         delta ~ 1 + (1 | Item_Factor)
+   Data: df (Number of observations: 8000) 
+  Draws: 2 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 2000
+
+Multilevel Hyperparameters:
+~ID_Factor (Number of levels: 200) 
+                                Estimate Est.Error l-95% CI u-95% CI Rhat
+sd(theta_Intercept)                 1.66      0.67     0.64     3.17 1.00
+sd(theta_Time)                      0.27      0.14     0.06     0.60 1.00
+cor(theta_Intercept,theta_Time)    -0.02      0.25    -0.44     0.53 1.00
+                                Bulk_ESS Tail_ESS
+sd(theta_Intercept)                  872      937
+sd(theta_Time)                       332      291
+cor(theta_Intercept,theta_Time)      866      429
+
+~Item_Factor (Number of levels: 10) 
+                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(logalpha_Intercept)     0.28      0.10     0.15     0.51 1.00     1224
+sd(delta_Intercept)        1.17      0.35     0.71     2.03 1.00      982
+                       Tail_ESS
+sd(logalpha_Intercept)     1444
+sd(delta_Intercept)        1267
+
+Regression Coefficients:
+                   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+theta_Intercept       -0.32      0.90    -2.16     1.47 1.00     1588     1288
+theta_Time             0.85      0.34     0.33     1.65 1.00      901     1088
+logalpha_Intercept    -0.43      0.40    -1.17     0.40 1.00      913      930
+delta_Intercept       -0.25      0.74    -1.72     1.35 1.00     1013      944
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb69-2"><a href="#cb69-2"></a>item_parameters <span class="ot">&lt;-</span> irt_growth_2pl <span class="sc">%&gt;%</span></span>
+<span id="cb69-3"><a href="#cb69-3"></a>  <span class="fu">spread_draws</span>(</span>
+<span id="cb69-4"><a href="#cb69-4"></a>    b_logalpha_Intercept,</span>
+<span id="cb69-5"><a href="#cb69-5"></a>    b_delta_Intercept,</span>
+<span id="cb69-6"><a href="#cb69-6"></a>    r_Item_Factor__logalpha[Item, Term],</span>
+<span id="cb69-7"><a href="#cb69-7"></a>    r_Item_Factor__delta[Item, Term]</span>
+<span id="cb69-8"><a href="#cb69-8"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb69-9"><a href="#cb69-9"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb69-10"><a href="#cb69-10"></a>    <span class="at">Discrimination =</span> <span class="fu">exp</span>(b_logalpha_Intercept <span class="sc">+</span> r_Item_Factor__logalpha),</span>
+<span id="cb69-11"><a href="#cb69-11"></a>    <span class="at">Difficulty =</span> b_delta_Intercept <span class="sc">+</span> r_Item_Factor__delta</span>
+<span id="cb69-12"><a href="#cb69-12"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb69-13"><a href="#cb69-13"></a><span class="fu">group_by</span>(Item) <span class="sc">%&gt;%</span></span>
+<span id="cb69-14"><a href="#cb69-14"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb69-15"><a href="#cb69-15"></a>    <span class="at">Mean_Alpha =</span> <span class="fu">mean</span>(Discrimination),</span>
+<span id="cb69-16"><a href="#cb69-16"></a>    <span class="at">Mean_delta =</span> <span class="fu">mean</span>(Difficulty))</span>
+<span id="cb69-17"><a href="#cb69-17"></a>  </span>
+<span id="cb69-18"><a href="#cb69-18"></a>item_parameters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Mean_Alpha Mean_delta
+1  0.7122272  -0.252426</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>item_params <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb71-2"><a href="#cb71-2"></a>  <span class="at">Item =</span> <span class="fu">c</span>(<span class="st">"Item 4 "</span>, <span class="st">"Item 7"</span>, <span class="st">"Item 10"</span>),</span>
+<span id="cb71-3"><a href="#cb71-3"></a>  <span class="at">Difficulty =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.64536299</span>, <span class="fl">0.01865466</span>, <span class="fl">1.61749528</span>), </span>
+<span id="cb71-4"><a href="#cb71-4"></a>  <span class="at">Discrimination =</span> <span class="fu">c</span>(<span class="fl">0.6629388</span>, <span class="fl">0.8400569</span>, <span class="fl">0.5800594</span>)   </span>
+<span id="cb71-5"><a href="#cb71-5"></a>)</span>
+<span id="cb71-6"><a href="#cb71-6"></a></span>
+<span id="cb71-7"><a href="#cb71-7"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb71-8"><a href="#cb71-8"></a>  <span class="at">Theta =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="at">by =</span> <span class="fl">0.1</span>),</span>
+<span id="cb71-9"><a href="#cb71-9"></a>  <span class="at">Item =</span> item_params<span class="sc">$</span>Item</span>
+<span id="cb71-10"><a href="#cb71-10"></a>)</span>
+<span id="cb71-11"><a href="#cb71-11"></a></span>
+<span id="cb71-12"><a href="#cb71-12"></a>grid <span class="ot">&lt;-</span> <span class="fu">left_join</span>(grid, item_params, <span class="at">by =</span> <span class="st">"Item"</span>)</span>
+<span id="cb71-13"><a href="#cb71-13"></a></span>
+<span id="cb71-14"><a href="#cb71-14"></a>grid<span class="sc">$</span>Probability <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span>grid<span class="sc">$</span>Discrimination <span class="sc">*</span> (grid<span class="sc">$</span>Theta <span class="sc">-</span> grid<span class="sc">$</span>Difficulty)))</span>
+<span id="cb71-15"><a href="#cb71-15"></a></span>
+<span id="cb71-16"><a href="#cb71-16"></a><span class="fu">ggplot</span>(grid, <span class="fu">aes</span>(<span class="at">x =</span> Theta, <span class="at">y =</span> Probability, <span class="at">color =</span> Item)) <span class="sc">+</span></span>
+<span id="cb71-17"><a href="#cb71-17"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb71-18"><a href="#cb71-18"></a>  <span class="fu">geom_vline</span>(<span class="at">data =</span> item_params, <span class="fu">aes</span>(<span class="at">xintercept =</span> Difficulty, <span class="at">color =</span> Item),</span>
+<span id="cb71-19"><a href="#cb71-19"></a>             <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb71-20"><a href="#cb71-20"></a>  </span>
+<span id="cb71-21"><a href="#cb71-21"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Item Characteristic Curves (ICCs)"</span>,</span>
+<span id="cb71-22"><a href="#cb71-22"></a>       <span class="at">x =</span> <span class="st">"Theta (Latent Ability)"</span>,</span>
+<span id="cb71-23"><a href="#cb71-23"></a>       <span class="at">y =</span> <span class="st">"Probability of Endorsement"</span>) <span class="sc">+</span></span>
+<span id="cb71-24"><a href="#cb71-24"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="mlm-2_files/figure-revealjs/unnamed-chunk-48-1.png" width="960" class="r-stretch"></section>
+<section id="accounting-for-measurement-error" class="slide level2">
+<h2>Accounting for measurement error</h2>
+<ul>
+<li><p>These are our first “latent” models for measuring change. Latent in the sense that there is some growth process that is hidden.</p></li>
+<li><p>Latent =/= construct. We are interested in constructs, but constructs are more theoretical. Latent has to do with decreasing measurement error.</p></li>
+<li><p>Observed = true + error</p></li>
+</ul>
+</section>
+<section id="likert-irt" class="slide level2">
+<h2>Likert IRT</h2>
+<p>With likert scales we can also estimate an IRT model. We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc.</p>
+
+<img data-src="grm1.png" class="r-stretch"></section>
 <section id="graded-response-model-growth-model" class="slide level2">
 <h2>graded response model growth model</h2>
 <p><span class="math display">\[\ln \left( \frac{P(Y_{ipt} \ge k)}{1 - P(Y_{ipt} \ge k)} \right) = \alpha_i (\theta_{pt} - \beta_{ik})\]</span></p>
@@ -1926,30 +2101,6 @@ Time        -0.323</code></pre>
 <section class="slide level2">
 
 <p><span class="math display">\[P(Y_{ipt} \ge k) = \frac{\exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}{1 + \exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}\]</span></p>
-</section>
-<section class="slide level2">
-
-<div class="cell">
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>b5_soep_long.item.E <span class="ot">&lt;-</span> b5_soep_long.item <span class="sc">|&gt;</span> <span class="fu">filter</span>(trait <span class="sc">==</span> <span class="st">"E"</span>)</span>
-<span id="cb66-2"><a href="#cb66-2"></a>b5_soep_long.item<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">factor</span>(b5_soep_long.item<span class="sc">$</span>value, <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb66-3"><a href="#cb66-3"></a></span>
-<span id="cb66-4"><a href="#cb66-4"></a>b5_soep_long.item.E<span class="ot">&lt;-</span> b5_soep_long.item.E <span class="sc">|&gt;</span> </span>
-<span id="cb66-5"><a href="#cb66-5"></a>   <span class="fu">mutate</span>(<span class="at">ID =</span> Procedural__SID) <span class="sc">|&gt;</span> </span>
-<span id="cb66-6"><a href="#cb66-6"></a>  <span class="fu">mutate</span>(<span class="at">ID =</span> <span class="fu">as.factor</span>(ID)) <span class="sc">|&gt;</span> </span>
-<span id="cb66-7"><a href="#cb66-7"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(year)) <span class="sc">|&gt;</span> </span>
-<span id="cb66-8"><a href="#cb66-8"></a>  <span class="fu">mutate</span>(<span class="at">item =</span> <span class="fu">as.factor</span>(item))</span>
-<span id="cb66-9"><a href="#cb66-9"></a></span>
-<span id="cb66-10"><a href="#cb66-10"></a>bform <span class="ot">&lt;-</span> <span class="fu">bf</span>( value <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> year <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> item) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> year <span class="sc">|</span> ID), </span>
-<span id="cb66-11"><a href="#cb66-11"></a>  disc <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> item))</span>
-<span id="cb66-12"><a href="#cb66-12"></a></span>
-<span id="cb66-13"><a href="#cb66-13"></a>grgnm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
-<span id="cb66-14"><a href="#cb66-14"></a>  <span class="at">formula =</span> bform, </span>
-<span id="cb66-15"><a href="#cb66-15"></a>  <span class="at">family =</span> <span class="fu">brmsfamily</span>(<span class="st">"cumulative"</span>, <span class="st">"logit"</span>),</span>
-<span id="cb66-16"><a href="#cb66-16"></a>  <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">2</span>,</span>
-<span id="cb66-17"><a href="#cb66-17"></a>  <span class="at">iter =</span> <span class="dv">500</span>,</span>
-<span id="cb66-18"><a href="#cb66-18"></a><span class="at">data =</span> b5_soep_long.item.E, </span>
-<span id="cb66-19"><a href="#cb66-19"></a><span class="at">file =</span> <span class="st">"grm.growth"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
 <section id="accelerated-longitudinal-designs" class="slide level2">
 <h2>Accelerated longitudinal designs</h2>
@@ -1963,26 +2114,26 @@ Time        -0.323</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb67-2"><a href="#cb67-2"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb67-3"><a href="#cb67-3"></a></span>
-<span id="cb67-4"><a href="#cb67-4"></a>n_per_cohort <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb67-5"><a href="#cb67-5"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>  </span>
-<span id="cb67-6"><a href="#cb67-6"></a></span>
-<span id="cb67-7"><a href="#cb67-7"></a>df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb67-8"><a href="#cb67-8"></a>  <span class="at">ID_in_Cohort =</span> <span class="dv">1</span><span class="sc">:</span>n_per_cohort,</span>
-<span id="cb67-9"><a href="#cb67-9"></a>  <span class="at">Cohort_Start_Age =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>), </span>
-<span id="cb67-10"><a href="#cb67-10"></a>  <span class="at">Time =</span> time_points                </span>
-<span id="cb67-11"><a href="#cb67-11"></a>)</span>
-<span id="cb67-12"><a href="#cb67-12"></a></span>
-<span id="cb67-13"><a href="#cb67-13"></a>df<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">paste0</span>(df<span class="sc">$</span>Cohort_Start_Age, <span class="st">"_"</span>, df<span class="sc">$</span>ID_in_Cohort)</span>
-<span id="cb67-14"><a href="#cb67-14"></a></span>
-<span id="cb67-15"><a href="#cb67-15"></a>df<span class="sc">$</span>Outcome <span class="ot">&lt;-</span> (df<span class="sc">$</span>Cohort_Start_Age <span class="sc">*</span> <span class="fl">1.5</span>) <span class="sc">+</span> (df<span class="sc">$</span>Time <span class="sc">*</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df))</span>
-<span id="cb67-16"><a href="#cb67-16"></a></span>
-<span id="cb67-17"><a href="#cb67-17"></a></span>
-<span id="cb67-18"><a href="#cb67-18"></a>acc.model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Outcome <span class="sc">~</span> Time <span class="sc">*</span> Cohort_Start_Age <span class="sc">+</span> (Time <span class="sc">|</span> ID), <span class="at">data =</span> df)</span>
-<span id="cb67-19"><a href="#cb67-19"></a></span>
-<span id="cb67-20"><a href="#cb67-20"></a><span class="fu">summary</span>(acc.model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb72-2"><a href="#cb72-2"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb72-3"><a href="#cb72-3"></a></span>
+<span id="cb72-4"><a href="#cb72-4"></a>n_per_cohort <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb72-5"><a href="#cb72-5"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>  </span>
+<span id="cb72-6"><a href="#cb72-6"></a></span>
+<span id="cb72-7"><a href="#cb72-7"></a>df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb72-8"><a href="#cb72-8"></a>  <span class="at">ID_in_Cohort =</span> <span class="dv">1</span><span class="sc">:</span>n_per_cohort,</span>
+<span id="cb72-9"><a href="#cb72-9"></a>  <span class="at">Cohort_Start_Age =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>), </span>
+<span id="cb72-10"><a href="#cb72-10"></a>  <span class="at">Time =</span> time_points                </span>
+<span id="cb72-11"><a href="#cb72-11"></a>)</span>
+<span id="cb72-12"><a href="#cb72-12"></a></span>
+<span id="cb72-13"><a href="#cb72-13"></a>df<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">paste0</span>(df<span class="sc">$</span>Cohort_Start_Age, <span class="st">"_"</span>, df<span class="sc">$</span>ID_in_Cohort)</span>
+<span id="cb72-14"><a href="#cb72-14"></a></span>
+<span id="cb72-15"><a href="#cb72-15"></a>df<span class="sc">$</span>Outcome <span class="ot">&lt;-</span> (df<span class="sc">$</span>Cohort_Start_Age <span class="sc">*</span> <span class="fl">1.5</span>) <span class="sc">+</span> (df<span class="sc">$</span>Time <span class="sc">*</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df))</span>
+<span id="cb72-16"><a href="#cb72-16"></a></span>
+<span id="cb72-17"><a href="#cb72-17"></a></span>
+<span id="cb72-18"><a href="#cb72-18"></a>acc.model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Outcome <span class="sc">~</span> Time <span class="sc">*</span> Cohort_Start_Age <span class="sc">+</span> (Time <span class="sc">|</span> ID), <span class="at">data =</span> df)</span>
+<span id="cb72-19"><a href="#cb72-19"></a></span>
+<span id="cb72-20"><a href="#cb72-20"></a><span class="fu">summary</span>(acc.model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML ['lmerMod']
@@ -2025,33 +2176,33 @@ Model failed to converge with max|grad| = 0.00468635 (tol = 0.002, component 1)
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>pred_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb69-2"><a href="#cb69-2"></a>  <span class="at">Cohort_Start_Age =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>),  </span>
-<span id="cb69-3"><a href="#cb69-3"></a>  <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="at">by =</span> <span class="fl">0.5</span>)         </span>
-<span id="cb69-4"><a href="#cb69-4"></a>)</span>
-<span id="cb69-5"><a href="#cb69-5"></a></span>
-<span id="cb69-6"><a href="#cb69-6"></a>pred_grid<span class="sc">$</span>Chronological_Age <span class="ot">&lt;-</span> pred_grid<span class="sc">$</span>Cohort_Start_Age <span class="sc">+</span> pred_grid<span class="sc">$</span>Time</span>
-<span id="cb69-7"><a href="#cb69-7"></a></span>
-<span id="cb69-8"><a href="#cb69-8"></a></span>
-<span id="cb69-9"><a href="#cb69-9"></a>pred_grid<span class="sc">$</span>Predicted_Outcome <span class="ot">&lt;-</span> <span class="fu">predict</span>(acc.model, <span class="at">newdata =</span> pred_grid, <span class="at">re.form =</span> <span class="cn">NA</span>)</span>
-<span id="cb69-10"><a href="#cb69-10"></a></span>
-<span id="cb69-11"><a href="#cb69-11"></a><span class="fu">ggplot</span>(pred_grid, <span class="fu">aes</span>(<span class="at">x =</span> Chronological_Age, </span>
-<span id="cb69-12"><a href="#cb69-12"></a>                      <span class="at">y =</span> Predicted_Outcome, </span>
-<span id="cb69-13"><a href="#cb69-13"></a>                      <span class="at">group =</span> <span class="fu">factor</span>(Cohort_Start_Age), </span>
-<span id="cb69-14"><a href="#cb69-14"></a>                      <span class="at">color =</span> <span class="fu">factor</span>(Cohort_Start_Age))) <span class="sc">+</span></span>
-<span id="cb69-15"><a href="#cb69-15"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb69-16"><a href="#cb69-16"></a>  <span class="fu">stat_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">method =</span> <span class="st">"lm"</span>, </span>
-<span id="cb69-17"><a href="#cb69-17"></a>              <span class="at">color =</span> <span class="st">"grey"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb69-18"><a href="#cb69-18"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Cohort-Sequential Plot"</span>,</span>
-<span id="cb69-19"><a href="#cb69-19"></a>       <span class="at">x =</span> <span class="st">"Chronological Age"</span>,</span>
-<span id="cb69-20"><a href="#cb69-20"></a>       <span class="at">y =</span> <span class="st">"Outcome Score"</span>,</span>
-<span id="cb69-21"><a href="#cb69-21"></a>       <span class="at">color =</span> <span class="st">"Cohort (Start Age)"</span>) <span class="sc">+</span></span>
-<span id="cb69-22"><a href="#cb69-22"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb69-23"><a href="#cb69-23"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a>pred_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb74-2"><a href="#cb74-2"></a>  <span class="at">Cohort_Start_Age =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>),  </span>
+<span id="cb74-3"><a href="#cb74-3"></a>  <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="at">by =</span> <span class="fl">0.5</span>)         </span>
+<span id="cb74-4"><a href="#cb74-4"></a>)</span>
+<span id="cb74-5"><a href="#cb74-5"></a></span>
+<span id="cb74-6"><a href="#cb74-6"></a>pred_grid<span class="sc">$</span>Chronological_Age <span class="ot">&lt;-</span> pred_grid<span class="sc">$</span>Cohort_Start_Age <span class="sc">+</span> pred_grid<span class="sc">$</span>Time</span>
+<span id="cb74-7"><a href="#cb74-7"></a></span>
+<span id="cb74-8"><a href="#cb74-8"></a></span>
+<span id="cb74-9"><a href="#cb74-9"></a>pred_grid<span class="sc">$</span>Predicted_Outcome <span class="ot">&lt;-</span> <span class="fu">predict</span>(acc.model, <span class="at">newdata =</span> pred_grid, <span class="at">re.form =</span> <span class="cn">NA</span>)</span>
+<span id="cb74-10"><a href="#cb74-10"></a></span>
+<span id="cb74-11"><a href="#cb74-11"></a><span class="fu">ggplot</span>(pred_grid, <span class="fu">aes</span>(<span class="at">x =</span> Chronological_Age, </span>
+<span id="cb74-12"><a href="#cb74-12"></a>                      <span class="at">y =</span> Predicted_Outcome, </span>
+<span id="cb74-13"><a href="#cb74-13"></a>                      <span class="at">group =</span> <span class="fu">factor</span>(Cohort_Start_Age), </span>
+<span id="cb74-14"><a href="#cb74-14"></a>                      <span class="at">color =</span> <span class="fu">factor</span>(Cohort_Start_Age))) <span class="sc">+</span></span>
+<span id="cb74-15"><a href="#cb74-15"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb74-16"><a href="#cb74-16"></a>  <span class="fu">stat_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">method =</span> <span class="st">"lm"</span>, </span>
+<span id="cb74-17"><a href="#cb74-17"></a>              <span class="at">color =</span> <span class="st">"grey"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb74-18"><a href="#cb74-18"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Cohort-Sequential Plot"</span>,</span>
+<span id="cb74-19"><a href="#cb74-19"></a>       <span class="at">x =</span> <span class="st">"Chronological Age"</span>,</span>
+<span id="cb74-20"><a href="#cb74-20"></a>       <span class="at">y =</span> <span class="st">"Outcome Score"</span>,</span>
+<span id="cb74-21"><a href="#cb74-21"></a>       <span class="at">color =</span> <span class="st">"Cohort (Start Age)"</span>) <span class="sc">+</span></span>
+<span id="cb74-22"><a href="#cb74-22"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb74-23"><a href="#cb74-23"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="mlm-2_files/figure-revealjs/unnamed-chunk-47-1.png" width="960" class="r-stretch"></section>
+<img data-src="mlm-2_files/figure-revealjs/unnamed-chunk-50-1.png" width="960" class="r-stretch"></section>
 <section id="fixed-effects" class="slide level2">
 <h2>Fixed effects</h2>
 <p>Other fields model dependencies differently. Econometrics for example often uses “fixed effects” for panel studies where you add Person ID as a categorical predictor rather than account for dependencies via random effects.</p>
@@ -2069,32 +2220,6 @@ Model failed to converge with max|grad| = 0.00468635 (tol = 0.002, component 1)
 <li><p>Remember that MLM is just like a lot of separate regressions done at Level 1.</p></li>
 <li><p>What happens when we have multiple predictors? The effect of any one variable partials out the common variance, the same as with multiple regression.</p></li>
 </ul>
-</section>
-<section id="level-2-predictors" class="slide level2">
-<h2>Level 2 predictors</h2>
-<p>Level 1: <span class="math display">\[{Y}_{ti} = \beta_{0i}  + \beta_{1j}time_{ti} + \varepsilon_{ti}\]</span></p>
-<p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}\]</span></p>
-<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} + U_{1i}\]</span></p>
-</section>
-<section class="slide level2">
-
-<p>Combined <span class="math display">\[{Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} Time_{ti} + U_{0i} + U_{1j}Time_{ti} + \varepsilon_{ti}\]</span></p>
-<p><span class="math display">\[{Y}_{ti} = [\gamma_{00} + \gamma_{01}G_{i}+ U_{0i}]  + [(\gamma_{10}  + U_{1i})(Time_{ti})] + \varepsilon_{ti}\]</span></p>
-</section>
-<section class="slide level2">
-
-<ul>
-<li><p>Level 2 refers to Between-Person (BP) Variation, INTER-individual, Differences, Time-Invariant, make comparisons across individuals.</p></li>
-<li><p>Some variables can be both depending on how you measure them. E.g. Age</p></li>
-<li><p>Level 1 and Level 2 can be differentiated in your dataset by which one repeats vs which is consistent.</p></li>
-</ul>
-</section>
-<section id="cross-level-interactions" class="slide level2">
-<h2>Cross level interactions</h2>
-<p>level 1: <span class="math display">\[{Y}_{ti} = \beta_{0i}  + \beta_{1i}time_{ti} + \varepsilon_{ti}\]</span> Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}\]</span></p>
-<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} + \gamma_{11}G_{i} + U_{1i}\]</span></p>
-<p><span class="math display">\[{Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (time_{ti}) + \gamma_{11}(G_{i}*time_{ti}) +  U_{0j} + U_{1i}(time_{ti}) + \varepsilon_{ti}\]</span></p>
-<p><span class="math display">\[{Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(time_{ti})] + \varepsilon_{ti}\]</span></p>
 
 <div class="footer footer-default">
 

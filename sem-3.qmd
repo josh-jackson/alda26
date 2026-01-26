@@ -25,6 +25,14 @@ SEM is the broader umbrella from the GLM. With it we are able to do two interest
 
 These two components allow us to address more difficult research questions involving but not limited to: multiple DVs, mediators, varying effects across time, unmeasured variables, constraints, and measurement invariance.
 
+-----------
+
+| | **Nature of the Latent Variable: Categorical** | **Nature of the Latent Variable: Metrical** |
+| :--- | :--- | :--- |
+| **Manifest Variable: Categorical** | Latent transition analysis | Latent trait analysis; IRT |
+| **Manifest Variable: Metrical** | Latent class; Mixture modeling | Latent variable analysis; CFA |
+
+
 ## SEM terminology
 
 -   Indicators or items or manifest variables
@@ -46,6 +54,43 @@ Two headed arrows = correlations/covariances/variances
 Single head arrows = regressions
 
 Triangle = means
+
+
+
+```{r}
+#| code-fold: true
+
+# generate data dataset:
+X <- rnorm(100, 5, 5)
+M <- rnorm(100)
+Y <- rnorm(100, 0, 1) 
+data <- data.frame(X, Y, M)
+
+res1 <- 'Y ~  1 + X'
+
+fit.1 <- sem(res1, data=data)
+summary(fit.1)
+```
+
+---------
+
+```{r}
+summary(lm(Y ~ X, data))
+```
+
+
+
+----------------
+
+
+```{r}
+#| code-fold: true
+# dashes are fixed descriptive values rather than model estimates. 
+semPaths(fit.1, what = "model", "est", residuals = TRUE)
+```
+
+
+
 
 ------------------------------------------------------------------------
 
@@ -223,7 +268,7 @@ semPaths(fit.2)
 
 -   Need to define the scale of a latent variable because there is no inherent scale of measurement.
 
--   Largely irrelevant as to what scale is chosen as they are algebraic equivalent, similar to centering or standardizing.
+-   Largely irrelevant as to what scale is chosen as they are algebraic equivalent, similar to centering or standardizing. Reproduces same VarCov matrix.
 
 -   Scaling serves to establish a point of reference so as to interpret other parameters.
 
@@ -236,6 +281,13 @@ semPaths(fit.2)
 2.  Marker variable. Here you fix one factor loading to 1. All other loadings are relative to this loading. The variance of the latent variable can thus be anything. This is often the default of software programs.
 
 3.  Effect coding. Here you constrain loading to average to 1. This will be helpful for us as we can then put the scale of measurement into our original metric. For longitudinal models this is helpful in terms of how to interpret the amount of change.
+
+
+-------------
+
+
+![](sem_ef.png)
+
 
 ## Types of identification
 
@@ -267,13 +319,7 @@ semPaths(fit.2)
 
 -   This is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.
 
--   Given we are interested in change across time, we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on.
-
-
-## Means
-
-
-
+-   Given we are interested in change across time, we will be interested in means. 
 
 
 ## Types of longitudinal SEM models
@@ -436,6 +482,25 @@ What is the same, what is different? One notable difference is there is no resid
 
 The default of MLM is that these residuals are the same across measurement occasions. How could we model that here?
 
+
+------------------------
+
+```{r}
+#| code-fold: true
+model.1a <- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 
+            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16
+
+alcuse_14 ~~ Q*alcuse_14 
+alcuse_15 ~~ Q*alcuse_15
+alcuse_16 ~~ Q*alcuse_16
+
+'
+fit.1a <- growth(model.1a, data=alcohol.wide)
+summary(fit.1a)
+```
+
+
+
 ## rescale time
 
 ```{r}
@@ -459,33 +524,17 @@ fit.3<- growth(model.3, data=alcohol.wide)
 summary(fit.3)
 ```
 
-## modeling residuals
-
-Constrain to be equal. Compare with mlm residual
-
-```{r}
-#| code-fold: true
-model.4 <- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 
-            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16
-            
-alcuse_14 ~~ a*alcuse_14
-alcuse_15 ~~ a*alcuse_15
-alcuse_16 ~~ a*alcuse_16'
-
-fit.4 <- growth(model.4, data=alcohol.wide)
-summary(fit.4)
-```
 
 ## Plotting
 
 ```{r}
-lavPredict(fit.1,type="lv")
+head(lavPredict(fit.1,type="lv"))
 ```
 
 ------------------------------------------------------------------------
 
 ```{r}
-lavPredict(fit.1,type="ov")
+head(lavPredict(fit.1,type="ov"))
 ```
 
 ------------------------------------------------------------------------
@@ -507,7 +556,7 @@ Plotting the constrained slope variance model
 
 ```{r}
 #| code-fold: true
-as_tibble(lavPredict(fit.3,type="ov")) %>% 
+as_tibble(lavPredict(fit.1a,type="ov")) %>% 
   rowid_to_column("ID") %>% 
   pivot_longer(cols = starts_with("alc"), names_to = c(".value", "wave"), names_sep = "_") %>%
 dplyr::mutate(wave = as.numeric(wave)) %>% 

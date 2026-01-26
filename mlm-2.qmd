@@ -1139,7 +1139,6 @@ An item's difficulty is defined as the trait level required for someone to have 
 An item with a difficult of 0 (standardized values), person with a 0 theta has a 50:50 shot, whereas someone with a 1 theta will have a greater probability. For an item difficulty of 1.5, a person needs a 1.5 theta to have a 50:50 chance.  
 
 
--------------
 
 ## 1-PL (Rasch Model)
 
@@ -1148,8 +1147,7 @@ $$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$
 
 (usually difficulty is defined as $\theta_p$ - $\delta_i$)
 
-$$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
-$$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
+
 
 
 
@@ -1195,8 +1193,8 @@ summary(irt_growth_model)
 #| code-fold: true
 item_params <- data.frame(
   Item = c("Item 5 (Easy)", "Item 7 (Medium)", "Item 6 (Hard)"),
-  Difficulty = c(-1.79240, -0.10075, 2.02202), # The 'b' parameter
-  Discrimination = c(1, 1, 1)   # The 'a' parameter (Set to 1 for Rasch)
+  Difficulty = c(-1.79240, -0.10075, 2.02202), 
+  Discrimination = c(1, 1, 1)   
 )
 
 grid <- expand.grid(
@@ -1219,22 +1217,7 @@ ggplot(grid, aes(x = Theta, y = Probability, color = Item)) +
   theme_minimal()
 ```
 
-## Accounting for measurement error
-
-With likert scales we can also estimate an IRT model. Will use cumulative likelihood aka ordered categorical.   
-
-We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. Otherwise similar to before. 
-
-$$\ln\left(\dfrac{Pr(y_i)}{Pr(y_i)}\right)=\ln\left(\dfrac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)}\right)= \alpha_k$$
-
-
-------------------
-
-![](grm1.png)
-
-
-
-## Discrimination
+## 2-PL adds Discrimination
 
 How well items can differentiate a person who has high theta levels from a person who has low theta levels? Related to how strongly the item is associated with the latent construct. Is it a good item? Does it have construct irrelevant content? 
 
@@ -1242,9 +1225,151 @@ Akin to item construct correlation. Or item factor loadings.
 
 Positive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta. 
 
+----------
+
+$$ y_{pi}  \sim  \text{Bernoulli}(p_{pi})$$
+
+$$logit(p_{pi}) =  \alpha_i(\theta_p + \delta_i)$$
+
+Alpha is our discrimination parameter. In the 1pl it is held constant at 1. The i subscript indicates the discrimination parameter varies across the items, not across persons.
+
+
 -------------
 
 ![](2pl.png)
+
+
+----------------------
+
+```{r}
+#| code-fold: true
+library(brms)
+set.seed(123)
+n_people <- 200
+n_items <- 10
+n_waves <- 4
+
+item_discriminations <- rlnorm(n_items, meanlog = 0, sdlog = 0.25)
+item_difficulties <- runif(n_items, -2, 2)
+
+person_intercepts <- rnorm(n_people, mean = 0, sd = 1) 
+person_slopes <- rnorm(n_people, mean = 0.5, sd = 0.2) 
+
+df <- expand.grid(ID = 1:n_people, 
+                  Time = 0:(n_waves-1), 
+                  Item = 1:n_items)
+
+df <- df |>   
+  dplyr::mutate(
+    Theta = person_intercepts[ID] + (person_slopes[ID] * Time),
+    Discrimination = item_discriminations[Item],
+    Difficulty = item_difficulties[Item],
+    Logit = Discrimination * (Theta - Difficulty),
+    Prob = plogis(Logit),
+    Response = rbinom(n(), 1, Prob),
+    Item_Factor = factor(Item),
+    ID_Factor = factor(ID))
+
+```
+
+```{r}
+#| code-fold: true
+brms_formula <- bf(
+  Response ~ exp(logalpha) * theta + delta,
+  theta ~ 1 + Time + (1 + Time | ID_Factor),
+  logalpha ~ 1 + (1 | Item_Factor),
+  delta ~ 1 + (1 | Item_Factor),
+  nl = TRUE)
+
+
+priors <- c(
+  prior(normal(0, 1), nlpar = "theta"),    
+  prior(normal(0, 0.5), nlpar = "logalpha"), 
+  prior(normal(0, 3), nlpar = "delta"))
+
+
+irt_growth_2pl <- brm(
+  formula = brms_formula,
+  data = df,
+  family = bernoulli("logit"),
+  prior = priors,
+  chains = 2, cores = 4,
+  iter = 2000,
+  file = "2plgrowth")
+
+summary(irt_growth_2pl)
+```
+
+------------
+
+```{r}
+#| code-fold: true
+library(tidybayes)
+item_parameters <- irt_growth_2pl %>%
+  spread_draws(
+    b_logalpha_Intercept,
+    b_delta_Intercept,
+    r_Item_Factor__logalpha[Item, Term],
+    r_Item_Factor__delta[Item, Term]
+  ) |> 
+  mutate(
+    Discrimination = exp(b_logalpha_Intercept + r_Item_Factor__logalpha),
+    Difficulty = b_delta_Intercept + r_Item_Factor__delta
+  ) |> 
+group_by(Item) %>%
+  summarise(
+    Mean_Alpha = mean(Discrimination),
+    Mean_delta = mean(Difficulty))
+  
+item_parameters
+```
+
+-----------------
+
+```{r}
+#| code-fold: true
+item_params <- data.frame(
+  Item = c("Item 4 ", "Item 7", "Item 10"),
+  Difficulty = c(-1.64536299, 0.01865466, 1.61749528), 
+  Discrimination = c(0.6629388, 0.8400569, 0.5800594)   
+)
+
+grid <- expand.grid(
+  Theta = seq(-4, 4, by = 0.1),
+  Item = item_params$Item
+)
+
+grid <- left_join(grid, item_params, by = "Item")
+
+grid$Probability <- 1 / (1 + exp(-grid$Discrimination * (grid$Theta - grid$Difficulty)))
+
+ggplot(grid, aes(x = Theta, y = Probability, color = Item)) +
+  geom_line(size = 1.2) +
+  geom_vline(data = item_params, aes(xintercept = Difficulty, color = Item),
+             linetype = "dashed", alpha = 0.5) +
+  
+  labs(title = "Item Characteristic Curves (ICCs)",
+       x = "Theta (Latent Ability)",
+       y = "Probability of Endorsement") +
+  theme_minimal()
+```
+
+
+## Accounting for measurement error
+
+- These are our first "latent" models for measuring change. Latent in the sense that there is some growth process that is hidden. 
+
+- Latent =/= construct. We are interested in constructs, but constructs are more theoretical. Latent has to do with decreasing measurement error. 
+
+- Observed = true + error
+
+## Likert IRT
+
+With likert scales we can also estimate an IRT model. We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. 
+
+
+![](grm1.png)
+
 
 ## graded response model growth model
 
@@ -1260,33 +1385,6 @@ $$\theta_{pt} = \eta_{0p} + \eta_{1p} \cdot \text{Time}_{t} + \zeta_{pt}$$
 ----------------
 
 $$P(Y_{ipt} \ge k) = \frac{\exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}{1 + \exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}$$
-
--------------
-
-```{r, eval = FALSE}
-
-b5_soep_long.item.E <- b5_soep_long.item |> filter(trait == "E")
-b5_soep_long.item$value <- factor(b5_soep_long.item$value, ordered = TRUE)
-
-b5_soep_long.item.E<- b5_soep_long.item.E |> 
-   mutate(ID = Procedural__SID) |> 
-  mutate(ID = as.factor(ID)) |> 
-  mutate(year = as.numeric(year)) |> 
-  mutate(item = as.factor(item))
-
-bform <- bf( value ~ 1 + year + (1 | item) + (1 + year | ID), 
-  disc ~ 1 + (1 | item))
-
-grgnm <- brm(
-  formula = bform, 
-  family = brmsfamily("cumulative", "logit"),
-  cores = 4, chains = 2,
-  iter = 500,
-data = b5_soep_long.item.E, 
-file = "grm.growth")
-```
-
-
 
 
 ## Accelerated longitudinal designs
@@ -1384,40 +1482,6 @@ $${\beta}_{2i} = \gamma_{20} + U_{2i}$$
 
 
 
-## Level 2 predictors
-
-Level 1: $${Y}_{ti} = \beta_{0i}  + \beta_{1j}time_{ti} + \varepsilon_{ti}$$ 
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
-
--------
-
-
-Combined $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} Time_{ti} + U_{0i} + U_{1j}Time_{ti} + \varepsilon_{ti}$$
-
-$${Y}_{ti} = [\gamma_{00} + \gamma_{01}G_{i}+ U_{0i}]  + [(\gamma_{10}  + U_{1i})(Time_{ti})] + \varepsilon_{ti}$$
-
-------------
-
--   Level 2 refers to Between-Person (BP) Variation, INTER-individual, Differences, Time-Invariant, make comparisons across individuals.
-
-- Some variables can be both depending on how you measure them. E.g. Age
-
-- Level 1 and Level 2 can be differentiated in your dataset by which one repeats vs which is consistent. 
-
-
-
-## Cross level interactions
-
-level 1: $${Y}_{ti} = \beta_{0i}  + \beta_{1i}time_{ti} + \varepsilon_{ti}$$ Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} + \gamma_{11}G_{i} + U_{1i}$$
-
-$${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (time_{ti}) + \gamma_{11}(G_{i}*time_{ti}) +  U_{0j} + U_{1i}(time_{ti}) + \varepsilon_{ti}$$
-
-$${Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(time_{ti})] + \varepsilon_{ti}$$
 
 
 
