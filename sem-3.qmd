@@ -1,7 +1,7 @@
 ---
 title: SEM
 format: revealjs
-editor: visual
+editor: source
 execute:
   echo: true
 html:
@@ -49,7 +49,7 @@ Triangle = means
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE, messages = FALSE, warnings = FALSE}
+```{r}
 #| code-fold: true
 
 HolzingerSwineford1939 <- read_csv("HolzingerSwineford1939")
@@ -83,11 +83,21 @@ semPaths(fit.1, "std", intercepts = TRUE)
 
 -   The key components are the a) factor loadings, b) residuals, and c) variance of latent variable. We decide whether they are free or constrained.
 
+------------------------------------------------------------------------
+
+![](SEMe1.png)
+
+------------------------------------------------------------------------
+
+The factor loadings (eg $\lambda_1$) in a standard SEM are estimated in the same way regressions are, and they index the strength between the item and the latent variable.
+
+$$ \Lambda = \begin{bmatrix} \lambda_1\\  \lambda_2\\ \lambda_3\\ \end{bmatrix}$$
+
 ## Classical test theory interpretation
 
 -   Latent construct = what the indicators share in common
 -   Indicators represent the sum of True Score variance + Item specific variance + Random error
--   Variance of the latent variable represents the amount of common information. Variance represents that meaningful differences btwn people.
+-   Variance of the latent variable represents the amount of common information. Variance represents that meaningful differences between people.
 -   The residual errors (disturbances) represent the amount of information unique to each indicator. A combination of error and item-specific variance.
 -   The extent of the connection between the latent variable and the indicators is represented as a factor loading.
 
@@ -103,15 +113,6 @@ True score variance can be thought of as consisting as a combination of:
 
 -   For longitudinal models, occasion specific variance can lead to biased estimates. We want to separate the occasion variance from the overall construct variance.
 
-## Formative indicators
-
--   These pretty pictures imply that the latent variables "cause" the indicators. This is the standard view and are referred to as reflexive indicators.
-
--   There is another approach, formative indicators, where indicators "cause" the latent variable. It is not real, only a combination of variables.
-
--   An example of this is SES. SES does not 'exist' but is a socially constructed idea.
-
-------------------------------------------------------------------------
 
 ## Measurement error
 
@@ -123,7 +124,33 @@ True score variance can be thought of as consisting as a combination of:
 
 -   "Theoretically error free". The latent variable is not only filled with true score variance (see above re: occasion and method variance). Unless you have multiple methods and occasions it is hard to parse them apart.
 
+## How does this work?
+
+In Classical Test Theory (CTT), any observed variable $X$ is a composite of a True Score ($T$) and random Error ($E$):$$X = T + E$$
+
+If you calculate the variance of $X$, assuming error is uncorrelated with the true score, you get:$$Var(X) = Var(T) + Var(E)$$
+
+The observed correlation ($r_{obs}$) is always smaller than the true correlation ($r_{true}$) because it is multiplied by the square root of the reliabilities ($\rho$):$$r_{obs} = r_{true} \sqrt{\rho_X \rho_Y}$$
+
+------------------------------------------------------------------------
+
+$$ y =  \Lambda *  \boldsymbol{\eta_i} + \epsilon_i $$ The model-implied covariance matrix ($\boldsymbol{\Sigma}$) can be decomposed into two distinct matrices:
+
+$$\boldsymbol{\Sigma} = \boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}' + \boldsymbol{\Theta}$$ 
+$\boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}'$ (Common Variance): This matrix represents the variance shared among items—the "signal." $\boldsymbol{\Theta}$ (Unique Variance): This matrix (usually diagonal) represents the measurement error
+
+The model effectively "subtracts" the noise from the total variance. The Structural Model (the regressions between latent factors) then operates exclusively on $\boldsymbol{\Phi}$ (the covariance of the true scores)
+
+------------------------------------------------------------------------
+
+Maximum Likelihood (usually) solves for parameters that minimize the difference between the observed Covariance Matrix ($S$) and the Model-Implied Covariance Matrix ($\Sigma(\theta)$)
+
+Finds values for the loadings ($\Lambda$) and error variances ($\Theta$) such that the remaining structure perfectly explains the correlations. The "Latent Variable" is essentially a weighted prediction based purely on the shared variance ($\Lambda$), leaving the residuals ($\epsilon$) behind
+
+
 ## Path model
+
+- Once we have a measurement model, we can examine the associations between constructs
 
 -   The path model component can be in addition to a measurement model or separate from them.
 
@@ -169,13 +196,6 @@ fit.2 <- cfa(mod.2, data=HolzingerSwineford1939)
 semPaths(fit.2)
 ```
 
-## Estimating an SEM model
-
--   Compare our model implied associations to actual associations.
-
--   In addition to setting the measurement model and paths we may want to put apriori constraining parameters (variances/covariances/regressions) to reflect how we think variables are related.
-
--   Then we use or ML algorithm to get our model implied covariances/means as close as possible to the observed covariances/means.
 
 ## Fit Indices
 
@@ -201,11 +221,11 @@ semPaths(fit.2)
 
 ## Setting the scale
 
--   We are trying to measure clouds. Need to define the scale of a latent variable because there is no inherent scale of measurement.
+-   Need to define the scale of a latent variable because there is no inherent scale of measurement.
 
--   Largely irrelevant as to what scale is chosen just as centering or standardizing yield no substantive changes.
+-   Largely irrelevant as to what scale is chosen as they are algebraic equivalent, similar to centering or standardizing.
 
--   Instead, scaling serves to establish a point of reference so as to interpret other parameters.
+-   Scaling serves to establish a point of reference so as to interpret other parameters.
 
 ------------------------------------------------------------------------
 
@@ -243,13 +263,22 @@ semPaths(fit.2)
 
 ## Regarding means
 
--   SEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e. means are not necessary.\
+-   SEM is also known as covariance structure analysis. You can do SEM using only variance-covariance matrices. I.e. means are not necessary.
+
 -   This is cool because you can technically reproduce the analyses of a paper if they give you a correlation matrix of study variables.
--   Given we are interested in change across time,we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on. 
+
+-   Given we are interested in change across time, we will be interested in means. Latent variables by themselves do not have any inherent metric, it is up to us to choose the scale they are on.
+
+
+## Means
+
+
+
+
 
 ## Types of longitudinal SEM models
 
-** not an actual taxonomy
+\*\* not an actual taxonomy
 
 1.  Growth models
 
@@ -265,7 +294,7 @@ semPaths(fit.2)
 
 7.  Mixture or class based longitudinal models
 
-8.  Dynamic factor and dSEM models. 
+8.  Dynamic factor and dSEM models.
 
 ## lavaan
 
@@ -364,6 +393,24 @@ semPaths(gm.1)
 
 ------------------------------------------------------------------------
 
+![](SEMe2.png)
+
+The intercept is no longer as we are capturing mean differences in the latent variables
+
+------------------------------------------------------------------------
+
+Instead of freely estimating the elements of the factor loading matrix we fix them to determine the latent factor.
+
+$$ \Lambda = \begin{bmatrix} 1 \ 0 \\  1 \ 1 \\ 1 \ 2\\ 1 \ 3 \end{bmatrix}$$
+
+------------------------------------------------------------------------
+
+Each latent factor can be characterized by two parameters, the factor intercept and residual (just like MLM)
+
+$$\eta_i = \alpha + \zeta_i$$
+
+------------------------------------------------------------------------
+
 ```{r}
 #| code-fold: true
 
@@ -383,11 +430,9 @@ fit1.mlm.c <- lmer(alcuse ~  age_14 + (age_14 | id), data = alcohol)
 summary(fit1.mlm.c)
 ```
 
-------------------------------------------------------------------------
+## heteroscedasticity
 
-What is the same, what is different?
-
-One notable difference is there is no residual. Instead of a single residual/sigma that we have with MLM here we have separate residuals.
+What is the same, what is different? One notable difference is there is no residual. Instead of a single residual/sigma that we have with MLM here we have separate residuals.
 
 The default of MLM is that these residuals are the same across measurement occasions. How could we model that here?
 

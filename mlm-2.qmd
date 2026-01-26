@@ -177,7 +177,8 @@ simp<- tribble(
 10,5,3,7)
 ```
 
-```{r, echo=FALSE}
+```{r}
+#| code-fold: true
 simp %>% 
 ggplot(aes(x=study, y=test.score)) +
     geom_point(aes(colour = factor(group)))
@@ -187,7 +188,8 @@ ggplot(aes(x=study, y=test.score)) +
 
 Could aggragate across group
 
-```{r, echo = FALSE}
+```{r}
+#| code-fold: true
 simp.1<- tribble(
   ~ID, ~group,  ~test.score, ~study,
   1,1,6,2,
@@ -197,7 +199,7 @@ simp.1<- tribble(
   5,5,2,6)
 ```
 
-```{r, echo=FALSE}
+```{r}
 simp.1 %>% 
 ggplot(aes(x=study, y=test.score)) +
     geom_point() +    
@@ -207,7 +209,8 @@ ggplot(aes(x=study, y=test.score)) +
 
 ------------------------------------------------------------------------
 
-```{r, echo = FALSE}
+```{r}
+#| code-fold: true
 simp %>% 
 ggplot(aes(x=study, y=test.score, group = group)) +
     geom_point(aes(colour = factor(group))) +   
@@ -503,6 +506,16 @@ b5_soep_long <- soep_long %>%
     distinct())
 
 
+b5_soep_long.item <- soep_long %>%
+  filter(type == "Big 5") %>% 
+  group_by(Procedural__SID, trait,item, year) %>% 
+  dplyr::summarize(value = mean(value, na.rm = T)) %>% 
+  ungroup() %>% 
+  left_join(soep_long %>% 
+    select(Procedural__SID, DOB = Demographic__DOB, Sex = Demographic__Sex) %>%
+    distinct())
+
+
 ```
 
 ```{r, echo = TRUE}
@@ -522,6 +535,7 @@ b5_long <- b5_soep_long %>%
 ```
 
 ```{r}
+#| code-fold: true
 b5_long <-b5_long %>% 
   group_by(ID) %>%
   filter(!n() == 1) %>% 
@@ -530,7 +544,7 @@ b5_long <-b5_long %>%
 
 
 
-```{r, echo = TRUE}
+```{r}
 str(b5_long)
 ```
 
@@ -552,6 +566,7 @@ summary(mod.1)
 ------------------------------------------------------------------------
 
 ```{r}
+#| code-fold: true
 library(parameters) 
 
 model_parameters(mod.1)
@@ -562,6 +577,7 @@ model_parameters(mod.1)
 ICC By hand or
 
 ```{r}
+#| code-fold: true
 library(performance) 
 model_performance(mod.1)
 ```
@@ -595,7 +611,8 @@ These extend the flexibility of predict (base) and similar functions from emmean
 
 ------------------------------------------------------------------------
 
-```{r, echo = TRUE}
+```{r}
+#| code-fold: true
 library(modelbased)
 estimate_prediction(mod.1) %>% 
   head() 
@@ -605,6 +622,7 @@ estimate_prediction(mod.1) %>%
 ------------------------------------------------------------------------
 
 ```{r}
+#| code-fold: true
 library(marginaleffects)
 
 predictions(mod.1) %>%  head()
@@ -615,6 +633,7 @@ predictions(mod.1) %>%  head()
 ------
 
 ```{r}
+#| code-fold: true
 predictions(mod.1, newdata = datagrid(ID = c(901, 2301)))
 ```
 
@@ -685,7 +704,7 @@ $${\beta}_{1i} = \gamma_{10}$$
 
 ```{r}
 #| code-fold: true
-mod.2 <- glmmTMB(C ~ 1 + year + (1 | ID), data=b5_long)
+mod.2 <- glmmTMB(C ~ 1 + year + (1 | ID), data = b5_long)
 summary(mod.2)
 ```
 
@@ -693,7 +712,10 @@ summary(mod.2)
 
 ```{r}
 #| code-fold: true
-b5_long<- b5_long %>%  
+
+b5_long <- b5_long |> 
+  mutate(ID = Procedural__SID)|> 
+  mutate(ID = as.factor(ID)) |> 
   mutate(year = as.numeric(year))
   
 mod.3 <- lmer(C ~ 1 + year + (1 | ID), data=b5_long)
@@ -925,14 +947,6 @@ Two ends of an extreme, similar to no and full pooling.
 
 
 
-## Revisit 2 wave assessment
-
-Where is our error for a 2 wave model and: 
-
-- Assuming random slopes 
-- Assuming no random slopes
-
-
 ## Centering
 
 Because mlms are regressions, and because mlms involve interactions, it is important to consider how your predictors zero point is defined.
@@ -1079,7 +1093,7 @@ anova(mod.2, mod.1)
 $$\begin{pmatrix} {U}_{0i} \\ {U}_{1i} \end{pmatrix} \sim \mathcal{N} \begin{pmatrix} 0, & \tau_{00}^{2} & \tau_{01}\\ 0, & \tau_{01} & \tau_{10}^{2} \end{pmatrix}$$
 
 The variances and the covariation (correlations) can be of substantive interest. What do each of these terms reflect? What if one of the terms was zero, what would that mean?
-
+ 
 ## residual
 
 $$ {\varepsilon}_{ti} \sim \mathcal{N}(0, \sigma^{2})  $$ Much like in normal regression models we often use $\sigma^{2}$ as a means to describe the fit of the model
@@ -1109,10 +1123,169 @@ The correlation among random intercept and slopes is directly related to centeri
 ![](5.4.png){width="550px"}
 
 
-## Other types of models
+## Dichotomous items
 
 
-Depending on your DV, you might not want to have a Gaussian sampling distribution. Instead you may want something like a Poisson or a negative binomial if you are using some sort of count data. You can do this somewhat with lme4. However, the BRMS package -- which uses Bayesian estimation -- has many more possibilities: geometric, log normal, weibull, exponential, gamma, Beta, hurdle Poisson/gamma/negative binomial, zero inflated beta/Poisson/negative binomial, cumulative. Maybe we will fit some of these later in the semester. 
+- Depending on your DV, you might not want to have a Gaussian sampling distribution. 
+
+- One option is to average to get something semi-continuous. The other is to fit an IRT model. 
+
+## Item difficulty 
+
+Difficultly is one factors that influences performance (think hard math problems). We assume that those who have high levels of the construct (cog ability, neuroticism) are more likely to correctly answer hard problems than those that are low on the construct (theta).  
+
+An item's difficulty is defined as the trait level required for someone to have a probability of 50% correctly answering/endorsing. 
+
+An item with a difficult of 0 (standardized values), person with a 0 theta has a 50:50 shot, whereas someone with a 1 theta will have a greater probability. For an item difficulty of 1.5, a person needs a 1.5 theta to have a 50:50 chance.  
+
+
+-------------
+
+## 1-PL (Rasch Model)
+
+$$ y_{pi}  \sim  \text{Bernoulli}(p_{pi})$$
+$$ logit(p_{pi}) = \beta_0 + \theta_p + \delta_i $$ 
+
+(usually difficulty is defined as $\theta_p$ - $\delta_i$)
+
+$$ \theta_p  \sim \text{Normal}(0, \sigma_\theta)$$
+$$ \delta_i  \sim \text{Normal}(0, \sigma_\delta)$$
+
+
+
+---------
+
+```{r}
+#| code-fold: true
+set.seed(123)
+n_people <- 200
+n_items <- 10
+n_waves <- 4
+
+item_difficulties <- runif(n_items, -2, 2)
+person_intercepts <- rnorm(n_people, mean = 0, sd = 1) 
+person_slopes <- rnorm(n_people, mean = 0.5, sd = 0.2) 
+
+df <- expand.grid(ID = 1:n_people, 
+                  Time = 0:(n_waves-1), 
+                  Item = 1:n_items) 
+df <- df |>   
+mutate(
+    Ability = person_intercepts[ID] + (person_slopes[ID] * Time),
+    Difficulty = item_difficulties[Item],
+    Logit = Ability - Difficulty,
+    Prob = plogis(Logit),
+    Response = rbinom(8000, 1, Prob),
+    Item_Factor = factor(Item)
+  )
+
+irt_growth_model <- glmer(
+  Response ~ 0 + Item_Factor + Time + (Time | ID), 
+  data = df, 
+  family = binomial("logit"),
+  control = glmerControl(optimizer = "bobyqa") 
+)
+
+summary(irt_growth_model)
+```
+
+----------------------
+
+```{r}
+#| code-fold: true
+item_params <- data.frame(
+  Item = c("Item 5 (Easy)", "Item 7 (Medium)", "Item 6 (Hard)"),
+  Difficulty = c(-1.79240, -0.10075, 2.02202), # The 'b' parameter
+  Discrimination = c(1, 1, 1)   # The 'a' parameter (Set to 1 for Rasch)
+)
+
+grid <- expand.grid(
+  Theta = seq(-3, 3, by = 0.1),
+  Item = item_params$Item
+)
+
+grid <- left_join(grid, item_params, by = "Item")
+
+grid$Probability <- 1 / (1 + exp(-grid$Discrimination * (grid$Theta - grid$Difficulty)))
+
+ggplot(grid, aes(x = Theta, y = Probability, color = Item)) +
+  geom_line(size = 1.2) +
+  geom_vline(data = item_params, aes(xintercept = Difficulty, color = Item),
+             linetype = "dashed", alpha = 0.5) +
+  
+  labs(title = "Item Characteristic Curves (ICCs)",
+       x = "Theta (Latent Ability)",
+       y = "Probability of Endorsement") +
+  theme_minimal()
+```
+
+## Accounting for measurement error
+
+With likert scales we can also estimate an IRT model. Will use cumulative likelihood aka ordered categorical.   
+
+We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. Otherwise similar to before. 
+
+$$\ln\left(\dfrac{Pr(y_i)}{Pr(y_i)}\right)=\ln\left(\dfrac{Pr(y_i \leq k)}{1-Pr(y_i \leq k)}\right)= \alpha_k$$
+
+
+------------------
+
+![](grm1.png)
+
+
+
+## Discrimination
+
+How well items can differentiate a person who has high theta levels from a person who has low theta levels? Related to how strongly the item is associated with the latent construct. Is it a good item? Does it have construct irrelevant content? 
+
+Akin to item construct correlation. Or item factor loadings. 
+
+Positive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta. 
+
+-------------
+
+![](2pl.png)
+
+## graded response model growth model
+
+
+$$\ln \left( \frac{P(Y_{ipt} \ge k)}{1 - P(Y_{ipt} \ge k)} \right) = \alpha_i (\theta_{pt} - \beta_{ik})$$ 
+
+$\alpha_i$: The discrimination (slope) for item $i$.$\beta_{ik}$: The category threshold (difficulty) for responding $k$ or higher on item $i$.$\theta_{pt}$: The latent ability of person $p$ at time $t$.
+
+
+$$\theta_{pt} = \eta_{0p} + \eta_{1p} \cdot \text{Time}_{t} + \zeta_{pt}$$
+
+
+----------------
+
+$$P(Y_{ipt} \ge k) = \frac{\exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}{1 + \exp \left[ \alpha_i \left( (\eta_{0p} + \eta_{1p} \text{Time}_{t}) - \beta_{ik} \right) \right]}$$
+
+-------------
+
+```{r, eval = FALSE}
+
+b5_soep_long.item.E <- b5_soep_long.item |> filter(trait == "E")
+b5_soep_long.item$value <- factor(b5_soep_long.item$value, ordered = TRUE)
+
+b5_soep_long.item.E<- b5_soep_long.item.E |> 
+   mutate(ID = Procedural__SID) |> 
+  mutate(ID = as.factor(ID)) |> 
+  mutate(year = as.numeric(year)) |> 
+  mutate(item = as.factor(item))
+
+bform <- bf( value ~ 1 + year + (1 | item) + (1 + year | ID), 
+  disc ~ 1 + (1 | item))
+
+grgnm <- brm(
+  formula = bform, 
+  family = brmsfamily("cumulative", "logit"),
+  cores = 4, chains = 2,
+  iter = 500,
+data = b5_soep_long.item.E, 
+file = "grm.growth")
+```
+
 
 
 
@@ -1126,6 +1299,7 @@ Depending on your DV, you might not want to have a Gaussian sampling distributio
 
 ```{r}
 #| code-fold: true
+library(lme4)
 set.seed(123)
 
 n_per_cohort <- 100
@@ -1201,6 +1375,9 @@ $${\beta}_{2i} = \gamma_{20} + U_{2i}$$
 - Remember that MLM is just like a lot of separate regressions done at Level 1. 
 
 - What happens when we have multiple predictors? The effect of any one variable partials out the common variance, the same as with multiple regression. 
+
+
+
 
 
 

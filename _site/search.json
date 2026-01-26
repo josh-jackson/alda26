@@ -368,7 +368,7 @@
     "href": "mlm-2.html#example",
     "title": "MLM",
     "section": "Example",
-    "text": "Example\n\n\nCode\nlibrary(tidyverse)\nlibrary(broom)\n\nsimp&lt;- tribble(\n  ~ID, ~group,  ~test.score, ~study,\n1,1,5,1,\n2,1,7,3,\n3,2,4,2,\n4,2,6,4,\n5,3,3,3,\n6,3,5,5,\n7,4,2,4,\n8,4,4,6,\n9,5,1,5,\n10,5,3,7)"
+    "text": "Example\n\n\nCode\nlibrary(tidyverse)\nlibrary(broom)\n\nsimp&lt;- tribble(\n  ~ID, ~group,  ~test.score, ~study,\n1,1,5,1,\n2,1,7,3,\n3,2,4,2,\n4,2,6,4,\n5,3,3,3,\n6,3,5,5,\n7,4,2,4,\n8,4,4,6,\n9,5,1,5,\n10,5,3,7)\n\n\n\n\nCode\nsimp %&gt;% \nggplot(aes(x=study, y=test.score)) +\n    geom_point(aes(colour = factor(group)))"
   },
   {
     "objectID": "mlm-2.html#aggregation-obscures-hypotheses",
@@ -536,7 +536,7 @@
     "href": "mlm-2.html#gsoep-example",
     "title": "MLM",
     "section": "GSOEP EXAMPLE",
-    "text": "GSOEP EXAMPLE\n\n\nCode\nlibrary(plyr)\nlibrary(tidyverse)\nlibrary(tidybayes)\nlibrary(psych)\nlibrary(lme4)\nlibrary(brms)\n\ncodebook &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/codebook.csv\")\n\ncodebook &lt;- codebook %&gt;% \n    mutate(old_name = str_to_lower(old_name))\n\nold.names &lt;- codebook$old_name # get old column names\nnew.names &lt;- codebook$new_name # get new column names\n\nsoep &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/soepdata.csv\")\n\n soep &lt;-  soep %&gt;% # read in data\n  select(all_of(old.names)) %&gt;% # select the columns from our codebook\n  setNames(new.names) # rename columns with our new names\n\n\nsoep &lt;- soep %&gt;%\n  mutate_all(~as.numeric(mapvalues(., from = seq(-1,-7, -1), to = rep(NA, 7), warn_missing = F)))\n\nsoep_long &lt;- soep %&gt;%\n  pivot_longer(cols = c(-contains(\"Procedural\"), -contains(\"Demographic\")),\n               names_to = \"item\", \n               values_to = \"value\", \n               values_drop_na = TRUE) %&gt;%\n  left_join(codebook %&gt;% select(item = new_name, reverse, mini, maxi)) %&gt;% \n  separate(item, c(\"type\", \"item\"), sep = \"__\") %&gt;% \n  separate(item, c(\"item\", \"year\"), sep = \"[.]\") %&gt;% \n  separate(item, c(\"trait\", \"item\"), sep = \"_\") %&gt;% \n  mutate(value = as.numeric(value), # change to numeric\n         value = ifelse(reverse == -1, \n            reverse.code(-1, value, mini = mini, maxi = maxi), value))\n\nb5_soep_long &lt;- soep_long %&gt;%\n  filter(type == \"Big 5\") %&gt;% \n  group_by(Procedural__SID, trait, year) %&gt;% \n  dplyr::summarize(value = mean(value, na.rm = T)) %&gt;% \n  ungroup() %&gt;% \n  left_join(soep_long %&gt;% \n    select(Procedural__SID, DOB = Demographic__DOB, Sex = Demographic__Sex) %&gt;%\n    distinct())\n\n\n\nstr(b5_soep_long)\n\ntibble [151,186 × 6] (S3: tbl_df/tbl/data.frame)\n $ Procedural__SID: num [1:151186] 901 901 901 901 901 901 901 901 901 901 ...\n $ trait          : chr [1:151186] \"A\" \"A\" \"A\" \"C\" ...\n $ year           : chr [1:151186] \"2005\" \"2009\" \"2013\" \"2005\" ...\n $ value          : num [1:151186] 4.67 4.33 4.67 5 5 ...\n $ DOB            : num [1:151186] 1951 1951 1951 1951 1951 ...\n $ Sex            : num [1:151186] 2 2 2 2 2 2 2 2 2 2 ..."
+    "text": "GSOEP EXAMPLE\n\n\nCode\nlibrary(plyr)\nlibrary(tidyverse)\nlibrary(tidybayes)\nlibrary(psych)\nlibrary(lme4)\nlibrary(brms)\n\ncodebook &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/codebook.csv\")\n\ncodebook &lt;- codebook %&gt;% \n    mutate(old_name = str_to_lower(old_name))\n\nold.names &lt;- codebook$old_name # get old column names\nnew.names &lt;- codebook$new_name # get new column names\n\nsoep &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2021/master/soepdata.csv\")\n\n soep &lt;-  soep %&gt;% # read in data\n  select(all_of(old.names)) %&gt;% # select the columns from our codebook\n  setNames(new.names) # rename columns with our new names\n\n\nsoep &lt;- soep %&gt;%\n  mutate_all(~as.numeric(mapvalues(., from = seq(-1,-7, -1), to = rep(NA, 7), warn_missing = F)))\n\nsoep_long &lt;- soep %&gt;%\n  pivot_longer(cols = c(-contains(\"Procedural\"), -contains(\"Demographic\")),\n               names_to = \"item\", \n               values_to = \"value\", \n               values_drop_na = TRUE) %&gt;%\n  left_join(codebook %&gt;% select(item = new_name, reverse, mini, maxi)) %&gt;% \n  separate(item, c(\"type\", \"item\"), sep = \"__\") %&gt;% \n  separate(item, c(\"item\", \"year\"), sep = \"[.]\") %&gt;% \n  separate(item, c(\"trait\", \"item\"), sep = \"_\") %&gt;% \n  mutate(value = as.numeric(value), # change to numeric\n         value = ifelse(reverse == -1, \n            reverse.code(-1, value, mini = mini, maxi = maxi), value))\n\nb5_soep_long &lt;- soep_long %&gt;%\n  filter(type == \"Big 5\") %&gt;% \n  group_by(Procedural__SID, trait, year) %&gt;% \n  dplyr::summarize(value = mean(value, na.rm = T)) %&gt;% \n  ungroup() %&gt;% \n  left_join(soep_long %&gt;% \n    select(Procedural__SID, DOB = Demographic__DOB, Sex = Demographic__Sex) %&gt;%\n    distinct())\n\n\nb5_soep_long.item &lt;- soep_long %&gt;%\n  filter(type == \"Big 5\") %&gt;% \n  group_by(Procedural__SID, trait,item, year) %&gt;% \n  dplyr::summarize(value = mean(value, na.rm = T)) %&gt;% \n  ungroup() %&gt;% \n  left_join(soep_long %&gt;% \n    select(Procedural__SID, DOB = Demographic__DOB, Sex = Demographic__Sex) %&gt;%\n    distinct())\n\n\n\nstr(b5_soep_long)\n\ntibble [151,186 × 6] (S3: tbl_df/tbl/data.frame)\n $ Procedural__SID: num [1:151186] 901 901 901 901 901 901 901 901 901 901 ...\n $ trait          : chr [1:151186] \"A\" \"A\" \"A\" \"C\" ...\n $ year           : chr [1:151186] \"2005\" \"2009\" \"2013\" \"2005\" ...\n $ value          : num [1:151186] 4.67 4.33 4.67 5 5 ...\n $ DOB            : num [1:151186] 1951 1951 1951 1951 1951 ...\n $ Sex            : num [1:151186] 2 2 2 2 2 2 2 2 2 2 ..."
   },
   {
     "objectID": "mlm-2.html#what-do-the-random-effects-look-like",
@@ -1103,7 +1103,7 @@
     "href": "mlm-2.html#growth-curve-example",
     "title": "MLM",
     "section": "Growth curve example",
-    "text": "Growth curve example\n\n\nCode\nmod.2 &lt;- glmmTMB(C ~ 1 + year + (1 | ID), data=b5_long)\nsummary(mod.2)\n\n\n Family: gaussian  ( identity )\nFormula:          C ~ 1 + year + (1 | ID)\nData: b5_long\n\n      AIC       BIC    logLik -2*log(L)  df.resid \n  42779.9   42819.9  -21385.0   42769.9     22076 \n\nRandom effects:\n\nConditional model:\n Groups   Name        Variance Std.Dev.\n ID       (Intercept) 0.1378   0.3712  \n Residual             0.3008   0.5485  \nNumber of obs: 22081, groups:  ID, 8565\n\nDispersion estimate for gaussian family (sigma^2): 0.301 \n\nConditional model:\n            Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept) 4.752544   0.007566   628.2   &lt;2e-16 ***\nyear2009    0.009781   0.008756     1.1    0.264    \nyear2013    0.014583   0.009774     1.5    0.136    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
+    "text": "Growth curve example\n\n\nCode\nmod.2 &lt;- glmmTMB(C ~ 1 + year + (1 | ID), data = b5_long)\nsummary(mod.2)\n\n\n Family: gaussian  ( identity )\nFormula:          C ~ 1 + year + (1 | ID)\nData: b5_long\n\n      AIC       BIC    logLik -2*log(L)  df.resid \n  42779.9   42819.9  -21385.0   42769.9     22076 \n\nRandom effects:\n\nConditional model:\n Groups   Name        Variance Std.Dev.\n ID       (Intercept) 0.1378   0.3712  \n Residual             0.3008   0.5485  \nNumber of obs: 22081, groups:  ID, 8565\n\nDispersion estimate for gaussian family (sigma^2): 0.301 \n\nConditional model:\n            Estimate Std. Error z value Pr(&gt;|z|)    \n(Intercept) 4.752544   0.007566   628.2   &lt;2e-16 ***\nyear2009    0.009781   0.008756     1.1    0.264    \nyear2013    0.014583   0.009774     1.5    0.136    \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1"
   },
   {
     "objectID": "mlm-2.html#feed-our-model",
@@ -1160,5 +1160,47 @@
     "title": "homeworks",
     "section": "",
     "text": "Longitudinal MLM homework #1"
+  },
+  {
+    "objectID": "mlm-2.html#dichotomous-items",
+    "href": "mlm-2.html#dichotomous-items",
+    "title": "MLM",
+    "section": "Dichotomous items",
+    "text": "Dichotomous items\n\nDepending on your DV, you might not want to have a Gaussian sampling distribution.\nOne option is to average to get something semi-continuous. The other is to fit an IRT model."
+  },
+  {
+    "objectID": "mlm-2.html#item-difficulty",
+    "href": "mlm-2.html#item-difficulty",
+    "title": "MLM",
+    "section": "Item difficulty",
+    "text": "Item difficulty\nDifficultly is one factors that influences performance (think hard math problems). We assume that those who have high levels of the construct (cog ability, neuroticism) are more likely to correctly answer hard problems than those that are low on the construct (theta).\nAn item’s difficulty is defined as the trait level required for someone to have a probability of 50% correctly answering/endorsing.\nAn item with a difficult of 0 (standardized values), person with a 0 theta has a 50:50 shot, whereas someone with a 1 theta will have a greater probability. For an item difficulty of 1.5, a person needs a 1.5 theta to have a 50:50 chance."
+  },
+  {
+    "objectID": "mlm-2.html#pl-rasch-model",
+    "href": "mlm-2.html#pl-rasch-model",
+    "title": "MLM",
+    "section": "1-PL (Rasch Model)",
+    "text": "1-PL (Rasch Model)\n\\[ y_{pi}  \\sim  \\text{Bernoulli}(p_{pi})\\] \\[ logit(p_{pi}) = \\beta_0 + \\theta_p + \\delta_i \\]\n(usually difficulty is defined as \\(\\theta_p\\) - \\(\\delta_i\\))\n\\[ \\theta_p  \\sim \\text{Normal}(0, \\sigma_\\theta)\\] \\[ \\delta_i  \\sim \\text{Normal}(0, \\sigma_\\delta)\\]"
+  },
+  {
+    "objectID": "mlm-2.html#accounting-for-measurement-error",
+    "href": "mlm-2.html#accounting-for-measurement-error",
+    "title": "MLM",
+    "section": "Accounting for measurement error",
+    "text": "Accounting for measurement error\nWith likert scales we can also estimate an IRT model. Will use cumulative likelihood aka ordered categorical.\nWe want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc. Otherwise similar to before.\n\\[\\ln\\left(\\dfrac{Pr(y_i)}{Pr(y_i)}\\right)=\\ln\\left(\\dfrac{Pr(y_i \\leq k)}{1-Pr(y_i \\leq k)}\\right)= \\alpha_k\\]"
+  },
+  {
+    "objectID": "mlm-2.html#discrimination",
+    "href": "mlm-2.html#discrimination",
+    "title": "MLM",
+    "section": "Discrimination",
+    "text": "Discrimination\nHow well items can differentiate a person who has high theta levels from a person who has low theta levels? Related to how strongly the item is associated with the latent construct. Is it a good item? Does it have construct irrelevant content?\nAkin to item construct correlation. Or item factor loadings.\nPositive discrimination means item is associated with the latent trait. Zero means there is no association. Negative means those that score high are likely to score low on theta."
+  },
+  {
+    "objectID": "mlm-2.html#graded-response-model-growth-model",
+    "href": "mlm-2.html#graded-response-model-growth-model",
+    "title": "MLM",
+    "section": "graded response model growth model",
+    "text": "graded response model growth model\n\\[\\ln \\left( \\frac{P(Y_{ipt} \\ge k)}{1 - P(Y_{ipt} \\ge k)} \\right) = \\alpha_i (\\theta_{pt} - \\beta_{ik})\\]\n\\(\\alpha_i\\): The discrimination (slope) for item \\(i\\).\\(\\beta_{ik}\\): The category threshold (difficulty) for responding \\(k\\) or higher on item \\(i\\).\\(\\theta_{pt}\\): The latent ability of person \\(p\\) at time \\(t\\).\n\\[\\theta_{pt} = \\eta_{0p} + \\eta_{1p} \\cdot \\text{Time}_{t} + \\zeta_{pt}\\]"
   }
 ]
