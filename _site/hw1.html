@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Longitudinal 2026 - homeworks</title>
+<title>Longitudinal 2026 - hw1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -94,7 +94,7 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">readings</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./homeworks.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="./homeworks.html" rel="" target="">
  <span class="menu-text">homeworks</span></a>
   </li>  
   <li class="nav-item">
@@ -120,7 +120,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">homeworks</h1>
+<h1 class="title">hw1</h1>
 </div>
 
 
@@ -135,8 +135,18 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<p>Answer the questions below using the HW1 dataset from github <a href="https://github.com/josh-jackson/alda24/tree/main/homework%20data">here</a>. Turn in by emailing the .qmd/Rmd file and a pdf/html file to j.jackson at wustl.edu. Due 2/9 by midnight.</p>
+<p>There are 7 waves of data, each with a different file (hw1-t1, hw1-t2, etc). There are five different types of repeated measures variables, all from “the Big Five” of personality. Each of these five constructs have 9 items associated with them. See hw-1 codebook for basic details.</p>
+<p>To answer the questions below you will need to do a number of initial steps (bring data sets into R, create composites and reverse code so the variables are scored in the correct direction). You may create a codebook by modifying the existing one or by doing it all in R – it is your choice.</p>
 <ol type="1">
-<li><a href="./hw1.html">Longitudinal MLM homework #1</a></li>
+<li><p>How many observations are there? How many subjects? How many subjects have more than 3 observations? Create a nice table to answer these questions.</p></li>
+<li><p>Run a simple growth model with a random slope for the extraversion (E) composite.</p>
+<p>a. Describe why you coded time in the manner that you did.</p>
+<p>b. Interpret each coefficient, including the random effects and correlation between the slope and the intercept.</p>
+<p>c. Create a figure that represents the average or fixed effect trajectory and then individual trajectories ie a spaghetti plot.</p>
+<p>d. Create a figure that represents that amount of variation in the slope.</p></li>
+<li><p>Define the intercept as the final time point. How does this differ form the previous model – what in the output/interpretation is the same/different?</p></li>
+<li><p>Should the extraversion random slope be included or should slope be fixed?</p></li>
 </ol>
 
 

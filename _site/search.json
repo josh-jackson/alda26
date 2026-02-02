@@ -1237,5 +1237,12 @@
     "title": "MLM",
     "section": "Likert IRT",
     "text": "Likert IRT\nWith likert scales we can also estimate an IRT model. We want to estimate the cutpoints where someone goes from answering a 1 to a 2 or a 2 to a 3, etc."
+  },
+  {
+    "objectID": "hw1.html",
+    "href": "hw1.html",
+    "title": "hw1",
+    "section": "",
+    "text": "Answer the questions below using the HW1 dataset from github here. Turn in by emailing the .qmd/Rmd file and a pdf/html file to j.jackson at wustl.edu. Due 2/9 by midnight.\nThere are 7 waves of data, each with a different file (hw1-t1, hw1-t2, etc). There are five different types of repeated measures variables, all from “the Big Five” of personality. Each of these five constructs have 9 items associated with them. See hw-1 codebook for basic details.\nTo answer the questions below you will need to do a number of initial steps (bring data sets into R, create composites and reverse code so the variables are scored in the correct direction). You may create a codebook by modifying the existing one or by doing it all in R – it is your choice.\n\nHow many observations are there? How many subjects? How many subjects have more than 3 observations? Create a nice table to answer these questions.\nRun a simple growth model with a random slope for the extraversion (E) composite.\na. Describe why you coded time in the manner that you did.\nb. Interpret each coefficient, including the random effects and correlation between the slope and the intercept.\nc. Create a figure that represents the average or fixed effect trajectory and then individual trajectories ie a spaghetti plot.\nd. Create a figure that represents that amount of variation in the slope.\nDefine the intercept as the final time point. How does this differ form the previous model – what in the output/interpretation is the same/different?\nShould the extraversion random slope be included or should slope be fixed?"
   }
 ]
