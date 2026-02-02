@@ -453,6 +453,9 @@
 <p>Two headed arrows = correlations/covariances/variances</p>
 <p>Single head arrows = regressions</p>
 <p>Triangle = means</p>
+</section>
+<section class="slide level2">
+
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -490,15 +493,15 @@ Parameter Estimates:
 Regressions:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
   Y ~                                                 
-    X                 0.014    0.022    0.611    0.541
+    X                 0.013    0.020    0.632    0.527
 
 Intercepts:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
-   .Y                -0.108    0.160   -0.675    0.500
+   .Y                -0.165    0.157   -1.051    0.293
 
 Variances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
-   .Y                 1.050    0.149    7.071    0.000</code></pre>
+   .Y                 1.097    0.155    7.071    0.000</code></pre>
 </div>
 </div>
 </section>
@@ -513,16 +516,16 @@ lm(formula = Y ~ X, data = data)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--2.95883 -0.69407  0.02987  0.79451  2.54326 
+-2.47149 -0.85846  0.00866  0.59975  2.36090 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)
-(Intercept) -0.10816    0.16184  -0.668    0.506
-X            0.01360    0.02248   0.605    0.547
+(Intercept) -0.16453    0.15811  -1.041    0.301
+X            0.01267    0.02023   0.626    0.533
 
-Residual standard error: 1.035 on 98 degrees of freedom
-Multiple R-squared:  0.00372,   Adjusted R-squared:  -0.006446 
-F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
+Residual standard error: 1.058 on 98 degrees of freedom
+Multiple R-squared:  0.003984,  Adjusted R-squared:  -0.006179 
+F-statistic: 0.392 on 1 and 98 DF,  p-value: 0.5327</code></pre>
 </div>
 </div>
 </section>
@@ -583,11 +586,91 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <section class="slide level2">
 
 
-<img data-src="SEMe1.png" class="r-stretch"></section>
+<img data-src="SEMe1.png" class="r-stretch"><ul>
+<li>Basically a reverse regression where we know the DV and are estimated the IV</li>
+</ul>
+</section>
 <section class="slide level2">
 
 <p>The factor loadings (eg <span class="math inline">\(\lambda_1\)</span>) in a standard SEM are estimated in the same way regressions are, and they index the strength between the item and the latent variable.</p>
 <p><span class="math display">\[ \Lambda = \begin{bmatrix} \lambda_1\\  \lambda_2\\ \lambda_3\\ \end{bmatrix}\]</span></p>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>lavaan 0.6-19 ended normally after 35 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of model parameters                        30
+
+  Number of observations                           301
+
+Model Test User Model:
+                                                      
+  Test statistic                                85.306
+  Degrees of freedom                                24
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Standard errors                             Standard
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  visual =~                                           
+    x1                1.000                           
+    x2                0.554    0.100    5.554    0.000
+    x3                0.729    0.109    6.685    0.000
+  textual =~                                          
+    x4                1.000                           
+    x5                1.113    0.065   17.014    0.000
+    x6                0.926    0.055   16.703    0.000
+  speed =~                                            
+    x7                1.000                           
+    x8                1.180    0.165    7.152    0.000
+    x9                1.082    0.151    7.155    0.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  visual ~~                                           
+    textual           0.408    0.074    5.552    0.000
+    speed             0.262    0.056    4.660    0.000
+  textual ~~                                          
+    speed             0.173    0.049    3.518    0.000
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .x1                4.936    0.067   73.473    0.000
+   .x2                6.088    0.068   89.855    0.000
+   .x3                2.250    0.065   34.579    0.000
+   .x4                3.061    0.067   45.694    0.000
+   .x5                4.341    0.074   58.452    0.000
+   .x6                2.186    0.063   34.667    0.000
+   .x7                4.186    0.063   66.766    0.000
+   .x8                5.527    0.058   94.854    0.000
+   .x9                5.374    0.058   92.546    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .x1                0.549    0.114    4.833    0.000
+   .x2                1.134    0.102   11.146    0.000
+   .x3                0.844    0.091    9.317    0.000
+   .x4                0.371    0.048    7.779    0.000
+   .x5                0.446    0.058    7.642    0.000
+   .x6                0.356    0.043    8.277    0.000
+   .x7                0.799    0.081    9.823    0.000
+   .x8                0.488    0.074    6.573    0.000
+   .x9                0.566    0.071    8.003    0.000
+    visual            0.809    0.145    5.564    0.000
+    textual           0.979    0.112    8.737    0.000
+    speed             0.384    0.086    4.451    0.000</code></pre>
+</div>
+</div>
 </section>
 <section id="classical-test-theory-interpretation" class="slide level2">
 <h2>Classical test theory interpretation</h2>
@@ -628,9 +711,51 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 </section>
 <section class="slide level2">
 
-<p><span class="math display">\[ y =  \Lambda *  \boldsymbol{\eta_i} + \epsilon_i \]</span> The model-implied covariance matrix (<span class="math inline">\(\boldsymbol{\Sigma}\)</span>) can be decomposed into two distinct matrices:</p>
-<p><span class="math display">\[\boldsymbol{\Sigma} = \boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}' + \boldsymbol{\Theta}\]</span> <span class="math inline">\(\boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}'\)</span> (Common Variance): This matrix represents the variance shared among items—the “signal.” <span class="math inline">\(\boldsymbol{\Theta}\)</span> (Unique Variance): This matrix (usually diagonal) represents the measurement error</p>
-<p>The model effectively “subtracts” the noise from the total variance. The Structural Model (the regressions between latent factors) then operates exclusively on <span class="math inline">\(\boldsymbol{\Phi}\)</span> (the covariance of the true scores)</p>
+<p>The model-implied covariance matrix (<span class="math inline">\(\boldsymbol{\Sigma}\)</span>) can be decomposed into two distinct matrices:</p>
+<p><span class="math display">\[\boldsymbol{\Sigma} = \boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}' + \boldsymbol{\Theta}\]</span> <span class="math inline">\(\boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}'\)</span> : This matrix represents the variance shared among items—the “signal.” <span class="math inline">\(\boldsymbol{\Phi}\)</span> is the covariance of the true scores.</p>
+<p><span class="math inline">\(\boldsymbol{\Theta}\)</span>: This matrix (usually diagonal) represents the measurement error</p>
+<p>The model effectively “subtracts” the noise.</p>
+</section>
+<section class="slide level2">
+
+<p>The total variance of the item is just the Squared Loading (Explained Variance) plus the Error Variance (Unexplained Variance)</p>
+<table>
+<colgroup>
+<col style="width: 21%">
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Item 1 (<span class="math inline">\(X_1\)</span>)</th>
+<th style="text-align: center;">Item 2 (<span class="math inline">\(X_2\)</span>)</th>
+<th style="text-align: center;">Item 3 (<span class="math inline">\(X_3\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Item 1</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_1^2 + Var(\epsilon_1)\)</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Item 2</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_2 \lambda_1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_2^2 + Var(\epsilon_2)\)</span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Item 3</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_3 \lambda_1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_3 \lambda_2\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\lambda_3^2 + Var(\epsilon_3)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The correlation between any two items is simply Loading 1 times Loading 2.</p>
 </section>
 <section class="slide level2">
 
@@ -652,54 +777,44 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># generate data dataset:</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>X <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb9-3"><a href="#cb9-3"></a>M <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb9-4"><a href="#cb9-4"></a>Y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>) </span>
-<span id="cb9-5"><a href="#cb9-5"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(X, Y, M)</span>
-<span id="cb9-6"><a href="#cb9-6"></a></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co"># Two regressions:</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a>res1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(M <span class="sc">~</span> X, <span class="at">data =</span> data)</span>
-<span id="cb9-9"><a href="#cb9-9"></a>res2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X <span class="sc">+</span> M, <span class="at">data =</span> data)</span>
-<span id="cb9-10"><a href="#cb9-10"></a></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co"># Plot mediation</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="fu">semPaths</span>(res1 <span class="sc">+</span> res2, <span class="st">"model"</span>, <span class="st">"est"</span>, <span class="at">intercepts =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># generate data dataset:</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>X <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb11-3"><a href="#cb11-3"></a>M <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>Y <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>) </span>
+<span id="cb11-5"><a href="#cb11-5"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(X, Y, M)</span>
+<span id="cb11-6"><a href="#cb11-6"></a></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co"># Two regressions:</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>res1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(M <span class="sc">~</span> X, <span class="at">data =</span> data)</span>
+<span id="cb11-9"><a href="#cb11-9"></a>res2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X <span class="sc">+</span> M, <span class="at">data =</span> data)</span>
+<span id="cb11-10"><a href="#cb11-10"></a></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co"># Plot mediation</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a><span class="fu">semPaths</span>(res1 <span class="sc">+</span> res2, <span class="st">"model"</span>, <span class="st">"est"</span>, <span class="at">intercepts =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
 <section id="path-model-with-measurement-model" class="slide level2">
 <h2>path model with measurement model</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>mod<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="st">'X =~ x1 + x2 + x3</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="st">M =~ x4 + x5 + x6</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="st">Y =~ x7 + x8 + x9</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a></span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="st">Y ~ M + X</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="st">M ~ X'</span></span>
-<span id="cb10-7"><a href="#cb10-7"></a></span>
-<span id="cb10-8"><a href="#cb10-8"></a>fit<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">cfa</span>(mod<span class="fl">.2</span>, <span class="at">data=</span>HolzingerSwineford1939)</span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="fu">semPaths</span>(fit<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>mod<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="st">'X =~ x1 + x2 + x3</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">M =~ x4 + x5 + x6</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="st">Y =~ x7 + x8 + x9</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="st">Y ~ M + X</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="st">M ~ X'</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a></span>
+<span id="cb12-8"><a href="#cb12-8"></a>fit<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">cfa</span>(mod<span class="fl">.2</span>, <span class="at">data=</span>HolzingerSwineford1939)</span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="fu">semPaths</span>(fit<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
-<section id="fit-indices" class="slide level2">
-<h2>Fit Indices</h2>
-<ol type="1">
-<li><p>residuals. Good to check.</p></li>
-<li><p>modification indices. Check to see if missing parameters that residuals may suggest you didn’t include or should include.</p></li>
-<li><p>chi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.</p></li>
-<li><p>RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good</p></li>
-<li><p>CFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e.&nbsp;just identified model. Usually &gt;.9 is okay. Some care about &gt; .95</p></li>
-</ol>
-</section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
 <section id="identification" class="slide level2">
 <h2>Identification</h2>
 <ul>
-<li><p>We have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.</p></li>
+<li><p>We have multiple parameters we are trying to estimate (Paths, means, variances, residuals). Cannot have more unknowns than knowns.</p></li>
 <li><p>If you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.</p></li>
 <li><p>Compare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable</p></li>
 <li><p>The covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable which sets the scale.</p></li>
@@ -724,8 +839,115 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 </section>
 <section class="slide level2">
 
+<p><span class="math display">\[ y =  \nu+ \Lambda  * \boldsymbol{\eta_i} + \epsilon_i \]</span></p>
+<p>Variance of latent variable = 1. If the Latent Variable goes up by 1 Standard Deviation, Item 1 goes up by <span class="math inline">\(\lambda_1\)</span> units.</p>
+<p><span class="math display">\[ X_1 =  \nu_1+ \lambda_1  * \boldsymbol{\eta_{sd_i}} + \epsilon_i \]</span></p>
+<p>Interpreted on a standardized scale.</p>
+</section>
+<section class="slide level2">
+
+<p>Marker variable approach assumes the latent variable shares the exact same units as Item 1.</p>
+<p><span class="math display">\[ X_1 =  \nu_1+ 1  * \boldsymbol{\eta_i} + \epsilon_i \]</span></p>
+<p>We can now estimate the var(<span class="math inline">\({\eta_i}\)</span>) Item 2 is <span class="math inline">\(\lambda_2\)</span> times as responsive as Item 1.</p>
+<p><span class="math display">\[ X_2 =  \nu_2+ \lambda_2  * \boldsymbol{\eta_i} + \epsilon_i \]</span> Interpretted on the scale of the original metric.</p>
+</section>
+<section class="slide level2">
+
+<p>Fixed factor vs effect coding (more about this technique later)</p>
 
 <img data-src="sem_ef.png" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>mod<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="st">'X =~ x1 + x2 + x3'</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a>fit<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">cfa</span>(mod<span class="fl">.3</span>, <span class="at">data=</span>HolzingerSwineford1939)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="fu">summary</span>(fit<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>lavaan 0.6-19 ended normally after 23 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of model parameters                         6
+
+  Number of observations                           301
+
+Model Test User Model:
+                                                      
+  Test statistic                                 0.000
+  Degrees of freedom                                 0
+
+Parameter Estimates:
+
+  Standard errors                             Standard
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  X =~                                                
+    x1                1.000                           
+    x2                0.778    0.141    5.532    0.000
+    x3                1.107    0.214    5.173    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .x1                0.835    0.118    7.064    0.000
+   .x2                1.065    0.105   10.177    0.000
+   .x3                0.633    0.129    4.899    0.000
+    X                 0.524    0.130    4.021    0.000</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>mod<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="st">'X =~ x1 + x2 + x3'</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a>fit<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">cfa</span>(mod<span class="fl">.4</span>, <span class="at">data=</span>HolzingerSwineford1939, <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="fu">summary</span>(fit<span class="fl">.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>lavaan 0.6-19 ended normally after 17 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of model parameters                         6
+
+  Number of observations                           301
+
+Model Test User Model:
+                                                      
+  Test statistic                                 0.000
+  Degrees of freedom                                 0
+
+Parameter Estimates:
+
+  Standard errors                             Standard
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  X =~                                                
+    x1                0.724    0.090    8.043    0.000
+    x2                0.563    0.082    6.847    0.000
+    x3                0.801    0.093    8.626    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .x1                0.835    0.118    7.064    0.000
+   .x2                1.065    0.105   10.177    0.000
+   .x3                0.633    0.129    4.899    0.000
+    X                 1.000                           </code></pre>
+</div>
+</div>
+</section>
 <section id="types-of-identification" class="slide level2">
 <h2>Types of identification</h2>
 <ol type="1">
@@ -760,6 +982,41 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <li><p>Given we are interested in change across time, we will be interested in means.</p></li>
 </ul>
 </section>
+<section class="slide level2">
+
+<p><span class="math display">\[ y =  \nu+ \Lambda  * \boldsymbol{\eta_i} + \epsilon_i \]</span> Item response is due to differences in centered eta, the corresponding loadings, plus item mean</p>
+<p><span class="math display">\[ y =  \nu+ \Lambda   \boldsymbol(\gamma + \upsilon) + \epsilon_i \]</span></p>
+<p>Instead of centered eta we can think of the latent variable having a mean, lets call is gamma</p>
+<p><span class="math display">\[ y =  \nu + \Lambda   \boldsymbol(\gamma) + \Lambda (\upsilon) + \epsilon_i \]</span></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>Often we work with a centered version as a default because estimating means makes our task even harder.</p></li>
+<li><p>If I am trying to predict someone’s response on a math item. Lets say i get a 10/10 points. Is that because the item is easy or because the class has math skillz? Hard to separate the “item easiness” from the “general ability”</p></li>
+</ul>
+<p>10 = <span class="math inline">\(\nu\)</span> + <span class="math inline">\(\gamma\)</span></p>
+<p>10 = 9 + 1</p>
+<p>10 = 5 + 5</p>
+<p>10 = 10 + 0</p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>Solution is often to assume a zero latent mean.</p></li>
+<li><p>If we are interested in means, it helps to have a comparison group i.e., how does the mean differ from control group. Or how does the mean change from time 1.</p></li>
+</ul>
+</section>
+<section id="fit-indices" class="slide level2">
+<h2>Fit Indices</h2>
+<ol type="1">
+<li><p>residuals. Good to check.</p></li>
+<li><p>modification indices. Check to see if missing parameters that residuals may suggest you didn’t include or should include.</p></li>
+<li><p>chi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.</p></li>
+<li><p>RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good</p></li>
+<li><p>CFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e.&nbsp;just identified model. Usually &gt;.9 is okay. Some care about &gt; .95</p></li>
+</ol>
+</section>
 <section id="types-of-longitudinal-sem-models" class="slide level2">
 <h2>Types of longitudinal SEM models</h2>
 <p>** not an actual taxonomy</p>
@@ -777,10 +1034,10 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <section id="lavaan" class="slide level2">
 <h2>lavaan</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb11-2"><a href="#cb11-2"></a>wide <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/longitudinal.csv"</span>)</span>
-<span id="cb11-3"><a href="#cb11-3"></a></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="fu">summary</span>(wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb17-2"><a href="#cb17-2"></a>wide <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/longitudinal.csv"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3"></a></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="fu">summary</span>(wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    PosAFF11        PosAFF21         PosAFF31        NegAFF11      
  Min.   :1.365   Min.   :0.4152   Min.   :1.140   Min.   :-0.8584  
@@ -823,7 +1080,7 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <section id="wide-data-for-sem-models." class="slide level2">
 <h2>Wide data for SEM models.</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">head</span>(wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">head</span>(wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  PosAFF11 PosAFF21 PosAFF31  NegAFF11  NegAFF21 NegAFF31 PosAFF12 PosAFF22
 1 3.407196 3.161366 2.691232 2.4207020 2.3531140 2.338767 3.608672 2.385396
@@ -865,8 +1122,8 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>alcohol <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/alcohol1_pp.csv"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="fu">head</span>(alcohol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>alcohol <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/alcohol1_pp.csv"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="fu">head</span>(alcohol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  X id age coa male age_14   alcuse      peer      cpeer  ccoa
@@ -884,13 +1141,13 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb17-2"><a href="#cb17-2"></a>alcohol.wide <span class="ot">&lt;-</span> alcohol <span class="sc">%&gt;%</span> </span>
-<span id="cb17-3"><a href="#cb17-3"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>X, <span class="sc">-</span>age_14, <span class="sc">-</span>ccoa) <span class="sc">%&gt;%</span> </span>
-<span id="cb17-4"><a href="#cb17-4"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">"age"</span>, </span>
-<span id="cb17-5"><a href="#cb17-5"></a>              <span class="at">names_prefix =</span> <span class="st">"alcuse_"</span>,</span>
-<span id="cb17-6"><a href="#cb17-6"></a>              <span class="at">values_from  =</span> alcuse) </span>
-<span id="cb17-7"><a href="#cb17-7"></a><span class="fu">head</span>(alcohol.wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb23-2"><a href="#cb23-2"></a>alcohol.wide <span class="ot">&lt;-</span> alcohol <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>X, <span class="sc">-</span>age_14, <span class="sc">-</span>ccoa) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">"age"</span>, </span>
+<span id="cb23-5"><a href="#cb23-5"></a>              <span class="at">names_prefix =</span> <span class="st">"alcuse_"</span>,</span>
+<span id="cb23-6"><a href="#cb23-6"></a>              <span class="at">values_from  =</span> alcuse) </span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="fu">head</span>(alcohol.wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 8
@@ -910,9 +1167,9 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>model<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16'</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>gm<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>, <span class="at">data=</span>alcohol.wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>model<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16'</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a>gm<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>, <span class="at">data=</span>alcohol.wide)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>To fit a growth model within SEM we are going to create two latent variables: an intercept and a slope/trajectory. This is the same we did prior when we fit an MLM growth model with time as a predictor.</p>
@@ -923,11 +1180,11 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">semPaths</span>(gm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">semPaths</span>(gm<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <ul>
@@ -971,10 +1228,10 @@ F-statistic: 0.366 on 1 and 98 DF,  p-value: 0.5466</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>model<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16'</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a>fit<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>, <span class="at">data=</span>alcohol.wide)</span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>model<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16'</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>fit<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>, <span class="at">data=</span>alcohol.wide)</span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 22 iterations
@@ -1033,9 +1290,9 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb23-2"><a href="#cb23-2"></a>fit1.mlm.c <span class="ot">&lt;-</span> <span class="fu">lmer</span>(alcuse <span class="sc">~</span>  age_14 <span class="sc">+</span> (age_14 <span class="sc">|</span> id), <span class="at">data =</span> alcohol)</span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="fu">summary</span>(fit1.mlm.c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb29-2"><a href="#cb29-2"></a>fit1.mlm.c <span class="ot">&lt;-</span> <span class="fu">lmer</span>(alcuse <span class="sc">~</span>  age_14 <span class="sc">+</span> (age_14 <span class="sc">|</span> id), <span class="at">data =</span> alcohol)</span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="fu">summary</span>(fit1.mlm.c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML ['lmerMod']
@@ -1076,16 +1333,16 @@ age_14 -0.441</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>model<span class="fl">.1</span>a <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
-<span id="cb25-2"><a href="#cb25-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16</span></span>
-<span id="cb25-3"><a href="#cb25-3"></a></span>
-<span id="cb25-4"><a href="#cb25-4"></a><span class="st">alcuse_14 ~~ Q*alcuse_14 </span></span>
-<span id="cb25-5"><a href="#cb25-5"></a><span class="st">alcuse_15 ~~ Q*alcuse_15</span></span>
-<span id="cb25-6"><a href="#cb25-6"></a><span class="st">alcuse_16 ~~ Q*alcuse_16</span></span>
-<span id="cb25-7"><a href="#cb25-7"></a></span>
-<span id="cb25-8"><a href="#cb25-8"></a><span class="st">'</span></span>
-<span id="cb25-9"><a href="#cb25-9"></a>fit<span class="fl">.1</span>a <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>a, <span class="at">data=</span>alcohol.wide)</span>
-<span id="cb25-10"><a href="#cb25-10"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>model<span class="fl">.1</span>a <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="st">            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a></span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="st">alcuse_14 ~~ Q*alcuse_14 </span></span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="st">alcuse_15 ~~ Q*alcuse_15</span></span>
+<span id="cb31-6"><a href="#cb31-6"></a><span class="st">alcuse_16 ~~ Q*alcuse_16</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a></span>
+<span id="cb31-8"><a href="#cb31-8"></a><span class="st">'</span></span>
+<span id="cb31-9"><a href="#cb31-9"></a>fit<span class="fl">.1</span>a <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.1</span>a, <span class="at">data=</span>alcohol.wide)</span>
+<span id="cb31-10"><a href="#cb31-10"></a><span class="fu">summary</span>(fit<span class="fl">.1</span>a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 21 iterations
@@ -1145,10 +1402,10 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>model<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
-<span id="cb27-2"><a href="#cb27-2"></a><span class="st">            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16'</span></span>
-<span id="cb27-3"><a href="#cb27-3"></a>fit<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.2</span>, <span class="at">data=</span>alcohol.wide)</span>
-<span id="cb27-4"><a href="#cb27-4"></a><span class="fu">summary</span>(fit<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>model<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="st">            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16'</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a>fit<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.2</span>, <span class="at">data=</span>alcohol.wide)</span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="fu">summary</span>(fit<span class="fl">.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 26 iterations
@@ -1208,11 +1465,11 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>model<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
-<span id="cb29-2"><a href="#cb29-2"></a><span class="st">            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16</span></span>
-<span id="cb29-3"><a href="#cb29-3"></a><span class="st">               s ~~0*s'</span></span>
-<span id="cb29-4"><a href="#cb29-4"></a>fit<span class="fl">.3</span><span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.3</span>, <span class="at">data=</span>alcohol.wide)</span>
-<span id="cb29-5"><a href="#cb29-5"></a><span class="fu">summary</span>(fit<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>model<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="st">'  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 </span></span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="st">            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a><span class="st">               s ~~0*s'</span></span>
+<span id="cb35-4"><a href="#cb35-4"></a>fit<span class="fl">.3</span><span class="ot">&lt;-</span> <span class="fu">growth</span>(model<span class="fl">.3</span>, <span class="at">data=</span>alcohol.wide)</span>
+<span id="cb35-5"><a href="#cb35-5"></a><span class="fu">summary</span>(fit<span class="fl">.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 21 iterations
@@ -1266,10 +1523,13 @@ Variances:
 </div>
 </div>
 </section>
+<section id="model-predicted-means" class="slide level2">
+<h2>Model predicted means</h2>
+</section>
 <section id="plotting" class="slide level2">
 <h2>Plotting</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">head</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"lv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">head</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"lv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>              i          s
 [1,] 1.67339200 0.15061147
@@ -1284,7 +1544,7 @@ Variances:
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">head</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"ov"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">head</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"ov"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      alcuse_14 alcuse_15 alcuse_16
 [1,] 1.67339200 1.8240035 1.9746149
@@ -1301,32 +1561,32 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">as_tibble</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"ov"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-2"><a href="#cb35-2"></a>  <span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-3"><a href="#cb35-3"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"alc"</span>), <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">".value"</span>, <span class="st">"wave"</span>), <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb35-4"><a href="#cb35-4"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">as.numeric</span>(wave)) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-5"><a href="#cb35-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> alcuse, <span class="at">group =</span> ID, <span class="at">color =</span> <span class="fu">factor</span>(ID))) <span class="sc">+</span></span>
-<span id="cb35-6"><a href="#cb35-6"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="fu">as_tibble</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>,<span class="at">type=</span><span class="st">"ov"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb41-2"><a href="#cb41-2"></a>  <span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb41-3"><a href="#cb41-3"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"alc"</span>), <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">".value"</span>, <span class="st">"wave"</span>), <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb41-4"><a href="#cb41-4"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">as.numeric</span>(wave)) <span class="sc">%&gt;%</span> </span>
+<span id="cb41-5"><a href="#cb41-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> alcuse, <span class="at">group =</span> ID, <span class="at">color =</span> <span class="fu">factor</span>(ID))) <span class="sc">+</span></span>
+<span id="cb41-6"><a href="#cb41-6"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>Plotting the constrained slope variance model</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">as_tibble</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>a,<span class="at">type=</span><span class="st">"ov"</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"alc"</span>), <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">".value"</span>, <span class="st">"wave"</span>), <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb36-4"><a href="#cb36-4"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">as.numeric</span>(wave)) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-5"><a href="#cb36-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> alcuse, <span class="at">group =</span> ID, <span class="at">color =</span> <span class="fu">factor</span>(ID))) <span class="sc">+</span></span>
-<span id="cb36-6"><a href="#cb36-6"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a><span class="fu">as_tibble</span>(<span class="fu">lavPredict</span>(fit<span class="fl">.1</span>a,<span class="at">type=</span><span class="st">"ov"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-2"><a href="#cb42-2"></a>  <span class="fu">rowid_to_column</span>(<span class="st">"ID"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-3"><a href="#cb42-3"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"alc"</span>), <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">".value"</span>, <span class="st">"wave"</span>), <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb42-4"><a href="#cb42-4"></a>dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">wave =</span> <span class="fu">as.numeric</span>(wave)) <span class="sc">%&gt;%</span> </span>
+<span id="cb42-5"><a href="#cb42-5"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> wave, <span class="at">y =</span> alcuse, <span class="at">group =</span> ID, <span class="at">color =</span> <span class="fu">factor</span>(ID))) <span class="sc">+</span></span>
+<span id="cb42-6"><a href="#cb42-6"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"></section>
 <section id="what-is-measurement-invariance" class="slide level2">
 <h2>What is measurement invariance?</h2>
 <ul>
@@ -1354,33 +1614,33 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>cfa <span class="ot">&lt;-</span> <span class="st">'Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31'</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a></span>
-<span id="cb37-3"><a href="#cb37-3"></a>fit.cfa <span class="ot">&lt;-</span> <span class="fu">cfa</span>(cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb37-4"><a href="#cb37-4"></a><span class="fu">semPaths</span>(fit.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>cfa <span class="ot">&lt;-</span> <span class="st">'Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31'</span></span>
+<span id="cb43-2"><a href="#cb43-2"></a></span>
+<span id="cb43-3"><a href="#cb43-3"></a>fit.cfa <span class="ot">&lt;-</span> <span class="fu">cfa</span>(cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb43-4"><a href="#cb43-4"></a><span class="fu">semPaths</span>(fit.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"></section>
 <section id="configural-baseline" class="slide level2">
 <h2>configural (baseline)</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>config <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb38-3"><a href="#cb38-3"></a><span class="st">Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31</span></span>
-<span id="cb38-4"><a href="#cb38-4"></a><span class="st">Pos2 =~ PosAFF12 + PosAFF22 + PosAFF32</span></span>
-<span id="cb38-5"><a href="#cb38-5"></a><span class="st">Pos3 =~ PosAFF13 + PosAFF23 + PosAFF33</span></span>
-<span id="cb38-6"><a href="#cb38-6"></a></span>
-<span id="cb38-7"><a href="#cb38-7"></a></span>
-<span id="cb38-8"><a href="#cb38-8"></a></span>
-<span id="cb38-9"><a href="#cb38-9"></a></span>
-<span id="cb38-10"><a href="#cb38-10"></a><span class="st">'</span></span>
-<span id="cb38-11"><a href="#cb38-11"></a></span>
-<span id="cb38-12"><a href="#cb38-12"></a>config <span class="ot">&lt;-</span> <span class="fu">cfa</span>(config, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb38-13"><a href="#cb38-13"></a></span>
-<span id="cb38-14"><a href="#cb38-14"></a><span class="fu">summary</span>(config, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>config <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb44-3"><a href="#cb44-3"></a><span class="st">Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31</span></span>
+<span id="cb44-4"><a href="#cb44-4"></a><span class="st">Pos2 =~ PosAFF12 + PosAFF22 + PosAFF32</span></span>
+<span id="cb44-5"><a href="#cb44-5"></a><span class="st">Pos3 =~ PosAFF13 + PosAFF23 + PosAFF33</span></span>
+<span id="cb44-6"><a href="#cb44-6"></a></span>
+<span id="cb44-7"><a href="#cb44-7"></a></span>
+<span id="cb44-8"><a href="#cb44-8"></a></span>
+<span id="cb44-9"><a href="#cb44-9"></a></span>
+<span id="cb44-10"><a href="#cb44-10"></a><span class="st">'</span></span>
+<span id="cb44-11"><a href="#cb44-11"></a></span>
+<span id="cb44-12"><a href="#cb44-12"></a>config <span class="ot">&lt;-</span> <span class="fu">cfa</span>(config, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb44-13"><a href="#cb44-13"></a></span>
+<span id="cb44-14"><a href="#cb44-14"></a><span class="fu">summary</span>(config, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 59 iterations
@@ -1501,18 +1761,18 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>weak <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb40-2"><a href="#cb40-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb40-3"><a href="#cb40-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
-<span id="cb40-4"><a href="#cb40-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
-<span id="cb40-5"><a href="#cb40-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
-<span id="cb40-6"><a href="#cb40-6"></a></span>
-<span id="cb40-7"><a href="#cb40-7"></a></span>
-<span id="cb40-8"><a href="#cb40-8"></a><span class="st">'</span></span>
-<span id="cb40-9"><a href="#cb40-9"></a></span>
-<span id="cb40-10"><a href="#cb40-10"></a>weak <span class="ot">&lt;-</span> <span class="fu">cfa</span>(weak, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb40-11"><a href="#cb40-11"></a></span>
-<span id="cb40-12"><a href="#cb40-12"></a><span class="fu">summary</span>(weak, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a>weak <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb46-2"><a href="#cb46-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb46-3"><a href="#cb46-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
+<span id="cb46-4"><a href="#cb46-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
+<span id="cb46-5"><a href="#cb46-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
+<span id="cb46-6"><a href="#cb46-6"></a></span>
+<span id="cb46-7"><a href="#cb46-7"></a></span>
+<span id="cb46-8"><a href="#cb46-8"></a><span class="st">'</span></span>
+<span id="cb46-9"><a href="#cb46-9"></a></span>
+<span id="cb46-10"><a href="#cb46-10"></a>weak <span class="ot">&lt;-</span> <span class="fu">cfa</span>(weak, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb46-11"><a href="#cb46-11"></a></span>
+<span id="cb46-12"><a href="#cb46-12"></a><span class="fu">summary</span>(weak, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 43 iterations
@@ -1629,33 +1889,33 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>strong <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb42-2"><a href="#cb42-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb42-3"><a href="#cb42-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
-<span id="cb42-4"><a href="#cb42-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
-<span id="cb42-5"><a href="#cb42-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
-<span id="cb42-6"><a href="#cb42-6"></a></span>
-<span id="cb42-7"><a href="#cb42-7"></a></span>
-<span id="cb42-8"><a href="#cb42-8"></a><span class="st">## constrain intercepts across time</span></span>
-<span id="cb42-9"><a href="#cb42-9"></a><span class="st">PosAFF11 ~ t1*1</span></span>
-<span id="cb42-10"><a href="#cb42-10"></a><span class="st">PosAFF21 ~ t2*1</span></span>
-<span id="cb42-11"><a href="#cb42-11"></a><span class="st">PosAFF31 ~ t3*1</span></span>
-<span id="cb42-12"><a href="#cb42-12"></a></span>
-<span id="cb42-13"><a href="#cb42-13"></a></span>
-<span id="cb42-14"><a href="#cb42-14"></a><span class="st">PosAFF12 ~ t1*1</span></span>
-<span id="cb42-15"><a href="#cb42-15"></a><span class="st">PosAFF22 ~ t2*1</span></span>
-<span id="cb42-16"><a href="#cb42-16"></a><span class="st">PosAFF32 ~ t3*1</span></span>
-<span id="cb42-17"><a href="#cb42-17"></a></span>
-<span id="cb42-18"><a href="#cb42-18"></a></span>
-<span id="cb42-19"><a href="#cb42-19"></a><span class="st">PosAFF13 ~ t1*1</span></span>
-<span id="cb42-20"><a href="#cb42-20"></a><span class="st">PosAFF23 ~ t2*1</span></span>
-<span id="cb42-21"><a href="#cb42-21"></a><span class="st">PosAFF33 ~ t3*1</span></span>
-<span id="cb42-22"><a href="#cb42-22"></a></span>
-<span id="cb42-23"><a href="#cb42-23"></a><span class="st">'</span></span>
-<span id="cb42-24"><a href="#cb42-24"></a></span>
-<span id="cb42-25"><a href="#cb42-25"></a>strong <span class="ot">&lt;-</span> <span class="fu">cfa</span>(strong, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb42-26"><a href="#cb42-26"></a></span>
-<span id="cb42-27"><a href="#cb42-27"></a><span class="fu">summary</span>(strong, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>strong <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb48-2"><a href="#cb48-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb48-3"><a href="#cb48-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
+<span id="cb48-4"><a href="#cb48-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
+<span id="cb48-5"><a href="#cb48-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
+<span id="cb48-6"><a href="#cb48-6"></a></span>
+<span id="cb48-7"><a href="#cb48-7"></a></span>
+<span id="cb48-8"><a href="#cb48-8"></a><span class="st">## constrain intercepts across time</span></span>
+<span id="cb48-9"><a href="#cb48-9"></a><span class="st">PosAFF11 ~ t1*1</span></span>
+<span id="cb48-10"><a href="#cb48-10"></a><span class="st">PosAFF21 ~ t2*1</span></span>
+<span id="cb48-11"><a href="#cb48-11"></a><span class="st">PosAFF31 ~ t3*1</span></span>
+<span id="cb48-12"><a href="#cb48-12"></a></span>
+<span id="cb48-13"><a href="#cb48-13"></a></span>
+<span id="cb48-14"><a href="#cb48-14"></a><span class="st">PosAFF12 ~ t1*1</span></span>
+<span id="cb48-15"><a href="#cb48-15"></a><span class="st">PosAFF22 ~ t2*1</span></span>
+<span id="cb48-16"><a href="#cb48-16"></a><span class="st">PosAFF32 ~ t3*1</span></span>
+<span id="cb48-17"><a href="#cb48-17"></a></span>
+<span id="cb48-18"><a href="#cb48-18"></a></span>
+<span id="cb48-19"><a href="#cb48-19"></a><span class="st">PosAFF13 ~ t1*1</span></span>
+<span id="cb48-20"><a href="#cb48-20"></a><span class="st">PosAFF23 ~ t2*1</span></span>
+<span id="cb48-21"><a href="#cb48-21"></a><span class="st">PosAFF33 ~ t3*1</span></span>
+<span id="cb48-22"><a href="#cb48-22"></a></span>
+<span id="cb48-23"><a href="#cb48-23"></a><span class="st">'</span></span>
+<span id="cb48-24"><a href="#cb48-24"></a></span>
+<span id="cb48-25"><a href="#cb48-25"></a>strong <span class="ot">&lt;-</span> <span class="fu">cfa</span>(strong, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb48-26"><a href="#cb48-26"></a></span>
+<span id="cb48-27"><a href="#cb48-27"></a><span class="fu">summary</span>(strong, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 66 iterations
@@ -1769,47 +2029,47 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>strict <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb44-2"><a href="#cb44-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb44-3"><a href="#cb44-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
-<span id="cb44-4"><a href="#cb44-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
-<span id="cb44-5"><a href="#cb44-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
-<span id="cb44-6"><a href="#cb44-6"></a></span>
-<span id="cb44-7"><a href="#cb44-7"></a></span>
-<span id="cb44-8"><a href="#cb44-8"></a><span class="st">## equality of residuals </span></span>
-<span id="cb44-9"><a href="#cb44-9"></a><span class="st">PosAFF11 ~~ r*PosAFF11 </span></span>
-<span id="cb44-10"><a href="#cb44-10"></a><span class="st">PosAFF12 ~~ r*PosAFF12</span></span>
-<span id="cb44-11"><a href="#cb44-11"></a><span class="st">PosAFF13 ~~ r*PosAFF13</span></span>
-<span id="cb44-12"><a href="#cb44-12"></a></span>
-<span id="cb44-13"><a href="#cb44-13"></a><span class="st">PosAFF21 ~~ r*PosAFF21 </span></span>
-<span id="cb44-14"><a href="#cb44-14"></a><span class="st">PosAFF22 ~~ r*PosAFF22</span></span>
-<span id="cb44-15"><a href="#cb44-15"></a><span class="st">PosAFF23 ~~ r*PosAFF23</span></span>
-<span id="cb44-16"><a href="#cb44-16"></a></span>
-<span id="cb44-17"><a href="#cb44-17"></a><span class="st">PosAFF31 ~~ r*PosAFF31 </span></span>
-<span id="cb44-18"><a href="#cb44-18"></a><span class="st">PosAFF32 ~~ r*PosAFF32</span></span>
-<span id="cb44-19"><a href="#cb44-19"></a><span class="st">PosAFF33 ~~ r*PosAFF33</span></span>
-<span id="cb44-20"><a href="#cb44-20"></a></span>
-<span id="cb44-21"><a href="#cb44-21"></a></span>
-<span id="cb44-22"><a href="#cb44-22"></a><span class="st">## constrain intercepts across time</span></span>
-<span id="cb44-23"><a href="#cb44-23"></a><span class="st">PosAFF11 ~ t1*1</span></span>
-<span id="cb44-24"><a href="#cb44-24"></a><span class="st">PosAFF21 ~ t2*1</span></span>
-<span id="cb44-25"><a href="#cb44-25"></a><span class="st">PosAFF31 ~ t3*1</span></span>
-<span id="cb44-26"><a href="#cb44-26"></a></span>
-<span id="cb44-27"><a href="#cb44-27"></a></span>
-<span id="cb44-28"><a href="#cb44-28"></a><span class="st">PosAFF12 ~ t1*1</span></span>
-<span id="cb44-29"><a href="#cb44-29"></a><span class="st">PosAFF22 ~ t2*1</span></span>
-<span id="cb44-30"><a href="#cb44-30"></a><span class="st">PosAFF32 ~ t3*1</span></span>
-<span id="cb44-31"><a href="#cb44-31"></a></span>
-<span id="cb44-32"><a href="#cb44-32"></a></span>
-<span id="cb44-33"><a href="#cb44-33"></a><span class="st">PosAFF13 ~ t1*1</span></span>
-<span id="cb44-34"><a href="#cb44-34"></a><span class="st">PosAFF23 ~ t2*1</span></span>
-<span id="cb44-35"><a href="#cb44-35"></a><span class="st">PosAFF33 ~ t3*1</span></span>
-<span id="cb44-36"><a href="#cb44-36"></a></span>
-<span id="cb44-37"><a href="#cb44-37"></a><span class="st">'</span></span>
-<span id="cb44-38"><a href="#cb44-38"></a></span>
-<span id="cb44-39"><a href="#cb44-39"></a>strict <span class="ot">&lt;-</span> <span class="fu">cfa</span>(strict, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
-<span id="cb44-40"><a href="#cb44-40"></a></span>
-<span id="cb44-41"><a href="#cb44-41"></a><span class="fu">summary</span>(strict, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>strict <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb50-2"><a href="#cb50-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb50-3"><a href="#cb50-3"></a><span class="st">Pos1 =~ L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
+<span id="cb50-4"><a href="#cb50-4"></a><span class="st">Pos2 =~ L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
+<span id="cb50-5"><a href="#cb50-5"></a><span class="st">Pos3 =~ L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
+<span id="cb50-6"><a href="#cb50-6"></a></span>
+<span id="cb50-7"><a href="#cb50-7"></a></span>
+<span id="cb50-8"><a href="#cb50-8"></a><span class="st">## equality of residuals </span></span>
+<span id="cb50-9"><a href="#cb50-9"></a><span class="st">PosAFF11 ~~ r*PosAFF11 </span></span>
+<span id="cb50-10"><a href="#cb50-10"></a><span class="st">PosAFF12 ~~ r*PosAFF12</span></span>
+<span id="cb50-11"><a href="#cb50-11"></a><span class="st">PosAFF13 ~~ r*PosAFF13</span></span>
+<span id="cb50-12"><a href="#cb50-12"></a></span>
+<span id="cb50-13"><a href="#cb50-13"></a><span class="st">PosAFF21 ~~ r*PosAFF21 </span></span>
+<span id="cb50-14"><a href="#cb50-14"></a><span class="st">PosAFF22 ~~ r*PosAFF22</span></span>
+<span id="cb50-15"><a href="#cb50-15"></a><span class="st">PosAFF23 ~~ r*PosAFF23</span></span>
+<span id="cb50-16"><a href="#cb50-16"></a></span>
+<span id="cb50-17"><a href="#cb50-17"></a><span class="st">PosAFF31 ~~ r*PosAFF31 </span></span>
+<span id="cb50-18"><a href="#cb50-18"></a><span class="st">PosAFF32 ~~ r*PosAFF32</span></span>
+<span id="cb50-19"><a href="#cb50-19"></a><span class="st">PosAFF33 ~~ r*PosAFF33</span></span>
+<span id="cb50-20"><a href="#cb50-20"></a></span>
+<span id="cb50-21"><a href="#cb50-21"></a></span>
+<span id="cb50-22"><a href="#cb50-22"></a><span class="st">## constrain intercepts across time</span></span>
+<span id="cb50-23"><a href="#cb50-23"></a><span class="st">PosAFF11 ~ t1*1</span></span>
+<span id="cb50-24"><a href="#cb50-24"></a><span class="st">PosAFF21 ~ t2*1</span></span>
+<span id="cb50-25"><a href="#cb50-25"></a><span class="st">PosAFF31 ~ t3*1</span></span>
+<span id="cb50-26"><a href="#cb50-26"></a></span>
+<span id="cb50-27"><a href="#cb50-27"></a></span>
+<span id="cb50-28"><a href="#cb50-28"></a><span class="st">PosAFF12 ~ t1*1</span></span>
+<span id="cb50-29"><a href="#cb50-29"></a><span class="st">PosAFF22 ~ t2*1</span></span>
+<span id="cb50-30"><a href="#cb50-30"></a><span class="st">PosAFF32 ~ t3*1</span></span>
+<span id="cb50-31"><a href="#cb50-31"></a></span>
+<span id="cb50-32"><a href="#cb50-32"></a></span>
+<span id="cb50-33"><a href="#cb50-33"></a><span class="st">PosAFF13 ~ t1*1</span></span>
+<span id="cb50-34"><a href="#cb50-34"></a><span class="st">PosAFF23 ~ t2*1</span></span>
+<span id="cb50-35"><a href="#cb50-35"></a><span class="st">PosAFF33 ~ t3*1</span></span>
+<span id="cb50-36"><a href="#cb50-36"></a></span>
+<span id="cb50-37"><a href="#cb50-37"></a><span class="st">'</span></span>
+<span id="cb50-38"><a href="#cb50-38"></a></span>
+<span id="cb50-39"><a href="#cb50-39"></a>strict <span class="ot">&lt;-</span> <span class="fu">cfa</span>(strict, <span class="at">data=</span>wide, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span>
+<span id="cb50-40"><a href="#cb50-40"></a></span>
+<span id="cb50-41"><a href="#cb50-41"></a><span class="fu">summary</span>(strict, <span class="at">standardized=</span><span class="cn">TRUE</span>, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 34 iterations
@@ -1925,8 +2185,8 @@ Variances:
 <h2>Comparing the models</h2>
 <p>Usually done through chi-square difference test. You want NS, i.e.&nbsp;the constrains do not lead to worse fit. But this is a very sensitive test, especially with larger samples. Better to look at changes in CFI. If delta is .01 or greater than maybe it shows misfit.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1"></a><span class="do">##Compare configural and weak model</span></span>
-<span id="cb46-2"><a href="#cb46-2"></a><span class="fu">anova</span>(config, weak)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="do">##Compare configural and weak model</span></span>
+<span id="cb52-2"><a href="#cb52-2"></a><span class="fu">anova</span>(config, weak)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Chi-Squared Difference Test
@@ -1944,8 +2204,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a><span class="do">##Compare weak and strong model</span></span>
-<span id="cb48-2"><a href="#cb48-2"></a><span class="fu">anova</span>(weak, strong)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="do">##Compare weak and strong model</span></span>
+<span id="cb54-2"><a href="#cb54-2"></a><span class="fu">anova</span>(weak, strong)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1959,7 +2219,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">fitmeasures</span>(weak)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a><span class="fu">fitmeasures</span>(weak)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>     cfi 
@@ -1967,7 +2227,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">fitmeasures</span>(strong)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">fitmeasures</span>(strong)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>      cfi 
@@ -1975,7 +2235,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">fitmeasures</span>(strict)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">fitmeasures</span>(strict)[<span class="st">'cfi'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>      cfi 
@@ -2014,47 +2274,47 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1"></a>long.cfa <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb56-2"><a href="#cb56-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb56-3"><a href="#cb56-3"></a><span class="st">Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31</span></span>
-<span id="cb56-4"><a href="#cb56-4"></a><span class="st">Pos2 =~ PosAFF12 + PosAFF22 + PosAFF32</span></span>
-<span id="cb56-5"><a href="#cb56-5"></a><span class="st">Pos3 =~ PosAFF13 + PosAFF23 + PosAFF33</span></span>
-<span id="cb56-6"><a href="#cb56-6"></a><span class="st">Neg1 =~ NegAFF11 + NegAFF21 + NegAFF31</span></span>
-<span id="cb56-7"><a href="#cb56-7"></a><span class="st">Neg2 =~ NegAFF12 + NegAFF22 + NegAFF32</span></span>
-<span id="cb56-8"><a href="#cb56-8"></a><span class="st">Neg3 =~ NegAFF13 + NegAFF23 + NegAFF33</span></span>
-<span id="cb56-9"><a href="#cb56-9"></a></span>
-<span id="cb56-10"><a href="#cb56-10"></a><span class="st">## correlated residuals across time</span></span>
-<span id="cb56-11"><a href="#cb56-11"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
-<span id="cb56-12"><a href="#cb56-12"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
-<span id="cb56-13"><a href="#cb56-13"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
-<span id="cb56-14"><a href="#cb56-14"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
-<span id="cb56-15"><a href="#cb56-15"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
-<span id="cb56-16"><a href="#cb56-16"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
-<span id="cb56-17"><a href="#cb56-17"></a></span>
-<span id="cb56-18"><a href="#cb56-18"></a><span class="st">NegAFF11 ~~ NegAFF12 + NegAFF13</span></span>
-<span id="cb56-19"><a href="#cb56-19"></a><span class="st">NegAFF12 ~~ NegAFF13</span></span>
-<span id="cb56-20"><a href="#cb56-20"></a><span class="st">NegAFF21 ~~ NegAFF22 + NegAFF23</span></span>
-<span id="cb56-21"><a href="#cb56-21"></a><span class="st">NegAFF22 ~~ NegAFF23</span></span>
-<span id="cb56-22"><a href="#cb56-22"></a><span class="st">NegAFF31 ~~ NegAFF32 + NegAFF33</span></span>
-<span id="cb56-23"><a href="#cb56-23"></a><span class="st">NegAFF32 ~~ NegAFF33</span></span>
-<span id="cb56-24"><a href="#cb56-24"></a></span>
-<span id="cb56-25"><a href="#cb56-25"></a><span class="st">'</span></span>
-<span id="cb56-26"><a href="#cb56-26"></a>fit.long.cfa <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a>long.cfa <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb62-2"><a href="#cb62-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb62-3"><a href="#cb62-3"></a><span class="st">Pos1 =~ PosAFF11 + PosAFF21 + PosAFF31</span></span>
+<span id="cb62-4"><a href="#cb62-4"></a><span class="st">Pos2 =~ PosAFF12 + PosAFF22 + PosAFF32</span></span>
+<span id="cb62-5"><a href="#cb62-5"></a><span class="st">Pos3 =~ PosAFF13 + PosAFF23 + PosAFF33</span></span>
+<span id="cb62-6"><a href="#cb62-6"></a><span class="st">Neg1 =~ NegAFF11 + NegAFF21 + NegAFF31</span></span>
+<span id="cb62-7"><a href="#cb62-7"></a><span class="st">Neg2 =~ NegAFF12 + NegAFF22 + NegAFF32</span></span>
+<span id="cb62-8"><a href="#cb62-8"></a><span class="st">Neg3 =~ NegAFF13 + NegAFF23 + NegAFF33</span></span>
+<span id="cb62-9"><a href="#cb62-9"></a></span>
+<span id="cb62-10"><a href="#cb62-10"></a><span class="st">## correlated residuals across time</span></span>
+<span id="cb62-11"><a href="#cb62-11"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
+<span id="cb62-12"><a href="#cb62-12"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
+<span id="cb62-13"><a href="#cb62-13"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
+<span id="cb62-14"><a href="#cb62-14"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
+<span id="cb62-15"><a href="#cb62-15"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
+<span id="cb62-16"><a href="#cb62-16"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
+<span id="cb62-17"><a href="#cb62-17"></a></span>
+<span id="cb62-18"><a href="#cb62-18"></a><span class="st">NegAFF11 ~~ NegAFF12 + NegAFF13</span></span>
+<span id="cb62-19"><a href="#cb62-19"></a><span class="st">NegAFF12 ~~ NegAFF13</span></span>
+<span id="cb62-20"><a href="#cb62-20"></a><span class="st">NegAFF21 ~~ NegAFF22 + NegAFF23</span></span>
+<span id="cb62-21"><a href="#cb62-21"></a><span class="st">NegAFF22 ~~ NegAFF23</span></span>
+<span id="cb62-22"><a href="#cb62-22"></a><span class="st">NegAFF31 ~~ NegAFF32 + NegAFF33</span></span>
+<span id="cb62-23"><a href="#cb62-23"></a><span class="st">NegAFF32 ~~ NegAFF33</span></span>
+<span id="cb62-24"><a href="#cb62-24"></a></span>
+<span id="cb62-25"><a href="#cb62-25"></a><span class="st">'</span></span>
+<span id="cb62-26"><a href="#cb62-26"></a>fit.long.cfa <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">library</span>(semPlot)</span>
-<span id="cb57-2"><a href="#cb57-2"></a><span class="fu">semPaths</span>(fit.long.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1"></a><span class="fu">library</span>(semPlot)</span>
+<span id="cb63-2"><a href="#cb63-2"></a><span class="fu">semPaths</span>(fit.long.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1"></a><span class="fu">summary</span>(fit.long.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a><span class="fu">summary</span>(fit.long.cfa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 128 iterations
 
@@ -2193,8 +2453,8 @@ Variances:
 </ol>
 <p>This uses the marker variable approach. The above uses the fixed factor method.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a>fit.long.cfa.us <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">FALSE</span>)</span>
-<span id="cb60-2"><a href="#cb60-2"></a><span class="fu">summary</span>(fit.long.cfa.us)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>fit.long.cfa.us <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">FALSE</span>)</span>
+<span id="cb66-2"><a href="#cb66-2"></a><span class="fu">summary</span>(fit.long.cfa.us)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 144 iterations
 
@@ -2329,7 +2589,7 @@ Variances:
 
 <p>We can also get standardized estimates in the the summary step, even when using the fixed factor approach.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1"></a><span class="fu">summary</span>(fit.long.cfa.us, <span class="at">standardized =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">summary</span>(fit.long.cfa.us, <span class="at">standardized =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 144 iterations
 
@@ -2466,8 +2726,8 @@ Variances:
 <li>Notice how we can also estimate means of the variables, though we don’t necessarily need to. These are now under the “intercepts” heading.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1"></a>fit.long.cfa.us.mean <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">FALSE</span>)</span>
-<span id="cb64-2"><a href="#cb64-2"></a><span class="fu">summary</span>(fit.long.cfa.us.mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>fit.long.cfa.us.mean <span class="ot">&lt;-</span> <span class="fu">cfa</span>(long.cfa, <span class="at">meanstructure=</span><span class="cn">TRUE</span>, <span class="at">data=</span>wide, <span class="at">std.lv=</span><span class="cn">FALSE</span>)</span>
+<span id="cb70-2"><a href="#cb70-2"></a><span class="fu">summary</span>(fit.long.cfa.us.mean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 144 iterations
 
@@ -2632,60 +2892,60 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1"></a>sec.order <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb66-2"><a href="#cb66-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb66-3"><a href="#cb66-3"></a><span class="st">Pos1 =~ PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
-<span id="cb66-4"><a href="#cb66-4"></a><span class="st">Pos2 =~ PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
-<span id="cb66-5"><a href="#cb66-5"></a><span class="st">Pos3 =~ PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
-<span id="cb66-6"><a href="#cb66-6"></a></span>
-<span id="cb66-7"><a href="#cb66-7"></a><span class="st">## intercepts</span></span>
-<span id="cb66-8"><a href="#cb66-8"></a><span class="st">PosAFF11 ~ t1*1</span></span>
-<span id="cb66-9"><a href="#cb66-9"></a><span class="st">PosAFF21 ~ t2*1</span></span>
-<span id="cb66-10"><a href="#cb66-10"></a><span class="st">PosAFF31 ~ t3*1</span></span>
-<span id="cb66-11"><a href="#cb66-11"></a></span>
-<span id="cb66-12"><a href="#cb66-12"></a><span class="st">PosAFF12 ~ t1*1</span></span>
-<span id="cb66-13"><a href="#cb66-13"></a><span class="st">PosAFF22 ~ t2*1</span></span>
-<span id="cb66-14"><a href="#cb66-14"></a><span class="st">PosAFF32 ~ t3*1</span></span>
-<span id="cb66-15"><a href="#cb66-15"></a></span>
-<span id="cb66-16"><a href="#cb66-16"></a><span class="st">PosAFF13 ~ t1*1</span></span>
-<span id="cb66-17"><a href="#cb66-17"></a><span class="st">PosAFF23 ~ t2*1</span></span>
-<span id="cb66-18"><a href="#cb66-18"></a><span class="st">PosAFF33 ~ t3*1</span></span>
-<span id="cb66-19"><a href="#cb66-19"></a></span>
-<span id="cb66-20"><a href="#cb66-20"></a></span>
-<span id="cb66-21"><a href="#cb66-21"></a><span class="st">## correlated residuals across time</span></span>
-<span id="cb66-22"><a href="#cb66-22"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
-<span id="cb66-23"><a href="#cb66-23"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
-<span id="cb66-24"><a href="#cb66-24"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
-<span id="cb66-25"><a href="#cb66-25"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
-<span id="cb66-26"><a href="#cb66-26"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
-<span id="cb66-27"><a href="#cb66-27"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
-<span id="cb66-28"><a href="#cb66-28"></a></span>
-<span id="cb66-29"><a href="#cb66-29"></a></span>
-<span id="cb66-30"><a href="#cb66-30"></a><span class="st">## latent variable intercepts</span></span>
-<span id="cb66-31"><a href="#cb66-31"></a><span class="st">Pos1 ~ 0*1</span></span>
-<span id="cb66-32"><a href="#cb66-32"></a><span class="st">Pos2  ~ 0*1</span></span>
-<span id="cb66-33"><a href="#cb66-33"></a><span class="st">Pos3  ~ 0*1</span></span>
-<span id="cb66-34"><a href="#cb66-34"></a></span>
-<span id="cb66-35"><a href="#cb66-35"></a></span>
-<span id="cb66-36"><a href="#cb66-36"></a><span class="st">i =~ 1*Pos1 + 1*Pos2 + 1*Pos3 </span></span>
-<span id="cb66-37"><a href="#cb66-37"></a><span class="st">s =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '</span></span>
-<span id="cb66-38"><a href="#cb66-38"></a></span>
-<span id="cb66-39"><a href="#cb66-39"></a></span>
-<span id="cb66-40"><a href="#cb66-40"></a>fit.sec.order <span class="ot">&lt;-</span> <span class="fu">growth</span>(sec.order, <span class="at">data=</span>wide, <span class="at">missing =</span> <span class="st">"ML"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1"></a>sec.order <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb72-2"><a href="#cb72-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb72-3"><a href="#cb72-3"></a><span class="st">Pos1 =~ PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
+<span id="cb72-4"><a href="#cb72-4"></a><span class="st">Pos2 =~ PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
+<span id="cb72-5"><a href="#cb72-5"></a><span class="st">Pos3 =~ PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
+<span id="cb72-6"><a href="#cb72-6"></a></span>
+<span id="cb72-7"><a href="#cb72-7"></a><span class="st">## intercepts</span></span>
+<span id="cb72-8"><a href="#cb72-8"></a><span class="st">PosAFF11 ~ t1*1</span></span>
+<span id="cb72-9"><a href="#cb72-9"></a><span class="st">PosAFF21 ~ t2*1</span></span>
+<span id="cb72-10"><a href="#cb72-10"></a><span class="st">PosAFF31 ~ t3*1</span></span>
+<span id="cb72-11"><a href="#cb72-11"></a></span>
+<span id="cb72-12"><a href="#cb72-12"></a><span class="st">PosAFF12 ~ t1*1</span></span>
+<span id="cb72-13"><a href="#cb72-13"></a><span class="st">PosAFF22 ~ t2*1</span></span>
+<span id="cb72-14"><a href="#cb72-14"></a><span class="st">PosAFF32 ~ t3*1</span></span>
+<span id="cb72-15"><a href="#cb72-15"></a></span>
+<span id="cb72-16"><a href="#cb72-16"></a><span class="st">PosAFF13 ~ t1*1</span></span>
+<span id="cb72-17"><a href="#cb72-17"></a><span class="st">PosAFF23 ~ t2*1</span></span>
+<span id="cb72-18"><a href="#cb72-18"></a><span class="st">PosAFF33 ~ t3*1</span></span>
+<span id="cb72-19"><a href="#cb72-19"></a></span>
+<span id="cb72-20"><a href="#cb72-20"></a></span>
+<span id="cb72-21"><a href="#cb72-21"></a><span class="st">## correlated residuals across time</span></span>
+<span id="cb72-22"><a href="#cb72-22"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
+<span id="cb72-23"><a href="#cb72-23"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
+<span id="cb72-24"><a href="#cb72-24"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
+<span id="cb72-25"><a href="#cb72-25"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
+<span id="cb72-26"><a href="#cb72-26"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
+<span id="cb72-27"><a href="#cb72-27"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
+<span id="cb72-28"><a href="#cb72-28"></a></span>
+<span id="cb72-29"><a href="#cb72-29"></a></span>
+<span id="cb72-30"><a href="#cb72-30"></a><span class="st">## latent variable intercepts</span></span>
+<span id="cb72-31"><a href="#cb72-31"></a><span class="st">Pos1 ~ 0*1</span></span>
+<span id="cb72-32"><a href="#cb72-32"></a><span class="st">Pos2  ~ 0*1</span></span>
+<span id="cb72-33"><a href="#cb72-33"></a><span class="st">Pos3  ~ 0*1</span></span>
+<span id="cb72-34"><a href="#cb72-34"></a></span>
+<span id="cb72-35"><a href="#cb72-35"></a></span>
+<span id="cb72-36"><a href="#cb72-36"></a><span class="st">i =~ 1*Pos1 + 1*Pos2 + 1*Pos3 </span></span>
+<span id="cb72-37"><a href="#cb72-37"></a><span class="st">s =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '</span></span>
+<span id="cb72-38"><a href="#cb72-38"></a></span>
+<span id="cb72-39"><a href="#cb72-39"></a></span>
+<span id="cb72-40"><a href="#cb72-40"></a>fit.sec.order <span class="ot">&lt;-</span> <span class="fu">growth</span>(sec.order, <span class="at">data=</span>wide, <span class="at">missing =</span> <span class="st">"ML"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1"></a><span class="fu">semPaths</span>(fit.sec.order)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1"></a><span class="fu">semPaths</span>(fit.sec.order)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 </div>
-<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-39-1.png" width="960" class="r-stretch"></section>
+<img data-src="sem-3_files/figure-revealjs/unnamed-chunk-42-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1"></a><span class="fu">summary</span>(fit.sec.order, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="fu">summary</span>(fit.sec.order, <span class="at">fit.measures=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 76 iterations
 
@@ -2834,58 +3094,58 @@ Variances:
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1"></a>sec.order <span class="ot">&lt;-</span> <span class="st">'</span></span>
-<span id="cb70-2"><a href="#cb70-2"></a><span class="st">## define latent variables</span></span>
-<span id="cb70-3"><a href="#cb70-3"></a><span class="st">Pos1 =~ NA*PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
-<span id="cb70-4"><a href="#cb70-4"></a><span class="st">Pos2 =~ NA*PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
-<span id="cb70-5"><a href="#cb70-5"></a><span class="st">Pos3 =~ NA*PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
-<span id="cb70-6"><a href="#cb70-6"></a></span>
-<span id="cb70-7"><a href="#cb70-7"></a><span class="st">## intercepts</span></span>
-<span id="cb70-8"><a href="#cb70-8"></a><span class="st">PosAFF11 ~ t1*1</span></span>
-<span id="cb70-9"><a href="#cb70-9"></a><span class="st">PosAFF21 ~ t2*1</span></span>
-<span id="cb70-10"><a href="#cb70-10"></a><span class="st">PosAFF31 ~ t3*1</span></span>
-<span id="cb70-11"><a href="#cb70-11"></a></span>
-<span id="cb70-12"><a href="#cb70-12"></a><span class="st">PosAFF12 ~ t1*1</span></span>
-<span id="cb70-13"><a href="#cb70-13"></a><span class="st">PosAFF22 ~ t2*1</span></span>
-<span id="cb70-14"><a href="#cb70-14"></a><span class="st">PosAFF32 ~ t3*1</span></span>
-<span id="cb70-15"><a href="#cb70-15"></a></span>
-<span id="cb70-16"><a href="#cb70-16"></a><span class="st">PosAFF13 ~ t1*1</span></span>
-<span id="cb70-17"><a href="#cb70-17"></a><span class="st">PosAFF23 ~ t2*1</span></span>
-<span id="cb70-18"><a href="#cb70-18"></a><span class="st">PosAFF33 ~ t3*1</span></span>
-<span id="cb70-19"><a href="#cb70-19"></a></span>
-<span id="cb70-20"><a href="#cb70-20"></a></span>
-<span id="cb70-21"><a href="#cb70-21"></a><span class="st">## correlated residuals across time</span></span>
-<span id="cb70-22"><a href="#cb70-22"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
-<span id="cb70-23"><a href="#cb70-23"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
-<span id="cb70-24"><a href="#cb70-24"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
-<span id="cb70-25"><a href="#cb70-25"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
-<span id="cb70-26"><a href="#cb70-26"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
-<span id="cb70-27"><a href="#cb70-27"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
-<span id="cb70-28"><a href="#cb70-28"></a></span>
-<span id="cb70-29"><a href="#cb70-29"></a></span>
-<span id="cb70-30"><a href="#cb70-30"></a><span class="st">## latent variable intercepts</span></span>
-<span id="cb70-31"><a href="#cb70-31"></a><span class="st">Pos1 ~ 0*1</span></span>
-<span id="cb70-32"><a href="#cb70-32"></a><span class="st">Pos2  ~ 0*1</span></span>
-<span id="cb70-33"><a href="#cb70-33"></a><span class="st">Pos3  ~ 0*1</span></span>
-<span id="cb70-34"><a href="#cb70-34"></a></span>
-<span id="cb70-35"><a href="#cb70-35"></a><span class="st">#model constraints for effect coding</span></span>
-<span id="cb70-36"><a href="#cb70-36"></a><span class="st">## loadings must average to 1</span></span>
-<span id="cb70-37"><a href="#cb70-37"></a><span class="st">L1 == 3 - L2 - L3</span></span>
-<span id="cb70-38"><a href="#cb70-38"></a><span class="st">## means must average to 0</span></span>
-<span id="cb70-39"><a href="#cb70-39"></a><span class="st">t1 == 0 - t2 - t3</span></span>
-<span id="cb70-40"><a href="#cb70-40"></a></span>
-<span id="cb70-41"><a href="#cb70-41"></a><span class="st">i =~ 1*Pos1 + 1*Pos2 + 1*Pos3 </span></span>
-<span id="cb70-42"><a href="#cb70-42"></a><span class="st">s =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '</span></span>
-<span id="cb70-43"><a href="#cb70-43"></a></span>
-<span id="cb70-44"><a href="#cb70-44"></a></span>
-<span id="cb70-45"><a href="#cb70-45"></a>fit.sec.order <span class="ot">&lt;-</span> <span class="fu">growth</span>(sec.order, <span class="at">data=</span>wide, <span class="at">missing =</span> <span class="st">"ML"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a>sec.order <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb76-2"><a href="#cb76-2"></a><span class="st">## define latent variables</span></span>
+<span id="cb76-3"><a href="#cb76-3"></a><span class="st">Pos1 =~ NA*PosAFF11 + L1*PosAFF11 + L2*PosAFF21 + L3*PosAFF31</span></span>
+<span id="cb76-4"><a href="#cb76-4"></a><span class="st">Pos2 =~ NA*PosAFF12 + L1*PosAFF12 + L2*PosAFF22 + L3*PosAFF32</span></span>
+<span id="cb76-5"><a href="#cb76-5"></a><span class="st">Pos3 =~ NA*PosAFF13 + L1*PosAFF13 + L2*PosAFF23 + L3*PosAFF33</span></span>
+<span id="cb76-6"><a href="#cb76-6"></a></span>
+<span id="cb76-7"><a href="#cb76-7"></a><span class="st">## intercepts</span></span>
+<span id="cb76-8"><a href="#cb76-8"></a><span class="st">PosAFF11 ~ t1*1</span></span>
+<span id="cb76-9"><a href="#cb76-9"></a><span class="st">PosAFF21 ~ t2*1</span></span>
+<span id="cb76-10"><a href="#cb76-10"></a><span class="st">PosAFF31 ~ t3*1</span></span>
+<span id="cb76-11"><a href="#cb76-11"></a></span>
+<span id="cb76-12"><a href="#cb76-12"></a><span class="st">PosAFF12 ~ t1*1</span></span>
+<span id="cb76-13"><a href="#cb76-13"></a><span class="st">PosAFF22 ~ t2*1</span></span>
+<span id="cb76-14"><a href="#cb76-14"></a><span class="st">PosAFF32 ~ t3*1</span></span>
+<span id="cb76-15"><a href="#cb76-15"></a></span>
+<span id="cb76-16"><a href="#cb76-16"></a><span class="st">PosAFF13 ~ t1*1</span></span>
+<span id="cb76-17"><a href="#cb76-17"></a><span class="st">PosAFF23 ~ t2*1</span></span>
+<span id="cb76-18"><a href="#cb76-18"></a><span class="st">PosAFF33 ~ t3*1</span></span>
+<span id="cb76-19"><a href="#cb76-19"></a></span>
+<span id="cb76-20"><a href="#cb76-20"></a></span>
+<span id="cb76-21"><a href="#cb76-21"></a><span class="st">## correlated residuals across time</span></span>
+<span id="cb76-22"><a href="#cb76-22"></a><span class="st">PosAFF11 ~~ PosAFF12 + PosAFF13</span></span>
+<span id="cb76-23"><a href="#cb76-23"></a><span class="st">PosAFF12 ~~ PosAFF13</span></span>
+<span id="cb76-24"><a href="#cb76-24"></a><span class="st">PosAFF21 ~~ PosAFF22 + PosAFF23</span></span>
+<span id="cb76-25"><a href="#cb76-25"></a><span class="st">PosAFF22 ~~ PosAFF23</span></span>
+<span id="cb76-26"><a href="#cb76-26"></a><span class="st">PosAFF31 ~~ PosAFF32 + PosAFF33</span></span>
+<span id="cb76-27"><a href="#cb76-27"></a><span class="st">PosAFF32 ~~ PosAFF33</span></span>
+<span id="cb76-28"><a href="#cb76-28"></a></span>
+<span id="cb76-29"><a href="#cb76-29"></a></span>
+<span id="cb76-30"><a href="#cb76-30"></a><span class="st">## latent variable intercepts</span></span>
+<span id="cb76-31"><a href="#cb76-31"></a><span class="st">Pos1 ~ 0*1</span></span>
+<span id="cb76-32"><a href="#cb76-32"></a><span class="st">Pos2  ~ 0*1</span></span>
+<span id="cb76-33"><a href="#cb76-33"></a><span class="st">Pos3  ~ 0*1</span></span>
+<span id="cb76-34"><a href="#cb76-34"></a></span>
+<span id="cb76-35"><a href="#cb76-35"></a><span class="st">#model constraints for effect coding</span></span>
+<span id="cb76-36"><a href="#cb76-36"></a><span class="st">## loadings must average to 1</span></span>
+<span id="cb76-37"><a href="#cb76-37"></a><span class="st">L1 == 3 - L2 - L3</span></span>
+<span id="cb76-38"><a href="#cb76-38"></a><span class="st">## means must average to 0</span></span>
+<span id="cb76-39"><a href="#cb76-39"></a><span class="st">t1 == 0 - t2 - t3</span></span>
+<span id="cb76-40"><a href="#cb76-40"></a></span>
+<span id="cb76-41"><a href="#cb76-41"></a><span class="st">i =~ 1*Pos1 + 1*Pos2 + 1*Pos3 </span></span>
+<span id="cb76-42"><a href="#cb76-42"></a><span class="st">s =~ 0*Pos1 + 1*Pos2 + 2*Pos3 '</span></span>
+<span id="cb76-43"><a href="#cb76-43"></a></span>
+<span id="cb76-44"><a href="#cb76-44"></a></span>
+<span id="cb76-45"><a href="#cb76-45"></a>fit.sec.order <span class="ot">&lt;-</span> <span class="fu">growth</span>(sec.order, <span class="at">data=</span>wide, <span class="at">missing =</span> <span class="st">"ML"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a><span class="fu">summary</span>(fit.sec.order)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1"></a><span class="fu">summary</span>(fit.sec.order)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>lavaan 0.6-19 ended normally after 99 iterations
 
@@ -3049,7 +3309,7 @@ Constraints:
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',

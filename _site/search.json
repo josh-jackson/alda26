@@ -809,7 +809,7 @@
     "href": "sem-3.html#path-diagrams",
     "title": "SEM",
     "section": "Path diagrams",
-    "text": "Path diagrams\nCircles = latent variables\nBoxes = observed indicator variables\nTwo headed arrows = correlations/covariances/variances\nSingle head arrows = regressions\nTriangle = means\n\n\nCode\n# generate data dataset:\nX &lt;- rnorm(100, 5, 5)\nM &lt;- rnorm(100)\nY &lt;- rnorm(100, 0, 1) \ndata &lt;- data.frame(X, Y, M)\n\nres1 &lt;- 'Y ~  1 + X'\n\nfit.1 &lt;- sem(res1, data=data)\nsummary(fit.1)\n\n\nlavaan 0.6-19 ended normally after 1 iteration\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                         3\n\n  Number of observations                           100\n\nModel Test User Model:\n                                                      \n  Test statistic                                 0.000\n  Degrees of freedom                                 0\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nRegressions:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  Y ~                                                 \n    X                 0.014    0.022    0.611    0.541\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .Y                -0.108    0.160   -0.675    0.500\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .Y                 1.050    0.149    7.071    0.000"
+    "text": "Path diagrams\nCircles = latent variables\nBoxes = observed indicator variables\nTwo headed arrows = correlations/covariances/variances\nSingle head arrows = regressions\nTriangle = means"
   },
   {
     "objectID": "sem-3.html#classical-test-theory-interpretation",
@@ -872,7 +872,7 @@
     "href": "sem-3.html#identification",
     "title": "SEM",
     "section": "Identification",
-    "text": "Identification\n\nWe have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.\nIf you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.\nCompare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable\nThe covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable which sets the scale."
+    "text": "Identification\n\nWe have multiple parameters we are trying to estimate (Paths, means, variances, residuals). Cannot have more unknowns than knowns.\nIf you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.\nCompare the number of knowns (variances and covariances) to the unknowns (model parameters). For example, a three indicator latent variable has 7 unknowns. 3 Loadings, 3 error variances and the variance of the latent variable\nThe covariance matrix has 6 data points. Thus we need to add in one more known, in this case a fixed factor or a marker variable which sets the scale."
   },
   {
     "objectID": "sem-3.html#setting-the-scale",
@@ -1244,5 +1244,12 @@
     "title": "hw1",
     "section": "",
     "text": "Answer the questions below using the HW1 dataset from github here. Turn in by emailing the .qmd/Rmd file and a pdf/html file to j.jackson at wustl.edu. Due 2/9 by midnight.\nThere are 7 waves of data, each with a different file (hw1-t1, hw1-t2, etc). There are five different types of repeated measures variables, all from “the Big Five” of personality. Each of these five constructs have 9 items associated with them. See hw-1 codebook for basic details.\nTo answer the questions below you will need to do a number of initial steps (bring data sets into R, create composites and reverse code so the variables are scored in the correct direction). You may create a codebook by modifying the existing one or by doing it all in R – it is your choice.\n\nHow many observations are there? How many subjects? How many subjects have more than 3 observations? Create a nice table to answer these questions.\nRun a simple growth model with a random slope for the extraversion (E) composite.\na. Describe why you coded time in the manner that you did.\nb. Interpret each coefficient, including the random effects and correlation between the slope and the intercept.\nc. Create a figure that represents the average or fixed effect trajectory and then individual trajectories ie a spaghetti plot.\nd. Create a figure that represents that amount of variation in the slope.\nDefine the intercept as the final time point. How does this differ form the previous model – what in the output/interpretation is the same/different?\nShould the extraversion random slope be included or should slope be fixed?"
+  },
+  {
+    "objectID": "sem-3.html#model-predicted-means",
+    "href": "sem-3.html#model-predicted-means",
+    "title": "SEM",
+    "section": "Model predicted means",
+    "text": "Model predicted means"
   }
 ]

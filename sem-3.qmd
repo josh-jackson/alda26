@@ -1,12 +1,14 @@
 ---
 title: SEM
 format: revealjs
-editor: source
+slide-number: true
+editor: visual
 execute:
   echo: true
 html:
   code-fold: true
   code-summary: Show the code
+  scrollable: true
 ---
 
 ## Longitudinal Structural Equation Modeling
@@ -56,6 +58,7 @@ Single head arrows = regressions
 Triangle = means
 
 
+------------
 
 ```{r}
 #| code-fold: true
@@ -132,11 +135,20 @@ semPaths(fit.1, "std", intercepts = TRUE)
 
 ![](SEMe1.png)
 
+- Basically a reverse regression where we know the DV and are estimated the IV
+
 ------------------------------------------------------------------------
 
 The factor loadings (eg $\lambda_1$) in a standard SEM are estimated in the same way regressions are, and they index the strength between the item and the latent variable.
 
 $$ \Lambda = \begin{bmatrix} \lambda_1\\  \lambda_2\\ \lambda_3\\ \end{bmatrix}$$
+
+
+-----------
+
+```{r}
+summary(fit.1) 
+```
 
 ## Classical test theory interpretation
 
@@ -179,18 +191,37 @@ The observed correlation ($r_{obs}$) is always smaller than the true correlation
 
 ------------------------------------------------------------------------
 
-$$ y =  \Lambda *  \boldsymbol{\eta_i} + \epsilon_i $$ The model-implied covariance matrix ($\boldsymbol{\Sigma}$) can be decomposed into two distinct matrices:
+The model-implied covariance matrix ($\boldsymbol{\Sigma}$) can be decomposed into two distinct matrices:
 
 $$\boldsymbol{\Sigma} = \boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}' + \boldsymbol{\Theta}$$ 
-$\boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}'$ (Common Variance): This matrix represents the variance shared among items—the "signal." $\boldsymbol{\Theta}$ (Unique Variance): This matrix (usually diagonal) represents the measurement error
+$\boldsymbol{\Lambda} \boldsymbol{\Phi} \boldsymbol{\Lambda}'$ : This matrix represents the variance shared among items—the "signal." $\boldsymbol{\Phi}$ is the covariance of the true scores. 
 
-The model effectively "subtracts" the noise from the total variance. The Structural Model (the regressions between latent factors) then operates exclusively on $\boldsymbol{\Phi}$ (the covariance of the true scores)
+$\boldsymbol{\Theta}$: This matrix (usually diagonal) represents the measurement error
+
+The model effectively "subtracts" the noise.
+
+-----------
+
+The total variance of the item is just the Squared Loading (Explained Variance) plus the Error Variance (Unexplained Variance)
+
+| | Item 1 ($X_1$) | Item 2 ($X_2$) | Item 3 ($X_3$) |
+|:---|:---:|:---:|:---:|
+| **Item 1** | $\lambda_1^2 + Var(\epsilon_1)$ | | |
+| **Item 2** | $\lambda_2 \lambda_1$ | $\lambda_2^2 + Var(\epsilon_2)$ | |
+| **Item 3** | $\lambda_3 \lambda_1$ | $\lambda_3 \lambda_2$ | $\lambda_3^2 + Var(\epsilon_3)$ |
+
+The correlation between any two items is simply Loading 1 times Loading 2.
 
 ------------------------------------------------------------------------
 
 Maximum Likelihood (usually) solves for parameters that minimize the difference between the observed Covariance Matrix ($S$) and the Model-Implied Covariance Matrix ($\Sigma(\theta)$)
 
 Finds values for the loadings ($\Lambda$) and error variances ($\Theta$) such that the remaining structure perfectly explains the correlations. The "Latent Variable" is essentially a weighted prediction based purely on the shared variance ($\Lambda$), leaving the residuals ($\epsilon$) behind
+
+
+
+
+
 
 
 ## Path model
@@ -242,21 +273,11 @@ semPaths(fit.2)
 ```
 
 
-## Fit Indices
 
-1.  residuals. Good to check.
-
-2.  modification indices. Check to see if missing parameters that residuals may suggest you didn't include or should include.
-
-3.  chi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.
-
-4.  RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good
-
-5.  CFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually \>.9 is okay. Some care about \> .95
 
 ## Identification
 
--   We have multiple parameters we are trying to estimate (Paths, means, variances, residuals. Cannot have more unknowns than knowns.
+-   We have multiple parameters we are trying to estimate (Paths, means, variances, residuals). Cannot have more unknowns than knowns.
 
 -   If you are asking too much you can constraint parameters to be the same, which reduces the number of parameters.
 
@@ -272,7 +293,9 @@ semPaths(fit.2)
 
 -   Scaling serves to establish a point of reference so as to interpret other parameters.
 
-------------------------------------------------------------------------
+
+
+---------
 
 3 options:
 
@@ -283,10 +306,62 @@ semPaths(fit.2)
 3.  Effect coding. Here you constrain loading to average to 1. This will be helpful for us as we can then put the scale of measurement into our original metric. For longitudinal models this is helpful in terms of how to interpret the amount of change.
 
 
+
+------------------------------------------------------------------------
+
+$$ y =  \nu+ \Lambda  * \boldsymbol{\eta_i} + \epsilon_i $$
+
+Variance of latent variable = 1. If the Latent Variable goes up by 1 Standard Deviation, Item 1 goes up by $\lambda_1$ units.
+
+$$ X_1 =  \nu_1+ \lambda_1  * \boldsymbol{\eta_{sd_i}} + \epsilon_i $$
+
+Interpreted on a standardized scale. 
+
+
+
+---------
+
+Marker variable approach assumes the latent variable shares the exact same units as Item 1. 
+
+$$ X_1 =  \nu_1+ 1  * \boldsymbol{\eta_i} + \epsilon_i $$
+
+We can now estimate the var(${\eta_i}$)
+Item 2 is $\lambda_2$ times as responsive as Item 1.
+
+$$ X_2 =  \nu_2+ \lambda_2  * \boldsymbol{\eta_i} + \epsilon_i $$
+Interpretted on the scale of the original metric. 
+
+
+
 -------------
 
+Fixed factor vs effect coding (more about this technique later) 
 
 ![](sem_ef.png)
+
+---------------
+
+
+```{r}
+#| code-fold: true
+
+mod.3 <- 'X =~ x1 + x2 + x3'
+
+fit.3 <- cfa(mod.3, data=HolzingerSwineford1939)
+summary(fit.3)
+```
+
+
+----------
+
+```{r}
+#| code-fold: true
+
+mod.4 <- 'X =~ x1 + x2 + x3'
+
+fit.4 <- cfa(mod.4, data=HolzingerSwineford1939, std.lv = TRUE)
+summary(fit.4)
+```
 
 
 ## Types of identification
@@ -321,6 +396,51 @@ semPaths(fit.2)
 
 -   Given we are interested in change across time, we will be interested in means. 
 
+--------
+
+
+$$ y =  \nu+ \Lambda  * \boldsymbol{\eta_i} + \epsilon_i $$
+Item response is due to differences in centered eta, the corresponding loadings, plus item mean
+
+$$ y =  \nu+ \Lambda   \boldsymbol(\gamma + \upsilon) + \epsilon_i $$
+
+Instead of centered eta we can think of the latent variable having a mean, lets call is gamma
+
+$$ y =  \nu + \Lambda   \boldsymbol(\gamma) + \Lambda (\upsilon) + \epsilon_i $$
+
+------------
+
+- Often we work with a centered version as a default because estimating means makes our task even harder. 
+
+- If I am trying to predict someone's response on a math item. Lets say i get a 10/10 points. Is that because the item is easy or because the class has math skillz? Hard to separate the "item easiness" from the "general ability"
+
+10 =  $\nu$ + $\gamma$
+
+10 = 9 + 1
+
+10 = 5 + 5
+
+10 = 10 + 0
+
+------- 
+
+- Solution is often to assume a zero latent mean. 
+
+- If we are interested in means, it helps to have a comparison group i.e., how does the mean differ from control group. Or how does the mean change from time 1.  
+
+
+
+## Fit Indices
+
+1.  residuals. Good to check.
+
+2.  modification indices. Check to see if missing parameters that residuals may suggest you didn't include or should include.
+
+3.  chi-square. (Statistical fit) Implied versus observed data, tests to see if model are exact fit with data.
+
+4.  RMSEA or SRMR (Absolute fit). Judges distance from perfect fit. Above .10 poor fit Below .08 acceptable/good
+
+5.  CFI, TFI (Relative fit). Compares relative to a null model. Null models have no covariance among observed and latent variables. Range from 0-1. Indicate % of improvement from the null model to a saturated i.e. just identified model. Usually \>.9 is okay. Some care about \> .95
 
 ## Types of longitudinal SEM models
 
@@ -525,6 +645,12 @@ summary(fit.3)
 ```
 
 
+## Model predicted means
+
+
+
+
+
 ## Plotting
 
 ```{r}
@@ -564,6 +690,11 @@ ggplot(aes(x = wave, y = alcuse, group = ID, color = factor(ID))) +
   geom_line() +  theme(legend.position = "none") 
 
 ```
+
+
+
+
+
 
 ## What is measurement invariance?
 
