@@ -785,6 +785,9 @@ summary(weak, standardized=TRUE, fit.measures=TRUE)
 
 -   Why are we doing that if we want to test whether people change? Change will be reflected latently.
 
+
+-----------
+
 ```{r}
 #| code-fold: true
 
@@ -871,14 +874,32 @@ summary(strict, standardized=TRUE, fit.measures=TRUE)
 
 Note that there are other types of MI that we could investigate, depending on what we are interested in. We could look at equality of latent means and variances, as well as regressions, if they were in the model.
 
+## Model fit for MI
+
+Usually done through chi-square difference test. You want to use the "Model Test User Model"
+
+It compares the model predicted covariance matrix against the actual covariance matrix. 
+
+Null is your model fits data perfectly. Alternative is that it does not. Thus we want a non significant chi square test. 
+
 ## Comparing the models
 
-Usually done through chi-square difference test. You want NS, i.e. the constrains do not lead to worse fit. But this is a very sensitive test, especially with larger samples. Better to look at changes in CFI. If delta is .01 or greater than maybe it shows misfit.
+Likelihood Ratio Test (LRT) aka  the Chi-Square Difference Test
+
+$$D = \chi^2_{\text{simple}} - \chi^2_{\text{complex}}$$
+$$df_{\text{diff}} = df_{\text{simple}} - df_{\text{complex}}$$
+You want NS, i.e. the constrains do not lead to worse fit. 
+
+
+-------------
 
 ```{r}
 ##Compare configural and weak model
 anova(config, weak)
 ```
+
+
+But this LRT is a very sensitive test, especially with larger samples. Better to look at changes in CFI. If delta is .01 or greater than maybe it shows misfit.
 
 ------------------------------------------------------------------------
 
@@ -886,8 +907,6 @@ anova(config, weak)
 #| code-fold: true
 
 ##Compare weak and strong model
-anova(weak, strong)
-
 fitmeasures(weak)['cfi']
 fitmeasures(strong)['cfi']
 fitmeasures(strict)['cfi']
