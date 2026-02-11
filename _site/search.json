@@ -1258,5 +1258,145 @@
     "title": "SEM",
     "section": "Model fit for MI",
     "text": "Model fit for MI\nUsually done through chi-square difference test. You want to use the “Model Test User Model”\nIt compares the model predicted covariance matrix against the actual covariance matrix.\nNull is your model fits data perfectly. Alternative is that it does not. Thus we want a non significant chi square test."
+  },
+  {
+    "objectID": "bends-4.html#trajectories-that-bend",
+    "href": "bends-4.html#trajectories-that-bend",
+    "title": "bends",
+    "section": "Trajectories that bend",
+    "text": "Trajectories that bend\n\nlibrary(tidyverse)\nlibrary(lavaan)\nlibrary(modelr)\nlibrary(lme4)\n\n\nThus far we have been sticking with monotonically increasing trajectories. This is a good assumption given the amount of data often found, along with the simplicity.\nOften we want to see if trajectories are not straight. Development is not simple so our lines should not be.\nNeed effective strategies for line that bend that also balance trade offs with interpretability and overfitting"
+  },
+  {
+    "objectID": "bends-4.html#polynomial-and-splines",
+    "href": "bends-4.html#polynomial-and-splines",
+    "title": "bends",
+    "section": "Polynomial and Splines",
+    "text": "Polynomial and Splines\nPolynomials (quadratic) level 1: \\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}(Time_{ij} - \\bar{X)} + \\beta_{2j}(Time_{ij} - \\bar{X)}^2 + \\varepsilon_{ij}\\]\nLevel 2: \\[{\\beta}_{0j} = \\gamma_{00} +   U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} +  U_{1j}\\] \\[{\\beta}_{2j} = \\gamma_{20} +  U_{2j}\\]"
+  },
+  {
+    "objectID": "bends-4.html#mlm-poly-example",
+    "href": "bends-4.html#mlm-poly-example",
+    "title": "bends",
+    "section": "MLM poly example",
+    "text": "MLM poly example\n\n\nCode\npersonality &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/Subject_personality.csv\")\n\nggplot(personality,\n   aes(x = neodate, y = neuroticism, group = mapid)) + geom_line()"
+  },
+  {
+    "objectID": "bends-4.html#sem-poly-example",
+    "href": "bends-4.html#sem-poly-example",
+    "title": "bends",
+    "section": "SEM poly example",
+    "text": "SEM poly example\n\n\nCode\n#use alcohol data from before\nalcohol &lt;- read.csv(\"https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/alcohol1_pp.csv\")\n\nalcohol.wide &lt;- alcohol %&gt;% \n  dplyr::select(-X, -age_14, -ccoa) %&gt;% \n  pivot_wider(names_from = \"age\", \n              names_prefix = \"alcuse_\",\n              values_from  = alcuse) \nalcohol.wide\n\n\n# A tibble: 82 × 8\n      id   coa  male  peer  cpeer alcuse_14 alcuse_15 alcuse_16\n   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;\n 1     1     1     0 1.26   0.247      1.73      2         2   \n 2     2     1     1 0.894 -0.124      0         0         1   \n 3     3     1     1 0.894 -0.124      1         2         3.32\n 4     4     1     1 1.79   0.771      0         2         1.73\n 5     5     1     0 0.894 -0.124      0         0         0   \n 6     6     1     1 1.55   0.531      3         3         3.16\n 7     7     1     0 1.55   0.531      1.73      2.45      1   \n 8     8     1     1 0     -1.02       0         0         0   \n 9     9     1     1 0     -1.02       0         1         3.46\n10    10     1     0 2      0.982      1         1         1   \n# ℹ 72 more rows"
+  },
+  {
+    "objectID": "bends-4.html#centering-in-sem",
+    "href": "bends-4.html#centering-in-sem",
+    "title": "bends",
+    "section": "centering in SEM",
+    "text": "centering in SEM\nBecause we control the scaling of time via our constraints we do not need to explicitly center time in the same way we did in the MLM model"
+  },
+  {
+    "objectID": "bends-4.html#sem-latent-basis",
+    "href": "bends-4.html#sem-latent-basis",
+    "title": "bends",
+    "section": "SEM latent basis",
+    "text": "SEM latent basis\n\nLet the model decide the loadings, much as we would do with normal CFAs.\nT1 Loading: 0 (Fixed - Baseline)\nT2 Loading: 0.75 (Estimated) “75% of the total change happened in the first year\nT3 Loading: 0.90 (Estimated) “By year 3, 90% of the total change occurred.\nT4 Loading: 1.0 (Fixed - End)"
+  },
+  {
+    "objectID": "bends-4.html#sem-latent-basis-1",
+    "href": "bends-4.html#sem-latent-basis-1",
+    "title": "bends",
+    "section": "SEM latent basis",
+    "text": "SEM latent basis\n\n#| code-fold: true\nmodel.7 &lt;- '  \n\ni =~ 1*extra_1 + 1*extra_2 + 1*extra_3 + 1*extra_4 + 1*extra_5 \ns =~ 0*extra_1 + extra_2 + extra_3 + extra_4 + 1*extra_5 \n\n'\n\np7 &lt;- growth(model.7, data = p.wide, missing = \"ML\")"
+  },
+  {
+    "objectID": "bends-4.html#piecewise",
+    "href": "bends-4.html#piecewise",
+    "title": "bends",
+    "section": "Piecewise",
+    "text": "Piecewise\n\nFit more than 1 trajectory\nBest to use when we have a reason for a qualitative difference at a time point. For example, before your health event you may have a different trajectory than after\nTime modeled as dummy variables that represent different segments\nThe point of separation is called a knot. You can have as many as you want and these can be pre-specified or let the data specify"
+  },
+  {
+    "objectID": "bends-4.html#mlm-example",
+    "href": "bends-4.html#mlm-example",
+    "title": "bends",
+    "section": "mlm example",
+    "text": "mlm example\nlevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time1_{ti} + \\beta_{2i}Time2_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +  U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\]"
+  },
+  {
+    "objectID": "bends-4.html#sem-example",
+    "href": "bends-4.html#sem-example",
+    "title": "bends",
+    "section": "SEM example",
+    "text": "SEM example\n0 1 2 2 2\n0 0 0 1 2\n\ntwo.rate &lt;- 'i =~ 1*extra_1 + 1*extra_2 + 1*extra_3 + 1*extra_4 + 1*extra_5 \ns1 =~ 0*extra_1 + 1*extra_2 + 2*extra_3 + 2*extra_4 + 2*extra_5 \ns2 =~ 0*extra_1 + 0*extra_2 + 0*extra_3 + 1*extra_4 + 2*extra_5  \n'\n\np8 &lt;- growth(two.rate, data = p.wide, missing = \"ML\")"
+  },
+  {
+    "objectID": "bends-4.html#splines-polynomial-polynomial-piecewise",
+    "href": "bends-4.html#splines-polynomial-polynomial-piecewise",
+    "title": "bends",
+    "section": "splines + polynomial = polynomial piecewise",
+    "text": "splines + polynomial = polynomial piecewise\n\\[{Y}_{ij} = \\beta_{0j}  + \\beta_{1j}Time1_{ij} +  \\beta_{2j}Time1_{ij}^2 + \\beta_{3j}Time2_{ij} + \\varepsilon_{ij}\\]\nLevel 2: \\[{\\beta}_{0j} = \\gamma_{00} +  U_{0j}\\]\n\\[{\\beta}_{1j} = \\gamma_{10} +  U_{1j}\\] \\[{\\beta}_{2j} = \\gamma_{20} +  U_{2j}\\] \\[{\\beta}_{3j} = \\gamma_{30} +  U_{3j}\\]"
+  },
+  {
+    "objectID": "bends-4.html#discontinuity-in-level-not-in-slopes",
+    "href": "bends-4.html#discontinuity-in-level-not-in-slopes",
+    "title": "bends",
+    "section": "Discontinuity in level, not in slopes",
+    "text": "Discontinuity in level, not in slopes\n\nThe previous models modified time, and thus the trajectory. But level 1 predictors also modify the trajectory. We will cover these in more detail later, but for now…\n\n\n\nCode\nlibrary(tidyverse)\nplot &lt;- function(data, \n                            mapping, \n                            sizes = c(1, 1/4), \n                            linetypes = c(1, 2), \n                            ...) {\n  \n  ggplot(data, mapping) +\n    geom_line(aes(size = model, linetype = model)) +\n    geom_text(data = text,\n              aes(label = label, hjust = hjust),\n              size = 3, parse = T) +\n    geom_segment(data = arrow,\n                 aes(xend = xend, yend = yend),\n                 arrow = arrow(length = unit(0.075, \"inches\"), type = \"closed\"),\n                 size = 1/4) +\n    scale_size_manual(values = sizes) +\n    scale_linetype_manual(values = linetypes) +\n    scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +\n    scale_y_continuous(breaks = 0:4 * 0.2 + 1.6, expand = c(0, 0)) +\n    coord_cartesian(ylim = c(1.6, 2.4)) +\n    theme(legend.position = \"none\",\n          panel.grid = element_blank())\n  \n}\n\ntext &lt;-\n  tibble(exper = c(4.5, 4.5, 7.5, 7.5, 1),\n         lnw   = c(2.24, 2.2, 1.82, 1.78, 1.62),\n         label = c(\"Common~rate~of~change\",\n                   \"Pre-Post~L1~Event~(gamma[1][italic(i)])\",\n                   \"Elevation~differential\",\n                   \"on~level~1~IV~(gamma[2][italic(i)])\",\n                   \"DV~at~time~zero~(gamma[0][italic(i)])\"),\n         hjust = c(.5, .5, .5, .5, 0))\n\narrow &lt;-\n  tibble(exper = c(2.85, 5.2, 5.5, 1.7),\n         xend  = c(2, 6.8, 3.1, 0.05),\n         lnw   = c(2.18, 2.18, 1.8, 1.64),\n         yend  = c(1.84, 2.08, 1.9, 1.74))\n\np1 &lt;-\n  tibble(exper = c(0, 3, 3, 10),\n         ged   = rep(0:1, each = 2)) %&gt;% \n  tidyr::expand(model = letters[1:2],\n         nesting(exper, ged)) %&gt;% \n  mutate(exper2 = if_else(ged == 0, 0, exper - 3)) %&gt;% \n  mutate(lnw = case_when(\n    model == \"a\" ~ 1.75 + 0.04 * exper,\n    model == \"b\" ~ 1.75 + 0.04 * exper + 0.05 * ged),\n  model = fct_rev(model)) %&gt;%\n  plot(aes(x = exper, y = lnw))+ xlab(\"time\") +ylab(\"DV\")\np1"
+  },
+  {
+    "objectID": "bends-4.html#splines",
+    "href": "bends-4.html#splines",
+    "title": "bends",
+    "section": "Splines",
+    "text": "Splines\n\n\nCode\ntext &lt;-\n  tibble(exper = c(5, 5, 0.5, 0.5, 1),\n         lnw   = c(2.24, 2.2, 2, 1.96, 1.62),\n         label = c(\"Slope~differential\",\n                   \"Pre-Post~knot~(gamma[2][italic(i)])\",\n                   \"Rate~of~change\",\n                   \"Pre~knot~(gamma[1][italic(i)])\",\n                   \"DV~at~time~0(gamma[0][italic(i)])\"),\n         hjust = c(.5, .5, 0, 0, 0))\n\narrow &lt;-\n  tibble(exper = c(5.2, 1.7, 1.7),\n         xend  = c(9.1, 1.7, 0.05),\n         lnw   = c(2.18, 1.93, 1.64),\n         yend  = c(2.15, 1.84, 1.74))\n\np2 &lt;-\n  tibble(exper = c(0, 3, 3, 10),\n         ged   = rep(0:1, each = 2)) %&gt;% \n tidyr::expand(model = letters[1:2],\n         nesting(exper, ged)) %&gt;% \n  mutate(postexp = ifelse(exper == 10, 1, 0)) %&gt;% \n  mutate(lnw = case_when(\n    model == \"a\" ~ 1.75 + 0.04 * exper,\n    model == \"b\" ~ 1.75 + 0.04 * exper + 0.15 * postexp),\n  model = fct_rev(model)) %&gt;%\n  \n  plot(aes(x = exper, y = lnw)) +\n  annotate(geom = \"curve\",\n           x = 8.5, xend = 8.8,\n           y = 2.195, yend = 2.109,\n           arrow = arrow(length = unit(0.05, \"inches\"), type = \"closed\", ends = \"both\"),\n           size = 1/4, linetype = 2, curvature = -0.85)+ xlab(\"time\") +ylab(\"DV\")\n  \np2"
+  },
+  {
+    "objectID": "bends-4.html#generalized-growth-curves",
+    "href": "bends-4.html#generalized-growth-curves",
+    "title": "bends",
+    "section": "Generalized growth curves",
+    "text": "Generalized growth curves\n\nOften times your DV is not assumed to be governed by a normal data generating process. For example, we are working with count variables, or with dichotomous variables.\nJust like with regression, you would fit different response distribution (binomial, poisson, beta, etc) and then use a link function to create a linear formula.\nThese same techniques can be applied to MLMs and thus longitudinal MLMs."
+  },
+  {
+    "objectID": "bends-4.html#non-linear-models",
+    "href": "bends-4.html#non-linear-models",
+    "title": "bends",
+    "section": "Non-linear models",
+    "text": "Non-linear models\nStandard GLM can be written this way, which reflects a linear combination \\[ \\eta_n = \\sum_{i = 1}^K b_i x_{ni}\\]\nNonlinear models cannot, such as: \\[\\eta_n = b_1 \\exp(b_2 x_n)\\]\n\nMany nonlinear functions exist, and can be used in standard regression. We can of course take these functions and apply them to longitudinal data."
+  },
+  {
+    "objectID": "bends-4.html#polynomial",
+    "href": "bends-4.html#polynomial",
+    "title": "bends",
+    "section": "Polynomial",
+    "text": "Polynomial\nPolynomials (quadratic) level 1: \\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}(Time_{ti} - \\bar{X)} + \\beta_{2i}(Time_{ti} - \\bar{X)}^2 + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +   U_{0j}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1j}\\] \\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\]"
+  },
+  {
+    "objectID": "bends-4.html#polynomial-piecewise",
+    "href": "bends-4.html#polynomial-piecewise",
+    "title": "bends",
+    "section": "polynomial piecewise",
+    "text": "polynomial piecewise\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time1_{ti} +  \\beta_{2i}Time1_{ti}^2 + \\beta_{3i}Time2_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +  U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\] \\[{\\beta}_{3i} = \\gamma_{30} +  U_{3i}\\]"
+  },
+  {
+    "objectID": "bends-4.html#discontinuity-in-level",
+    "href": "bends-4.html#discontinuity-in-level",
+    "title": "bends",
+    "section": "Discontinuity in level",
+    "text": "Discontinuity in level\n\nThe previous models modified time, and thus the trajectory. But level 1 predictors also modify the trajectory.\n\n\n\nCode\nlibrary(tidyverse)\nplot &lt;- function(data, \n                            mapping, \n                            sizes = c(1, 1/4), \n                            linetypes = c(1, 2), \n                            ...) {\n  \n  ggplot(data, mapping) +\n    geom_line(aes(size = model, linetype = model)) +\n    geom_text(data = text,\n              aes(label = label, hjust = hjust),\n              size = 3, parse = T) +\n    geom_segment(data = arrow,\n                 aes(xend = xend, yend = yend),\n                 arrow = arrow(length = unit(0.075, \"inches\"), type = \"closed\"),\n                 size = 1/4) +\n    scale_size_manual(values = sizes) +\n    scale_linetype_manual(values = linetypes) +\n    scale_x_continuous(expand = expansion(mult = c(0, 0.05))) +\n    scale_y_continuous(breaks = 0:4 * 0.2 + 1.6, expand = c(0, 0)) +\n    coord_cartesian(ylim = c(1.6, 2.4)) +\n    theme(legend.position = \"none\",\n          panel.grid = element_blank())\n  \n}\n\ntext &lt;-\n  tibble(exper = c(4.5, 4.5, 7.5, 7.5, 1),\n         lnw   = c(2.24, 2.2, 1.82, 1.78, 1.62),\n         label = c(\"Common~rate~of~change\",\n                   \"Pre-Post~L1~Event~(gamma[1][italic(i)])\",\n                   \"Elevation~differential\",\n                   \"on~level~1~IV~(gamma[2][italic(i)])\",\n                   \"DV~at~time~zero~(gamma[0][italic(i)])\"),\n         hjust = c(.5, .5, .5, .5, 0))\n\narrow &lt;-\n  tibble(exper = c(2.85, 5.2, 5.5, 1.7),\n         xend  = c(2, 6.8, 3.1, 0.05),\n         lnw   = c(2.18, 2.18, 1.8, 1.64),\n         yend  = c(1.84, 2.08, 1.9, 1.74))\n\np1 &lt;-\n  tibble(exper = c(0, 3, 3, 10),\n         ged   = rep(0:1, each = 2)) %&gt;% \n  tidyr::expand(model = letters[1:2],\n         nesting(exper, ged)) %&gt;% \n  mutate(exper2 = if_else(ged == 0, 0, exper - 3)) %&gt;% \n  mutate(lnw = case_when(\n    model == \"a\" ~ 1.75 + 0.04 * exper,\n    model == \"b\" ~ 1.75 + 0.04 * exper + 0.05 * ged),\n  model = fct_rev(model)) %&gt;%\n  plot(aes(x = exper, y = lnw))+ xlab(\"time\") +ylab(\"DV\")\np1"
+  },
+  {
+    "objectID": "bends-4.html#discontinuity-in-level-and-slope",
+    "href": "bends-4.html#discontinuity-in-level-and-slope",
+    "title": "bends",
+    "section": "Discontinuity in Level and Slope",
+    "text": "Discontinuity in Level and Slope\nlevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time1_{ti} + \\beta_{2i}Switch_{ti} + \\beta_{3i}Time2_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +  U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\] \\[{\\beta}_{3i} = \\gamma_{20} +  U_{2i}\\]"
+  },
+  {
+    "objectID": "bends-4.html#three-phase-piecewise-model",
+    "href": "bends-4.html#three-phase-piecewise-model",
+    "title": "bends",
+    "section": "Three-Phase Piecewise Model",
+    "text": "Three-Phase Piecewise Model"
   }
 ]

@@ -1,14 +1,19 @@
 ---
 title: "bends"
-execute: 
-  echo: true
 format: revealjs
+slide-number: true
 editor: visual
+execute:
+  echo: true
+html:
+  code-fold: true
+  code-summary: Show the code
+  scrollable: true
 ---
 
 ## Trajectories that bend
 
-```{r, echo = FALSE}
+```{r}
 library(tidyverse)
 library(lavaan)
 library(modelr)
@@ -19,15 +24,15 @@ library(lme4)
 
 -   Often we want to see if trajectories are not straight. Development is not simple so our lines should not be.
 
--   Need effective strategies for line that bend that also balance tradeoffs with interpretability and overfitting
+-   Need effective strategies for line that bend that also balance trade offs with interpretability and overfitting
 
-## Polynomial and Splines
+## Polynomial 
 
-Polynomials (quadratic) level 1: $${Y}_{ij} = \beta_{0j}  + \beta_{1j}(Time_{ij} - \bar{X)} + \beta_{2j}(Time_{ij} - \bar{X)}^2 + \varepsilon_{ij}$$
+Polynomials (quadratic) level 1: $${Y}_{ti} = \beta_{0i}  + \beta_{1i}(Time_{ti} - \bar{X)} + \beta_{2i}(Time_{ti} - \bar{X)}^2 + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0j} = \gamma_{00} +   U_{0j}$$
+Level 2: $${\beta}_{0i} = \gamma_{00} +   U_{0j}$$
 
-$${\beta}_{1j} = \gamma_{10} +  U_{1j}$$ $${\beta}_{2j} = \gamma_{20} +  U_{2j}$$
+$${\beta}_{1i} = \gamma_{10} +  U_{1j}$$ $${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
 
 ## MLM poly example
 
@@ -58,6 +63,10 @@ ggplot(personality,
 ```
 
 ------------------------------------------------------------------------
+
+Think about what time means both in terms of your model but how you structure your data. 
+
+- What does the intercept mean? How does that impact random effects? Etc...
 
 ```{r}
 #| code-fold: true
@@ -125,6 +134,29 @@ p1 <- lmer(extraversion ~ year + (year | mapid), data=personality)
 summary(p1)
 ```
 
+
+---------
+
+```{r}
+
+p1b <- lmer(extraversion ~ wave + (wave | mapid), data=personality)
+summary(p1b)
+```
+
+
+
+---------
+
+Much smaller random effects; Less variance explained by predictors. 
+
+```{r}
+
+p1c <- lmer(extraversion ~ age + (age | mapid), data=personality)
+summary(p1c)
+```
+
+
+
 ------------------------------------------------------------------------
 
 quadratic
@@ -181,8 +213,8 @@ graphically, what does this look like?
 ```{r}
 #| code-fold: true
 personality %>% 
-  data_grid(year.c = seq(-3.1,10, 1), .model = personality) %>% 
-  add_predictions(p3) %>% 
+  data_grid(year.c = seq(-3.1,10, 1), .model = personality) %>%
+  modelr::add_predictions(p3) %>% 
    group_by(year.c) %>% 
   dplyr::summarize(pred = mean(pred)) %>% 
   ggplot(aes(x = year.c, y = pred)) +
@@ -225,6 +257,8 @@ compare with a linear model
 ```{r}
 anova(p3, p1)
 ```
+
+
 
 ## SEM poly example
 
@@ -369,13 +403,25 @@ ggplot(aes(x = wave, y = extra, group = ID, color = factor(ID))) +
 
 ## SEM latent basis
 
+- Let the model decide the loadings, much as we would do with normal CFAs. 
+
+- T1 Loading: 0 (Fixed - Baseline)
+- T2 Loading: 0.75 (Estimated) "75% of the total change happened in the first year
+- T3 Loading: 0.90 (Estimated) "By year 3, 90% of the total change occurred.
+- T4 Loading: 1.0 (Fixed - End)
+
+
+
+
+## SEM latent basis
+
 ```{r}
 
 #| code-fold: true
 model.7 <- '  
 
 i =~ 1*extra_1 + 1*extra_2 + 1*extra_3 + 1*extra_4 + 1*extra_5 
-s =~ 0*extra_1 + extra_2 + extra_3 + extra_4 + 4*extra_5 
+s =~ 0*extra_1 + extra_2 + extra_3 + extra_4 + 1*extra_5 
 
 '
 
@@ -400,6 +446,15 @@ dplyr::mutate(wave = as.numeric(wave)) %>%
 ggplot(aes(x = wave, y = extra, group = ID, color = factor(ID))) +
   geom_line(alpha = .2) +  theme(legend.position = "none") 
 ```
+
+
+------------
+
+- With three repeated assessments you will have a just identified model and thus cannot look at fit stats. It is more descriptive.
+
+- Slope variance describes variance in total change. Note that the latent basis shape is assumed to fit for everyone! I.e. proportion of total change inbetween 1 and 2 must be the same for everyone, even if you are going up vs down 
+
+
 
 ------------------------------------------------------------------------
 
@@ -451,15 +506,57 @@ t2
 -   In the first, the two slope coefficients represent the actual slope in the respective time period.
 -   In the second, the coefficient for time 2 represents the deviation from the slope in period 1.
 
+------------
+
+```{r}
+#| code-fold: true
+text <-
+  tibble(exper = c(5, 5, 0.5, 0.5, 1),
+         lnw   = c(2.24, 2.2, 2, 1.96, 1.62),
+         label = c("Slope~differential",
+                   "Pre-Post~knot~(gamma[2][italic(i)])",
+                   "Rate~of~change",
+                   "Pre~knot~(gamma[1][italic(i)])",
+                   "DV~at~time~0(gamma[0][italic(i)])"),
+         hjust = c(.5, .5, 0, 0, 0))
+
+arrow <-
+  tibble(exper = c(5.2, 1.7, 1.7),
+         xend  = c(9.1, 1.7, 0.05),
+         lnw   = c(2.18, 1.93, 1.64),
+         yend  = c(2.15, 1.84, 1.74))
+
+p2 <-
+  tibble(exper = c(0, 3, 3, 10),
+         ged   = rep(0:1, each = 2)) %>% 
+ tidyr::expand(model = letters[1:2],
+         nesting(exper, ged)) %>% 
+  mutate(postexp = ifelse(exper == 10, 1, 0)) %>% 
+  mutate(lnw = case_when(
+    model == "a" ~ 1.75 + 0.04 * exper,
+    model == "b" ~ 1.75 + 0.04 * exper + 0.15 * postexp),
+  model = fct_rev(model)) %>%
+  
+  plot(aes(x = exper, y = lnw)) +
+  annotate(geom = "curve",
+           x = 8.5, xend = 8.8,
+           y = 2.195, yend = 2.109,
+           arrow = arrow(length = unit(0.05, "inches"), type = "closed", ends = "both"),
+           size = 1/4, linetype = 2, curvature = -0.85)+ xlab("time") +ylab("DV")
+  
+p2  
+```
+
+
 ## mlm example
 
 level 1:
 
-$${Y}_{ij} = \beta_{0j}  + \beta_{1j}Time1_{ij} + \beta_{2j}Time2_{ij} + \varepsilon_{ij}$$
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time1_{ti} + \beta_{2i}Time2_{ti} + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0j} = \gamma_{00} +  U_{0j}$$
+Level 2: $${\beta}_{0i} = \gamma_{00} +  U_{0i}$$
 
-$${\beta}_{1j} = \gamma_{10} +  U_{1j}$$ $${\beta}_{2j} = \gamma_{20} +  U_{2j}$$
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$ $${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
 
 ------------------------------------------------------------------------
 
@@ -565,13 +662,13 @@ ggplot(aes(x = wave, y = extra, group = ID, color = factor(ID))) +
 
 ------------------------------------------------------------------------
 
-## splines + polynomial = polynomial piecewise
+## polynomial piecewise
 
-$${Y}_{ij} = \beta_{0j}  + \beta_{1j}Time1_{ij} +  \beta_{2j}Time1_{ij}^2 + \beta_{3j}Time2_{ij} + \varepsilon_{ij}$$
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time1_{ti} +  \beta_{2i}Time1_{ti}^2 + \beta_{3i}Time2_{ti} + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0j} = \gamma_{00} +  U_{0j}$$
+Level 2: $${\beta}_{0i} = \gamma_{00} +  U_{0i}$$
 
-$${\beta}_{1j} = \gamma_{10} +  U_{1j}$$ $${\beta}_{2j} = \gamma_{20} +  U_{2j}$$ $${\beta}_{3j} = \gamma_{30} +  U_{3j}$$
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$ $${\beta}_{2i} = \gamma_{20} +  U_{2i}$$ $${\beta}_{3i} = \gamma_{30} +  U_{3i}$$
 
 ------------------------------------------------------------------------
 
@@ -616,9 +713,13 @@ ggplot(aes(x = wave, y = extra, group = ID, color = factor(ID))) +
 
 ```
 
-## Discontinuity in level, not in slopes
 
--   The previous models modified time, and thus the trajectory. But level 1 predictors also modify the trajectory. We will cover these in more detail later, but for now...
+
+
+
+## Discontinuity in level
+
+-   The previous models modified time, and thus the trajectory. But level 1 predictors also modify the trajectory. 
 
 ```{r}
 #| code-fold: true
@@ -679,46 +780,57 @@ p1
 
 ```
 
-## Splines
+--------------
+
+
+level 1:
+
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}Switch_{ti} + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} +  U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$ 
+$${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
+
+
+## Discontinuity in Level and Slope
+
+
+level 1:
+
+$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time1_{ti} + \beta_{2i}Switch_{ti} + \beta_{3i}Time2_{ti} + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} +  U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$ 
+$${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
+$${\beta}_{3i} = \gamma_{20} +  U_{2i}$$
+
+## Three-Phase Piecewise Model
+
+
+![](bend1.png)
+
+
+
+---------------------------
+
+Same model as before, just time is coded differently. You effectively have two knots, and then connect the knots. One knot is the end of the first trajectory, whereas the second is the start of the other trajectory.  
+
+----------
+
+knot between w3 and w4. 
 
 ```{r}
-#| code-fold: true
-text <-
-  tibble(exper = c(5, 5, 0.5, 0.5, 1),
-         lnw   = c(2.24, 2.2, 2, 1.96, 1.62),
-         label = c("Slope~differential",
-                   "Pre-Post~knot~(gamma[2][italic(i)])",
-                   "Rate~of~change",
-                   "Pre~knot~(gamma[1][italic(i)])",
-                   "DV~at~time~0(gamma[0][italic(i)])"),
-         hjust = c(.5, .5, 0, 0, 0))
-
-arrow <-
-  tibble(exper = c(5.2, 1.7, 1.7),
-         xend  = c(9.1, 1.7, 0.05),
-         lnw   = c(2.18, 1.93, 1.64),
-         yend  = c(2.15, 1.84, 1.74))
-
-p2 <-
-  tibble(exper = c(0, 3, 3, 10),
-         ged   = rep(0:1, each = 2)) %>% 
- tidyr::expand(model = letters[1:2],
-         nesting(exper, ged)) %>% 
-  mutate(postexp = ifelse(exper == 10, 1, 0)) %>% 
-  mutate(lnw = case_when(
-    model == "a" ~ 1.75 + 0.04 * exper,
-    model == "b" ~ 1.75 + 0.04 * exper + 0.15 * postexp),
-  model = fct_rev(model)) %>%
-  
-  plot(aes(x = exper, y = lnw)) +
-  annotate(geom = "curve",
-           x = 8.5, xend = 8.8,
-           y = 2.195, yend = 2.109,
-           arrow = arrow(length = unit(0.05, "inches"), type = "closed", ends = "both"),
-           size = 1/4, linetype = 2, curvature = -0.85)+ xlab("time") +ylab("DV")
-  
-p2  
+t3 <- tribble(
+  ~time, ~t0,~t1,~t2,~t3,~t4,~t5,~t6,
+  "time 1", 0,1,2,3,3,3,3,
+  "transition", 0,0, 0,0,1,1,1,
+  "time 2", 0, 0,0,0,0,1,2
+)
+t3
 ```
+
 
 ## Generalized growth curves
 
@@ -1159,372 +1271,6 @@ $b_j$ can be thought of as the intercept, whereas $c_j$ is the slope. $a_j$ is m
 
 
 
-## GAMs
 
--   Standard longitudinal models are simple to understand (lines!), but fail to capture the ebbs and flows of many time series. Yet there are downsides to polynomial models, as they end up making bad predictions at the ends
 
--   We can do localized regression such as lowess but those are non-parameteric and thus we cannot do standard inferential tests on this
 
--   GAMs offer a middle ground: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models
-
-## Generalized additive models
-
-Similar to going from general linear model to generalized linear model. One more generalization.
-
-$$y \sim ExpoFam(\mu, etc.)$$ $$E(y) = \mu$$
-
-$$g(\mu) = b_0 + f(x_1) + f(x_2) \;...\;+f(x_p)$$
-
-exponential family distribution, and μ is still related to the model predictors via a link function. The key difference is that the linear predictor now incorporates smooth functions of at least some (possibly all) features, represented as f(x), and this will allow for nonlinear relationships between the features and the target variable y.
-
-## When to use?
-
--   Take a look at your scatter plots, are they monotononicly linear?
--   Residuals vs fitted look off? QQ plot looking bent?
--   Transformations help in general but make edge cases even worse?
--   Polynomial not cutting it
--   You want to be as flexible as possible
-
-## Simplified GAM
-
-$$y = f(x) + \epsilon$$
-
-choosing a basis, which in technical terms means choosing a space of functions for which (f) is some element of it.
-
-$$y = f(x) + \epsilon = \sum_{j=1}^{d}F_j(x)\beta_j + \epsilon$$ Each Fj is a basis function that is the transformed x depending on the type of basis considered, and the b are the corresponding regression coefficients.
-
-------------------------------------------------------------------------
-
-Can think of the basis function as a polynomial with d = 2 (but it could be many other things too) 
-
-$$f(x) = b_0 + w_1 B_{i, 1} + w_2 B_{i, 2} + w_3 B_{i, 3} + \dots$$ These basis functions become extra variables used to predict, though each of them are often "hidden" behind the overly bland "basis function"
-
-
-## Cherry blossom data
-
-```{r}
-#| code-fold: true
-#| 
-library(rethinking)
-data(cherry_blossoms)
-d <- cherry_blossoms
-rm(cherry_blossoms)
-detach(package:rethinking, unload = T)
-
-d %>% 
-  ggplot(aes(x = year, y = doy)) +
-  geom_point(color = "#ffb7c5", alpha = 1/2) +
-  theme_bw() +
-    theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank())
-
-
-```
-
---------
-
-$$f(x) = w_1 B_{i, 1} + w_2 B_{i, 2} + w_3 B_{i, 3} + \dots$$
-
-- B-splines do not directly transform the predictor by squaring or cubing it.
-
-- Instead they invent a series of entirely new, synthetic predictor variables. Each of these synthetic variables exists only to gradually turn a specific parameter on and off within a specific range of the real predictor variable. 
-
-- Each of the synthetic variables is called a basis function and serve as weights
-
-
-## knots
-
-How wiggly do you want it? 
-
-```{r}
-#| code-fold: true
-d2 <-
-  d %>% 
-  drop_na(doy)
-
-num_knots <- 15
-knot_list <- quantile(d2$year, probs = seq(from = 0, to = 1, length.out = num_knots))
-knot_list
-```
-
-------
-
-```{r}
-#| code-fold: true
-d %>% 
-  ggplot(aes(x = year, y = doy)) +
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_point(color = "#ffb7c5", alpha = 1/2) +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank())
-```
-
-## Linear basis
-
-- We will no longer use year as our predictor, instead only focus on the knots. 
-
-- The most simple, is taking the synthetic variable and either turning on or turning off a range across the knots. 
-
-```{r, echo = FALSE}
-library(splines)
-# redo the `B` splines
-
-knot_list2 <- quantile(d2$year, probs = seq(from = 0, to = 1, length.out = 5))
-
-B3 <- bs(d2$year,
-        knots = knot_list2[-c(1, 5)], 
-        # this makes the splines liner rater than cubic
-        degree = 1, 
-        intercept = TRUE)
-
-# define a new `d4` data
-d4 <- 
-  d2 %>% 
-  mutate(B3 = B3)
-
-spline0 <- 
-  brm(data = d4,
-      family = gaussian,
-      formula = doy ~ 1 + B,
-      prior = c(prior(normal(100, 10), class = Intercept),
-                prior(normal(0, 10), class = b),
-                prior(exponential(1), class = sigma)),
-      iter = 2000, warmup = 1000, chains = 4, cores = 4,
-      seed = 4,
-      backend = "cmdstanr",
-      file = "spline0")
-
-b4 <-
-  invoke(data.frame, d4) %>% 
-  pivot_longer(starts_with("B"),
-               names_to = "bias_function",
-               values_to = "bias")
-
-# plot
-  b4 %>% 
-  ggplot(aes(x = year, y = bias, group = bias_function)) +
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_line(color = "#ffb7c5", alpha = 1/2, linewidth = 1.5) +
-  scale_x_continuous(NULL, breaks = NULL) +
-  ylab("bias value")
-```
-
-
-
-------
-
-For degree 3, four basis combine at each point.
-
-```{r}
-#| code-fold: true
-library(splines)
-
-B <- bs(d2$year, knots = knot_list[-c(1, num_knots)], 
-        degree = 3,  
-        intercept = TRUE)
-        
-B %>% str()
-knot_list[c(1, num_knots)]
-```
-
-
--------
-
-Basis functions turn on parameters over different ranges of of the x-axis. Parameters influence the shape.  
-```{r}
-#| code-fold: true
-# wrangle a bit
-
-b <-B %>% 
-  data.frame() %>% 
-  set_names(str_c(0, 1:9), 10:17) %>%  
-  bind_cols(dplyr::select(d2,year)) %>% 
-  pivot_longer(-year,
-               names_to = "bias_function",
-               values_to = "bias")
-
-# plot
-b %>% 
-  ggplot(aes(x = year, y = bias, group = bias_function)) +
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_line(color = "#ffb7c5", alpha = 1/2, linewidth = 1.5) +
-  ylab("bias value") +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank())
-```
-
-
----------
-
-```{r}
-#| code-fold: true
-#| 
-b %>% 
-  mutate(bias_function = str_c("bias function ", bias_function)) %>% 
-  
-  ggplot(aes(x = year, y = bias)) +
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_line(color = "#ffb7c5", linewidth = 1.5) +
-  ylab("bias value") +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank(),
-        strip.background = element_rect(fill = scales::alpha("#ffb7c5", .25), color = "transparent"),
-        strip.text = element_text(size = 8, margin = margin(0.1, 0, 0.1, 0, "cm"))) +
-  facet_wrap(~ bias_function, ncol = 1)
-```
-
-
--------
-
-
-![](spline2.png)
-
---------
-
-
-```{r}
-#| code-fold: true
-d3 <-
-  d2 %>% 
-  mutate(B = B) 
-
-# take a look at the structure of `d3
-d3 %>% glimpse()
-```
-
-
-The B column is a matrix column, which contains the same number of rows as the others, but also smuggled in 17 columns within that column. Each of those 17 columns corresponds to one of our synthetic variables. 
-
-y ~ b as opposed to y ~ b1 + b2 + b3 ..... 
-
-
-## estimation
-
-```{r}
-spline <- 
-  brm(data = d3,
-      family = gaussian,
-      doy ~ 1 + B,
-      prior = c(prior(normal(100, 10), class = Intercept),
-                prior(normal(0, 10), class = b),
-                prior(exponential(1), class = sigma)),
-      iter = 2000, warmup = 1000, chains = 4, cores = 4,
-      seed = 4,
-      backend = "cmdstanr",
-      file = "spline")
-```
-
---------
-
-The parameter estimates are very difficult to interpret directly. It’s often easier to just plot the results
-
-```{r}
-summary(spline)
-```
-
-
----------
-
-
-```{r}
-#| code-fold: true
-post <- as_draws_df(spline)
-
-post %>% 
-  dplyr::select(b_B1:b_B17) %>% 
-  set_names(c(str_c(0, 1:9), 10:17)) %>% 
-  pivot_longer(everything(), names_to = "bias_function") %>% 
-  group_by(bias_function) %>% 
-  summarise(weight = mean(value)) %>% 
-  full_join(b, by = "bias_function") %>% 
-  
-  # plot
-  ggplot(aes(x = year, y = bias * weight, group = bias_function)) +
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_line(color = "#ffb7c5", alpha = 1/2, linewidth = 1.5) +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank()) 
-```
-
-
--------
-
-```{r}
-#| code-fold: true
-f <- fitted(spline)
-
-f %>% 
-  data.frame() %>% 
-  bind_cols(d2) %>% 
-  
-  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) + 
-  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
-  geom_hline(yintercept = fixef(spline)[1, 1], color = "white", linetype = 2) +
-  geom_point(color = "#ffb7c5", alpha = 1/2) +
-  geom_ribbon(fill = "white", alpha = 2/3) +
-  labs(x = "year",
-       y = "day in year") +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"),
-        panel.grid = element_blank())
-```
-
-
-## actual gam model
-
-```{r}
-spline2 <-
-  brm(data = d2,
-      family = gaussian,
-      doy ~ 1 + s(year),
-      prior = c(prior(normal(100, 10), class = Intercept),
-                prior(normal(0, 10), class = b),
-                prior(student_t(3, 0, 5.9), class = sds),
-                prior(exponential(1), class = sigma)),
-      iter = 2000, warmup = 1000, chains = 4, cores = 4,
-      seed = 4,
-      control = list(adapt_delta = .99),
-      backend = "cmdstanr",
-      file = "spline2")
-```
-
-
-
-------
-
-```{r}
-summary(spline2)
-```
-
---------
-
-```{r}
-#| code-fold: true
-fitted(spline2) %>% 
-  data.frame() %>% 
-  bind_cols(dplyr::select(d2, year, doy)) %>% 
-  
-  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) +
-  geom_hline(yintercept = fixef(spline2)[1, 1], color = "white", linetype = 2) +
-  geom_point(color = "#ffb7c5", alpha = 1/2) +
-  geom_ribbon(fill = "white", alpha = 2/3) +
-  labs(subtitle = "b4.7 using s(year)",
-       y = "day in year") +
-  theme_bw() +
-  theme(panel.background = element_rect(fill = "#4f455c"), 
-        panel.grid = element_blank())
-```
-
-
-
-## Penalized estimation
-
--   One concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.
-
--   This is what is used in lasso or ridge regression or many other machine learning algorithms.
-
--   A penalization parameter often called lambda uses cross validation to balance over vs under fitting
