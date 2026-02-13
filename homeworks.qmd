@@ -3,3 +3,5 @@ title: "homeworks"
 ---
 
 1.  [Longitudinal MLM homework #1](hw1.qmd)
+
+2.  [SEM growth curve homework #2](hw2.qmd)

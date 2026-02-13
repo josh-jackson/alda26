@@ -793,6 +793,20 @@ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
 $${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
 
 
+-----------
+
+```{r}
+t3 <- tribble(
+  ~time, ~t0,~t1,~t2,~t3,~t4,~t5,
+  "time 1", 0,1,2,3,4,5,
+  "switch", 0,0,0,1,1,1,
+)
+t3
+```
+
+
+
+
 ## Discontinuity in Level and Slope
 
 
@@ -806,6 +820,26 @@ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
 $${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
 $${\beta}_{3i} = \gamma_{20} +  U_{2i}$$
 
+
+-----------
+
+Same time trends as two rate specification, but add a switch
+
+```{r}
+t3 <- tribble(
+  ~time, ~t0,~t1,~t2,~t3,~t4,~t5,~t6,
+  "time 1", 0,1,2,3,3,3,3,
+  "transition", 0,0, 0,1,1,1,1,
+  "time 2", 0, 0,0,0,1,2,3
+)
+t3
+```
+
+
+
+
+
+
 ## Three-Phase Piecewise Model
 
 
@@ -815,20 +849,23 @@ $${\beta}_{3i} = \gamma_{20} +  U_{2i}$$
 
 ---------------------------
 
-Same model as before, just time is coded differently. You effectively have two knots, and then connect the knots. One knot is the end of the first trajectory, whereas the second is the start of the other trajectory.  
+- Same model as before, just time is coded differently. You effectively have two knots, and then connect the knots. One knot is the end of the first trajectory, whereas the second is the start of the other trajectory.  
+
+- Useful for events that are assessed at wave 4 that occurred prior to the assessment, sometime between wave 3 and 4. As a result, the instant change may not be appropriate as you do not want to attribute the change from the event to one of the slopes. This allows some wiggle room. 
+
 
 ----------
 
 knot between w3 and w4. 
 
 ```{r}
-t3 <- tribble(
+t4 <- tribble(
   ~time, ~t0,~t1,~t2,~t3,~t4,~t5,~t6,
   "time 1", 0,1,2,3,3,3,3,
   "transition", 0,0, 0,0,1,1,1,
   "time 2", 0, 0,0,0,0,1,2
 )
-t3
+t4
 ```
 
 
@@ -845,8 +882,11 @@ t3
 
 
 $$y_i \sim \operatorname{Bernoulli}(p_i)$$
-$$p_i = \operatorname{logit}^{-1}(b_0)$$
-$$\operatorname{logit}(x) = \log \left ( \frac{x}{1 - x} \right )$$
+Logistic function: 
+$$P(Y=1) = \frac{1}{1 + e^{-b_0 + b_1X}}$$
+Logit link: 
+$$\ln\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1X$$
+
 
 ------
 
@@ -929,11 +969,21 @@ conditional_effects(growth.log)
 
 
 
+-----------
+
+- Previous example had DVs that constrained the likelihood function and thus necessitated fitting a logistic growth model. You can fit any type of model this way eg a count growth curve.  
+
+- But what if your theorized form of the curve was ogive (S) shaped rather than the data? Eg You learn a new skill quickly at first, but improvements become marginally smaller as you approach "mastery"
+
+- Standard linear growth models are dumb about boundaries. They will predict you can increase past levels that make sense (eg byond the scale)
+
+
+
 ---------
 
 The probability that an unfamiliar listener understands what a child says, develops from age 3 to age 8. Example pulled from T.J. Mahr's website
 
-Proportions, bounded by 0 - 1. Nonlinear in that they are going to be logistic shapped. 
+Proportions, bounded by 0 - 1. Nonlinear in that they are going to be logistic shaped. 
 
 ```{r}
 #| code-fold: true
@@ -952,9 +1002,6 @@ ggplot(points) +
   scale_x_continuous(
     name = "Age in months", 
     limits = c(0, 96), 
-    # Because age is in months, I want breaks to land on multiples
-    # of 12. The `Q` in `extended_breaks()` are "nice" numbers to use
-    # for axis breaks.
     breaks = scales::extended_breaks(Q = c(24, 12))) + 
   scale_y_continuous(
     name = "Intelligibility",
@@ -969,7 +1016,6 @@ ggplot(points) +
 #| code-fold: true
 xs <- seq(0, 96, length.out = 80)
 
-# Create the curve from the equation parameters
 trend <- tibble(
   age = xs,
   asymptote = .8,
@@ -1045,8 +1091,13 @@ p
 
 -------
 
-$$f(t) = \frac{\text{asymptote}}{1 + \exp{((\text{mid}~-~t)~*~\text{scale})}}$$
+Logistic function from before: 
+$$P(Y=1) = \frac{1}{1 + e^{-b_0 + b_1X}}$$
 
+Same function, but the max is now asymptote rather than 1. 
+
+$$f(t) = \frac{\text{asymptote}}{1 + e^{((\text{mid}~-~t)~*~\text{scale})}}$$
+Scale is the slope, much like B1. t is our predictor. We use midpoint to mark where curve is centered. (For the IRT folk, mid and scale are basically our discrimination and difficulty parameters)
 
 ------
 
@@ -1136,17 +1187,13 @@ data <- tibble(
 inv_logit <- function(x) 1 / (1 + exp(-x))
 
 model_formula <- bf(
-  # Logistic curve
   prop ~ inv_logit(asymlogit) * inv(1 + exp((mid - age) * exp(scale))),
-  # Each term in the logistic equation gets a linear model
   asymlogit ~ 1,
   mid ~ 1,
   scale ~ 1,
-  # Precision
   phi ~ 1,
-  # This is a nonlinear Beta regression model
   nl = TRUE, 
-  family = Beta(link = identity)
+  family = Beta(link = identity) ## beta because proportion as DV
 )
 
 prior_fixef <- c(
@@ -1186,6 +1233,18 @@ summary(fit)
 ```
 
 
+----------
+
+```{r}
+inv_logit(1.46) ## Asymptote 
+```
+```{r}
+inv_logit(-1.96 ) ## scale at midpoint
+```
+
+
+
+
 ------
 
 ```{r}
@@ -1201,6 +1260,13 @@ ggplot(draws_posterior) +
   expand_limits(y = 0:1)
 ```
 
+---------
+
+- This example uses the beta likelihood function because the DV consists of bounded proportions (same likelihood you would use for standard regressions). 
+
+- But you can fit a logistic curve to other likelihoods, again dependent on how your DV is generated. Count data: negative binomial or a poisson, continuous data: gaussian, likert or ordinal scales: cumulative. 
+
+
 
 ## Non-linear models
 
@@ -1212,16 +1278,33 @@ $$\eta_n = b_1 \exp(b_2 x_n)$$
 
 - Many nonlinear functions exist, and can be used in standard regression. We can of course take these functions and apply them to longitudinal data. 
 
-----
+-------
 
-Insurance example
-$$ \mu_{AY, dev} = ult_{AY}
-\left(1 - \exp\left(- \left( \frac{dev}{\theta} \right)^\omega \right)
+We just saw a nonlinear growth model with the logistic function. But there are other functions that are similar to the standard logistic: 
+- Gompertz Curve (accelerates quickly but slows down, inflection occurs earlier thant logistic)
+- Log-Logistic (aysmetrical S, assumes a "Heavy Tail")
+- Von Bertalanffy (starts fast, no S)
+
+
+## Weibull Growth Model
+
+Model failure rates over time. 
+
+
+$$ asym \left(1 - \exp\left(- \left( \frac{t}{\theta} \right)^\omega \right)
 \right)$$ 
+
+
+Asym: Asymptote
+t: time
+$\theta$: scale
+$\omega$: shape of curve
+
+-------
 
 ```{r}
 data(loss)
-head(loss)
+loss
 ```
 
 
@@ -1256,14 +1339,23 @@ summary(fit_loss)
 ```
 
 
--------
+## Exponential family of growth curves
 
-Wright & Jackson, 2022 JPSP asymptoptic growth curve example
+Outside the sigmodal, S-shape family, the exponential family or J shaped curve is among the most popular. 
 
-$$Y_{ij}=\ a_j-\left(a_j-\ b_j\right)\ast e^{\left(-c_j{time}_{ij}\right)}\ $$
-$$b_j=\ \gamma_b0+\ U_bj$$
+- No Inflection Point, starts fast.  
+
+
+## Negative Exponential Growth Curve
+
+$$Y_{ij} = \underbrace{a_j}_{\text{Max}} - \underbrace{(a_j - b_j)}_{\text{Total Gap}} \times \underbrace{e^{-c_j \cdot \text{time}}}_{\text{Decay Rate}}$$
+
+Wright & Jackson, 2022 JPSP
+
+$$Y_{ti}=\ a_i-\left(a_i-\ b_i\right)\ast e^{\left(-c_i*{time}_{ti}\right)}\ $$
+$$b_i=\ \gamma_{b}+\ U_{b{i}}$$
 $$c_j=\ \gamma_{c0}+\ U_{cj}$$
-$b_j$ can be thought of as the intercept, whereas $c_j$ is the slope. $a_j$ is maximum possible value
+$b_i$ can be thought of as the intercept, whereas $c_i$ is the slope. $a_i$ is maximum possible value
 
 ------
 
