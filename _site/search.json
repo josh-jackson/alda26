@@ -11,7 +11,7 @@
     "href": "lectures.html",
     "title": "Lectures",
     "section": "",
-    "text": "Motivation and handling data\nLongitudinal MLM\nLongitudinal SEM\nBends\nConditional\nMultivariate"
+    "text": "Motivation and handling data\nLongitudinal MLM\nLongitudinal SEM\nBends\nGAMs\nConditional\nMultivariate"
   },
   {
     "objectID": "intro-1.html#goals-for-todayweek",
@@ -1425,28 +1425,28 @@
     "href": "gams-4a.html#splines",
     "title": "gams",
     "section": "Splines",
-    "text": "Splines\n\nPiecewise regression yields continuous functions which are not, generally, smooth. Regression with splines yields smooth continuous functions.\nA spline is essentially a Piecewise Polynomial but force the ends of these pieces to meet perfectly smoothly so it looks like one continuous line.\nA “spline” was a flexible strip of wood used by draftsmen to draw smooth curves through a set of points. We will do the same with several simple polynomial segments at specific points called knots"
+    "text": "Splines\n\nPiecewise regression yields continuous functions which are not, generally, smooth. Regression with splines yields smooth continuous functions.\nA spline is essentially a Piecewise Polynomial but forces the ends of these pieces to meet perfectly smoothly so it looks like one continuous line.\nA “spline” was a flexible strip of wood used by draftsmen to draw smooth curves through a set of points. We will do the same with several simple polynomial segments at specific points called knots"
   },
   {
     "objectID": "gams-4a.html#knots",
     "href": "gams-4a.html#knots",
     "title": "gams",
     "section": "knots",
-    "text": "knots\nWe break the \\(x\\)-axis into smaller regions. The specific points where we divide these regions are called knots.\nInside each region (between two knots), we fit a simple polynomial, usually a cubic (degree 3) function.\nWe must connect or touch each polynomial at the knot. Further, they must be smooth, non jerky transitions."
+    "text": "knots\nWe break the \\(x\\)-axis into multiple smaller regions. The specific points where we divide these regions are called knots.\nInside each region (between two knots), we fit a simple polynomial, usually a cubic (degree 3) function.\nWe must connect or touch each polynomial at the knot. Further, they must be smooth, non jerky transitions."
   },
   {
     "objectID": "gams-4a.html#knots-1",
     "href": "gams-4a.html#knots-1",
     "title": "gams",
-    "section": "4 knots",
-    "text": "4 knots\n\n\nCode\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- sin(x) + rnorm(100, sd = 0.2)\ndf &lt;- data.frame(x = x, y = y)\nbasis_matrix &lt;- bs(x, df = 4, intercept = TRUE) \nmodel &lt;- lm(y ~ basis_matrix - 1) \ncoeffs &lt;- coef(model)\nscaled_basis &lt;- basis_matrix %*% diag(coeffs)\nbasis_df &lt;- as.data.frame(scaled_basis)\nbasis_df$x &lt;- x\nbasis_df$Total_Curve &lt;- rowSums(scaled_basis) \nbasis_long &lt;- basis_df %&gt;%\n  pivot_longer(cols = starts_with(\"V\"), names_to = \"Basis_Function\", values_to = \"Value\")\n\nggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", size = 1.5, linetype = \"solid\") +\n  theme_minimal() +\n  theme(legend.position = \"none\")"
+    "section": "50 knots",
+    "text": "50 knots\n\n\nCode\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- sin(x) + rnorm(100, sd = 0.2)\ndf &lt;- data.frame(x = x, y = y)\nbasis_matrix &lt;- bs(x, df = 50, intercept = TRUE) \nmodel &lt;- lm(y ~ basis_matrix - 1) \ncoeffs &lt;- coef(model)\nscaled_basis &lt;- basis_matrix %*% diag(coeffs)\nbasis_df &lt;- as.data.frame(scaled_basis)\nbasis_df$x &lt;- x\nbasis_df$Total_Curve &lt;- rowSums(scaled_basis) \nbasis_long &lt;- basis_df %&gt;%\n  pivot_longer(cols = starts_with(\"V\"), names_to = \"Basis_Function\", values_to = \"Value\")\n\nggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", size = 1.5, linetype = \"solid\") +\n  theme_minimal() +\n  theme(legend.position = \"none\")"
   },
   {
     "objectID": "gams-4a.html#knots-2",
     "href": "gams-4a.html#knots-2",
     "title": "gams",
-    "section": "50 knots",
-    "text": "50 knots\n\n\nCode\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- sin(x) + rnorm(100, sd = 0.2)\ndf &lt;- data.frame(x = x, y = y)\nbasis_matrix &lt;- bs(x, df = 50, intercept = TRUE) \nmodel &lt;- lm(y ~ basis_matrix - 1) \ncoeffs &lt;- coef(model)\nscaled_basis &lt;- basis_matrix %*% diag(coeffs)\nbasis_df &lt;- as.data.frame(scaled_basis)\nbasis_df$x &lt;- x\nbasis_df$Total_Curve &lt;- rowSums(scaled_basis) \nbasis_long &lt;- basis_df %&gt;%\n  pivot_longer(cols = starts_with(\"V\"), names_to = \"Basis_Function\", values_to = \"Value\")\n\nggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", size = 1.5, linetype = \"solid\") +\n  theme_minimal() +\n  theme(legend.position = \"none\")"
+    "section": "knots",
+    "text": "knots\n\n\nCode\nd2 &lt;-\n  d %&gt;% \n  drop_na(doy)\n\nnum_knots &lt;- 15\nknot_list &lt;- quantile(d2$year, probs = seq(from = 0, to = 1, length.out = num_knots))\n\nd %&gt;% \n  ggplot(aes(x = year, y = doy)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_point(color = \"#ffb7c5\", alpha = 1/2) +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
   },
   {
     "objectID": "gams-4a.html#gams",
@@ -1460,7 +1460,7 @@
     "href": "gams-4a.html#generalized-additive-models",
     "title": "gams",
     "section": "Generalized additive models",
-    "text": "Generalized additive models\nSimilar to going from general linear model to generalized linear model. One more generalization.\n\\[y \\sim ExpoFam(\\mu, etc.)\\] \\[E(y) = \\mu\\]\n\\[g(\\mu) = b_0 + f(x_1) + f(x_2) \\;...\\;+f(x_p)\\]\nThe key difference is that the linear predictor now incorporates smooth functions of at least some (possibly all) features, represented as f(x), and this will allow for nonlinear relationships between the features and the target variable y."
+    "text": "Generalized additive models\nSimilar to going from general linear model to generalized linear model. One more generalization.\n\\[y \\sim ExpoFam(\\mu, etc.)\\]\n\\[ \\mu = \\beta_0  + \\beta_1 (x)  \\] Instead of one coefficient per predictor, in GAMs we have many.\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot B_j(x)\\]"
   },
   {
     "objectID": "gams-4a.html#cherry-blossom-data",
@@ -1481,7 +1481,7 @@
     "href": "gams-4a.html#basis-function",
     "title": "gams",
     "section": "Basis function",
-    "text": "Basis function\n\nlibrary(splines)\nlibrary(brms)\nlibrary(purrr)\nlibrary(stringr)\nB &lt;- bs(d2$year, knots = knot_list[-c(1, num_knots)], \n        degree = 3,  \n        intercept = TRUE)\n        \nB %&gt;% str()\n\n 'bs' num [1:827, 1:17] 1 0.96 0.767 0.563 0.545 ...\n - attr(*, \"dimnames\")=List of 2\n  ..$ : NULL\n  ..$ : chr [1:17] \"1\" \"2\" \"3\" \"4\" ...\n - attr(*, \"degree\")= int 3\n - attr(*, \"knots\")= Named num [1:13] 1036 1174 1269 1377 1454 ...\n  ..- attr(*, \"names\")= chr [1:13] \"7.142857%\" \"14.28571%\" \"21.42857%\" \"28.57143%\" ...\n - attr(*, \"Boundary.knots\")= int [1:2] 812 2015\n - attr(*, \"intercept\")= logi TRUE\n\nknot_list[c(1, num_knots)]\n\n  0% 100% \n 812 2015 \n\nb &lt;-B %&gt;% \n  data.frame() %&gt;% \n  # set_names(str_c(0, 1:9), 10:17) %&gt;%  \n  bind_cols(dplyr::select(d2,year)) %&gt;% \n  pivot_longer(-year,\n               names_to = \"bias_function\",\n               values_to = \"bias\")\n\n# plot\nb %&gt;% \n  ggplot(aes(x = year, y = bias, group = bias_function)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_line(color = \"#ffb7c5\", alpha = 1/2, linewidth = 1.5) +\n  ylab(\"bias value\") +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
+    "text": "Basis function\n\n\nCode\nlibrary(splines)\nlibrary(brms)\nlibrary(purrr)\nlibrary(stringr)\nB &lt;- bs(d2$year, knots = knot_list[-c(1, num_knots)], \n        degree = 3,  \n        intercept = TRUE)\n        \nB %&gt;% str()\n\n\n 'bs' num [1:827, 1:17] 1 0.96 0.767 0.563 0.545 ...\n - attr(*, \"dimnames\")=List of 2\n  ..$ : NULL\n  ..$ : chr [1:17] \"1\" \"2\" \"3\" \"4\" ...\n - attr(*, \"degree\")= int 3\n - attr(*, \"knots\")= Named num [1:13] 1036 1174 1269 1377 1454 ...\n  ..- attr(*, \"names\")= chr [1:13] \"7.142857%\" \"14.28571%\" \"21.42857%\" \"28.57143%\" ...\n - attr(*, \"Boundary.knots\")= int [1:2] 812 2015\n - attr(*, \"intercept\")= logi TRUE\n\n\nCode\nknot_list[c(1, num_knots)]\n\n\n  0% 100% \n 812 2015 \n\n\nCode\nb &lt;-B %&gt;% \n  data.frame() %&gt;% \n  # set_names(str_c(0, 1:9), 10:17) %&gt;%  \n  bind_cols(dplyr::select(d2,year)) %&gt;% \n  pivot_longer(-year,\n               names_to = \"bias_function\",\n               values_to = \"bias\")\n\n# plot\nb %&gt;% \n  ggplot(aes(x = year, y = bias, group = bias_function)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_line(color = \"#ffb7c5\", alpha = 1/2, linewidth = 1.5) +\n  ylab(\"bias value\") +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
   },
   {
     "objectID": "gams-4a.html#estimation",
@@ -1495,7 +1495,7 @@
     "href": "gams-4a.html#actual-gam-model",
     "title": "gams",
     "section": "actual gam model",
-    "text": "actual gam model\n\nspline2 &lt;-\n  brm(data = d2,\n      family = gaussian,\n      doy ~ 1 + s(year),\n      prior = c(prior(normal(100, 10), class = Intercept),\n                prior(normal(0, 10), class = b),\n                prior(student_t(3, 0, 5.9), class = sds),\n                prior(exponential(1), class = sigma)),\n      iter = 2000, warmup = 1000, chains = 4, cores = 4,\n      seed = 4,\n      control = list(adapt_delta = .99),\n      backend = \"cmdstanr\",\n      file = \"spline2\")\n\nRunning MCMC with 4 parallel chains...\n\nChain 1 Iteration:    1 / 2000 [  0%]  (Warmup) \nChain 2 Iteration:    1 / 2000 [  0%]  (Warmup) \nChain 3 Iteration:    1 / 2000 [  0%]  (Warmup) \nChain 4 Iteration:    1 / 2000 [  0%]  (Warmup) \nChain 2 Iteration:  100 / 2000 [  5%]  (Warmup) \nChain 3 Iteration:  100 / 2000 [  5%]  (Warmup) \nChain 1 Iteration:  100 / 2000 [  5%]  (Warmup) \nChain 4 Iteration:  100 / 2000 [  5%]  (Warmup) \nChain 1 Iteration:  200 / 2000 [ 10%]  (Warmup) \nChain 2 Iteration:  200 / 2000 [ 10%]  (Warmup) \nChain 3 Iteration:  200 / 2000 [ 10%]  (Warmup) \nChain 4 Iteration:  200 / 2000 [ 10%]  (Warmup) \nChain 1 Iteration:  300 / 2000 [ 15%]  (Warmup) \nChain 2 Iteration:  300 / 2000 [ 15%]  (Warmup) \nChain 3 Iteration:  300 / 2000 [ 15%]  (Warmup) \nChain 4 Iteration:  300 / 2000 [ 15%]  (Warmup) \nChain 1 Iteration:  400 / 2000 [ 20%]  (Warmup) \nChain 2 Iteration:  400 / 2000 [ 20%]  (Warmup) \nChain 4 Iteration:  400 / 2000 [ 20%]  (Warmup) \nChain 3 Iteration:  400 / 2000 [ 20%]  (Warmup) \nChain 2 Iteration:  500 / 2000 [ 25%]  (Warmup) \nChain 3 Iteration:  500 / 2000 [ 25%]  (Warmup) \nChain 1 Iteration:  500 / 2000 [ 25%]  (Warmup) \nChain 2 Iteration:  600 / 2000 [ 30%]  (Warmup) \nChain 4 Iteration:  500 / 2000 [ 25%]  (Warmup) \nChain 3 Iteration:  600 / 2000 [ 30%]  (Warmup) \nChain 1 Iteration:  600 / 2000 [ 30%]  (Warmup) \nChain 2 Iteration:  700 / 2000 [ 35%]  (Warmup) \nChain 3 Iteration:  700 / 2000 [ 35%]  (Warmup) \nChain 4 Iteration:  600 / 2000 [ 30%]  (Warmup) \nChain 1 Iteration:  700 / 2000 [ 35%]  (Warmup) \nChain 2 Iteration:  800 / 2000 [ 40%]  (Warmup) \nChain 4 Iteration:  700 / 2000 [ 35%]  (Warmup) \nChain 3 Iteration:  800 / 2000 [ 40%]  (Warmup) \nChain 1 Iteration:  800 / 2000 [ 40%]  (Warmup) \nChain 2 Iteration:  900 / 2000 [ 45%]  (Warmup) \nChain 3 Iteration:  900 / 2000 [ 45%]  (Warmup) \nChain 4 Iteration:  800 / 2000 [ 40%]  (Warmup) \nChain 1 Iteration:  900 / 2000 [ 45%]  (Warmup) \nChain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) \nChain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) \nChain 3 Iteration: 1000 / 2000 [ 50%]  (Warmup) \nChain 3 Iteration: 1001 / 2000 [ 50%]  (Sampling) \nChain 4 Iteration:  900 / 2000 [ 45%]  (Warmup) \nChain 2 Iteration: 1100 / 2000 [ 55%]  (Sampling) \nChain 3 Iteration: 1100 / 2000 [ 55%]  (Sampling) \nChain 4 Iteration: 1000 / 2000 [ 50%]  (Warmup) \nChain 4 Iteration: 1001 / 2000 [ 50%]  (Sampling) \nChain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) \nChain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) \nChain 2 Iteration: 1200 / 2000 [ 60%]  (Sampling) \nChain 3 Iteration: 1200 / 2000 [ 60%]  (Sampling) \nChain 4 Iteration: 1100 / 2000 [ 55%]  (Sampling) \nChain 2 Iteration: 1300 / 2000 [ 65%]  (Sampling) \nChain 4 Iteration: 1200 / 2000 [ 60%]  (Sampling) \nChain 3 Iteration: 1300 / 2000 [ 65%]  (Sampling) \nChain 1 Iteration: 1100 / 2000 [ 55%]  (Sampling) \nChain 2 Iteration: 1400 / 2000 [ 70%]  (Sampling) \nChain 4 Iteration: 1300 / 2000 [ 65%]  (Sampling) \nChain 3 Iteration: 1400 / 2000 [ 70%]  (Sampling) \nChain 2 Iteration: 1500 / 2000 [ 75%]  (Sampling) \nChain 4 Iteration: 1400 / 2000 [ 70%]  (Sampling) \nChain 1 Iteration: 1200 / 2000 [ 60%]  (Sampling) \nChain 3 Iteration: 1500 / 2000 [ 75%]  (Sampling) \nChain 2 Iteration: 1600 / 2000 [ 80%]  (Sampling) \nChain 4 Iteration: 1500 / 2000 [ 75%]  (Sampling) \nChain 3 Iteration: 1600 / 2000 [ 80%]  (Sampling) \nChain 1 Iteration: 1300 / 2000 [ 65%]  (Sampling) \nChain 2 Iteration: 1700 / 2000 [ 85%]  (Sampling) \nChain 4 Iteration: 1600 / 2000 [ 80%]  (Sampling) \nChain 3 Iteration: 1700 / 2000 [ 85%]  (Sampling) \nChain 2 Iteration: 1800 / 2000 [ 90%]  (Sampling) \nChain 4 Iteration: 1700 / 2000 [ 85%]  (Sampling) \nChain 3 Iteration: 1800 / 2000 [ 90%]  (Sampling) \nChain 1 Iteration: 1400 / 2000 [ 70%]  (Sampling) \nChain 2 Iteration: 1900 / 2000 [ 95%]  (Sampling) \nChain 4 Iteration: 1800 / 2000 [ 90%]  (Sampling) \nChain 3 Iteration: 1900 / 2000 [ 95%]  (Sampling) \nChain 2 Iteration: 2000 / 2000 [100%]  (Sampling) \nChain 4 Iteration: 1900 / 2000 [ 95%]  (Sampling) \nChain 2 finished in 8.7 seconds.\nChain 1 Iteration: 1500 / 2000 [ 75%]  (Sampling) \nChain 3 Iteration: 2000 / 2000 [100%]  (Sampling) \nChain 4 Iteration: 2000 / 2000 [100%]  (Sampling) \nChain 3 finished in 9.0 seconds.\nChain 4 finished in 9.1 seconds.\nChain 1 Iteration: 1600 / 2000 [ 80%]  (Sampling) \nChain 1 Iteration: 1700 / 2000 [ 85%]  (Sampling) \nChain 1 Iteration: 1800 / 2000 [ 90%]  (Sampling) \nChain 1 Iteration: 1900 / 2000 [ 95%]  (Sampling) \nChain 1 Iteration: 2000 / 2000 [100%]  (Sampling) \nChain 1 finished in 12.2 seconds.\n\nAll 4 chains finished successfully.\nMean chain execution time: 9.7 seconds.\nTotal execution time: 12.4 seconds."
+    "text": "actual gam model\n\nspline2 &lt;-\n  brm(data = d2,\n      family = gaussian,\n      doy ~ 1 + s(year),\n      prior = c(prior(normal(100, 10), class = Intercept),\n                prior(normal(0, 10), class = b),\n                prior(student_t(3, 0, 5.9), class = sds),\n                prior(exponential(1), class = sigma)),\n      iter = 2000, warmup = 1000, chains = 4, cores = 4,\n      seed = 4,\n      control = list(adapt_delta = .99),\n      backend = \"cmdstanr\",\n      file = \"spline2\")"
   },
   {
     "objectID": "gams-4a.html#penalized-estimation",
@@ -1510,5 +1510,33 @@
     "title": "hw2",
     "section": "",
     "text": "Answer the questions below using same dataset from homework 1. Turn in via email to j.jackson@wustl.edu. Due 2/23\n\nChoose one of the Big Five traits and run a growth model in SEM where the indicators are manifest variables. Interpret the intercept and the variance terms in the output.\nTry a new time coding: Use a time coding that defines the intercept as the final time point, and one that quantifies the slope estimate as the time across the entire study period. How does this differ form the previous model – what is the same/different?\nRun a latent basis coding where you allow the data to inform how time should be coded. Describe how this differs from the initial latent growth curve model.\nRun a MLM growth curve with the same variables as #1. How is the SEM model from #1 different than the MLM? The same? Run another model with constraints on the SEM model to more closely mimic the MLM model.\nPlot the growth curve from an SEM model of your choosing\nTest whether Measurement Invariance (MI) holds for a construct of your choosing. First try each item as an indicator. Then try parcels where you combine items together to get 3 indicators. Do the parcels improve the fit compared to the non-parceled model?\nImpose MI and run a second order growth curve model using effect coding. How does this model differ from models where the repeated measures are manifest variables?"
+  },
+  {
+    "objectID": "gams-4a.html#build-intuitions",
+    "href": "gams-4a.html#build-intuitions",
+    "title": "gams",
+    "section": "Build intuitions",
+    "text": "Build intuitions\n\n\nCode\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(splines) \nset.seed(123) \nn_points &lt;- 100\nx &lt;- seq(-10, 10, length.out = n_points)\ny &lt;- sin(x / 1.5) * 1.5 + rnorm(n_points, sd = 0.3)\ndf &lt;- data.frame(x = x, y = y)\n\nknots &lt;- c(-10, -5, 0, 5, 10)\nsegments_df &lt;- data.frame(\n  x_start = knots[-length(knots)], \n  x_end = knots[-1],     \n  bin_id = factor(1:(length(knots) - 1)) \n)\n\nsegments_df$y_mean &lt;- apply(segments_df, 1, function(row) {\n  x_s &lt;- as.numeric(row[\"x_start\"])\n  x_e &lt;- as.numeric(row[\"x_end\"])\n  if (x_e == max(knots)) {\n    in_bin &lt;- df$x &gt;= x_s & df$x &lt;= x_e\n  } else {\n    in_bin &lt;- df$x &gt;= x_s & df$x &lt; x_e\n  }\n  mean(df$y[in_bin], na.rm = TRUE)\n})\n\nsegment_colors &lt;- c(\"#377eb8\", \"#ff7f00\", \"#4daf4a\", \"#e41a1c\")\n\nggplot() +\n  geom_point(data = df, aes(x = x, y = y), color = \"black\", size = 2) +\n  geom_vline(aes(xintercept = knots, linetype = \"Knot\"), \n             color = \"gray50\", size = 0.8) +\n  geom_segment(data = segments_df, \n               aes(x = x_start, xend = x_end, \n                   y = y_mean, yend = y_mean, \n                   color = bin_id), \n               size = 1.5) +\n    scale_color_manual(values = segment_colors, guide = \"none\") + \n  scale_linetype_manual(name = \"\", values = c(\"Knot\" = \"dashed\")) + \n  scale_x_continuous(breaks = seq(-10, 10, 5), limits = c(-10.5, 10.5)) +\n  scale_y_continuous(breaks = seq(-2, 1, 1), limits = c(-2.2, 1.8)) +\n  theme_bw() +\n  theme(\n    plot.title = element_text(size = 20, hjust = 0.5),\n    axis.title = element_text(size = 18),\n    axis.text = element_text(size = 14),\n    legend.position = c(0.85, 0.5), \n    legend.text = element_text(size = 16),\n    legend.key.width = unit(1.5, \"cm\"), \n    panel.grid.major = element_blank(),\n    panel.grid.minor = element_blank()\n  )"
+  },
+  {
+    "objectID": "gams-4a.html#basis-functions",
+    "href": "gams-4a.html#basis-functions",
+    "title": "gams",
+    "section": "Basis Functions",
+    "text": "Basis Functions\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot \\text{Basis}_j(x)\\]\n\nSplines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots."
+  },
+  {
+    "objectID": "gams-4a.html#b-splines",
+    "href": "gams-4a.html#b-splines",
+    "title": "gams",
+    "section": "B-splines",
+    "text": "B-splines\nInstead of hills we are going to work with hills (or bells, from cubic function, and thus “b” splines).\n\n\nCode\nplot_cubic &lt;- create_spline_plot(df, \"pred_cubic\", \"Cubic Spline (Degree 3)\", \"#e41a1c\")\nplot_cubic"
+  },
+  {
+    "objectID": "gams-4a.html#basis-dimension",
+    "href": "gams-4a.html#basis-dimension",
+    "title": "gams",
+    "section": "Basis dimension",
+    "text": "Basis dimension\n\nLow number results in less wiggliness. May be under fit\nHigh number results in more wiggliness. May over fit."
   }
 ]

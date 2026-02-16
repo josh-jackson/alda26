@@ -16,13 +16,13 @@ html:
 
 - Piecewise regression yields continuous functions which are not, generally, smooth. Regression with splines yields smooth continuous functions.
 
-- A spline is essentially a Piecewise Polynomial but force the ends of these pieces to meet perfectly smoothly so it looks like one continuous line. 
+- A spline is essentially a Piecewise Polynomial but forces the ends of these pieces to meet perfectly smoothly so it looks like one continuous line. 
 
 - A "spline" was a flexible strip of wood used by draftsmen to draw smooth curves through a set of points. We will do the same with several simple polynomial segments at specific points called knots
 
 ## knots 
 
-We break the $x$-axis into smaller regions. The specific points where we divide these regions are called knots.
+We break the $x$-axis into multiple smaller regions. The specific points where we divide these regions are called knots.
 
 Inside each region (between two knots), we fit a simple polynomial, usually a cubic (degree 3) function.
 
@@ -30,42 +30,30 @@ We must connect or touch each polynomial at the knot. Further, they must be smoo
 
 
 
----------
+## Build intuitions
 
 
 ```{r}
 #| code-fold: true
-# Load necessary libraries
 library(ggplot2)
 library(dplyr)
-
-# --- 1. Generate Synthetic Data ---
-set.seed(123) # Ensures the data is the same every time
+library(splines) 
+set.seed(123) 
 n_points <- 100
 x <- seq(-10, 10, length.out = n_points)
-# Create a sine-wave pattern with some noise, similar to the example image
 y <- sin(x / 1.5) * 1.5 + rnorm(n_points, sd = 0.3)
 df <- data.frame(x = x, y = y)
 
-# --- 2. Define Knots and Calculate Piecewise Averages ---
-# Define the locations of the vertical "knots"
 knots <- c(-10, -5, 0, 5, 10)
-
-# Create a data frame for the segments.
-# We determine the start/end x-coordinates and calculate the mean y-value for each bin.
 segments_df <- data.frame(
-  x_start = knots[-length(knots)], # Starts of the intervals
-  x_end = knots[-1],               # Ends of the intervals
-  bin_id = factor(1:(length(knots) - 1)) # ID for coloring
+  x_start = knots[-length(knots)], 
+  x_end = knots[-1],     
+  bin_id = factor(1:(length(knots) - 1)) 
 )
 
-# Calculate the mean y-value within each interval
 segments_df$y_mean <- apply(segments_df, 1, function(row) {
   x_s <- as.numeric(row["x_start"])
   x_e <- as.numeric(row["x_end"])
-  
-  # Filter data within the knot interval. 
-  # Use x < x_e to avoid double-counting, but include it for the last segment.
   if (x_e == max(knots)) {
     in_bin <- df$x >= x_s & df$x <= x_e
   } else {
@@ -74,98 +62,65 @@ segments_df$y_mean <- apply(segments_df, 1, function(row) {
   mean(df$y[in_bin], na.rm = TRUE)
 })
 
-# Define custom colors to match the example image roughly
 segment_colors <- c("#377eb8", "#ff7f00", "#4daf4a", "#e41a1c")
 
-
-# --- 3. Create the Plot ---
 ggplot() +
-  # Layer 1: The data points
   geom_point(data = df, aes(x = x, y = y), color = "black", size = 2) +
-  
-  # Layer 2: The vertical dashed lines for knots
-  # We map linetype to a static string to create a legend entry
   geom_vline(aes(xintercept = knots, linetype = "Knot"), 
              color = "gray50", size = 0.8) +
-  
-  # Layer 3: The horizontal piecewise average lines
   geom_segment(data = segments_df, 
                aes(x = x_start, xend = x_end, 
                    y = y_mean, yend = y_mean, 
                    color = bin_id), 
                size = 1.5) +
-  
-  # --- Customization for styling ---
-  scale_color_manual(values = segment_colors, guide = "none") + # Manually set colors and hide segment legend
-  scale_linetype_manual(name = "", values = c("Knot" = "dashed")) + # Configure the knot legend
-  
-  # Set plot limits and labels
+    scale_color_manual(values = segment_colors, guide = "none") + 
+  scale_linetype_manual(name = "", values = c("Knot" = "dashed")) + 
   scale_x_continuous(breaks = seq(-10, 10, 5), limits = c(-10.5, 10.5)) +
   scale_y_continuous(breaks = seq(-2, 1, 1), limits = c(-2.2, 1.8)) +
-  labs(title = "Piecewise constant", x = "x", y = "y") +
-  
-  # Apply a clean theme and customize font sizes
   theme_bw() +
   theme(
     plot.title = element_text(size = 20, hjust = 0.5),
     axis.title = element_text(size = 18),
     axis.text = element_text(size = 14),
-    legend.position = c(0.85, 0.5), # Place legend inside the plot
+    legend.position = c(0.85, 0.5), 
     legend.text = element_text(size = 16),
-    legend.key.width = unit(1.5, "cm"), # Make legend line longer
+    legend.key.width = unit(1.5, "cm"), 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
   )
 ```
+
+---------------
+
+- What does this equation look like? 
+
+- We are transforming our X variable into multiple "synthetic" variables. 
+
+- Right now, think of this as categorizing a continuous varible. 
 
 
 ----------------
 
 ```{r}
 #| code-fold: true
-library(ggplot2)
-library(dplyr)
-library(splines) # Essential package for GAMs/Splines
-
-# --- 1. Setup Data (Same as before) ---
 set.seed(123)
 n_points <- 100
 x <- seq(-10, 10, length.out = n_points)
 y <- sin(x / 1.5) * 1.5 + rnorm(n_points, sd = 0.3)
 df <- data.frame(x = x, y = y)
-
-# Define Knots
-# Note: For splines, we distinguish between "Boundary" knots (ends) and "Interior" knots (middle)
 knots_all <- c(-10, -5, 0, 5, 10) 
 knots_interior <- c(-5, 0, 5)
-
-# --- 2. Fit the Spline Models ---
-
-# Model A: Linear Spline (Degree 1)
-# "bs" stands for B-Spline basis. Degree 1 = Linear lines connected at knots.
 fit_linear <- lm(y ~ bs(x, knots = knots_interior, degree = 1), data = df)
 df$pred_linear <- predict(fit_linear, newdata = df)
 
-# Model B: Cubic Spline (Degree 3)
-# Degree 3 = Cubic curves connected smoothly at knots.
 fit_cubic <- lm(y ~ bs(x, knots = knots_interior, degree = 3), data = df)
 df$pred_cubic <- predict(fit_cubic, newdata = df)
 
-# --- 3. Plotting Functions ---
-
-# Helper to create the base plot style
 create_spline_plot <- function(data, y_col, title, line_color) {
   ggplot(data, aes(x = x, y = y)) +
-    # Raw Data
     geom_point(color = "black", size = 2) +
-    
-    # Knots (Vertical Lines)
     geom_vline(xintercept = knots_all, linetype = "dashed", color = "gray50") +
-    
-    # The Spline Fit
     geom_line(aes_string(y = y_col), color = line_color, size = 1.5) +
-    
-    # Styling
     scale_x_continuous(breaks = knots_all, limits = c(-10.5, 10.5)) +
     labs(title = title, subtitle = "Vertical dashed lines = Knots") +
     theme_bw() +
@@ -177,68 +132,171 @@ create_spline_plot <- function(data, y_col, title, line_color) {
     )
 }
 
-# --- 4. Generate the Two Figures ---
-
-# Figure 1: Linear Spline (Piecewise Linear)
-# Notice: It has sharp "elbows" at the knots. It is Continuous but not Smooth.
 plot_linear <- create_spline_plot(df, "pred_linear", "Linear Spline (Degree 1)", "#377eb8")
-print(plot_linear)
-
+plot_linear
 
 ```
 
 
----------
-B-splines (from bell shaped due to the cubic nature)
+-----------
 
-```{r}
-#| code-fold: true
-plot_cubic <- create_spline_plot(df, "pred_cubic", "Cubic Spline (Degree 3)", "#e41a1c")
-print(plot_cubic)
-```
+- How can we think of this equation? Same as before, but isntead of a 0,1 dummy varibale we are going to fit linear lines. Or similar to piecewise in that we are breaking up our predictor. 
+
+- $$Y = B_{1}X_1 + B_{2}X_2 + B_{3}X_3 + \dots$$
+
+Where $X_1$ = x if x is between -10, & -5, zero for all else. 
+
+Where $X_2$ = x if x is between -5, & 0, zero for all else.
+
+** technically this is not what is happening, as this does not lead to having our ends of each segment meet one another, but this transformation is a good starting point **
 
 
 ## Basis Functions
 
-$$f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)$$
+$$f(x) = \sum_{j=1}^{k} \beta_j \cdot \text{Basis}_j(x)$$
 
-- Splines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of basis functions to essential turn on and off the effect at different values of X.  
+- Splines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots.  
+
+
+------------
+
+```{r}
+#| code-fold: true
+library(splines)
+library(ggplot2)
+library(tidyr)
+x2 <- seq(0, 10, length.out = 100)
+internal_knots <- c(2.5, 5, 7.5)
+basis_mat <- bs(x2, knots = internal_knots, degree = 1, intercept = TRUE)
+basis_df <- as.data.frame(basis_mat)
+basis_df$x2 <- x2
+colnames(basis_df)[1:(ncol(basis_df)-1)] <- paste0("Basis_", 1:(ncol(basis_df)-1))
+basis_long <- pivot_longer(basis_df, 
+                           cols = starts_with("Basis"), 
+                           names_to = "Tent", 
+                           values_to = "Value")
+ggplot(basis_long, aes(x = x2, y = Value, color = Tent)) +
+  geom_line(size = 1.2) +
+  geom_vline(xintercept = c(0, internal_knots, 10), 
+             linetype = "dashed", color = "gray60") +
+  scale_y_continuous(limits = c(0, 1.1), breaks = seq(0, 1, 0.2)) +
+  labs(title = "Linear B-Spline Basis Functions (Tents)",
+       subtitle = "Notice how each tent peaks at 1.0 at its knot and is 0.0 at all other knots.",
+       x = "Independent Variable (X)",
+       y = "Basis Function Value (Membership)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+
+--------------
+
+```{r}
+bs(x2, knots = internal_knots, degree = 1, intercept = TRUE)
+```
+
+
+
+-------
+
+Normal regression has 1 function
+
+We will have number of basis functions equal to: 
+
+$\text{Internal Knots} + \text{Degree} + \text{Intercept}$
+
+3 + 1 (linear) + intercept
+
+
+-----------
+
+```{r}
+plot_linear
+```
+
+
+--------------------
+
+The matrix is unpacked, much like a categorical variable into a dummy. You get something like: y ~ Column1 + Column2 + Column3 + Column4 + Column5 
+
+
+```{r}
+#| code-fold: true
+
+i_knots <- c(-5, 0, 5)
+basis_mat <- bs(x, knots = i_knots, degree = 1, intercept = TRUE)
+lm1 <- lm(y ~ 0 + basis_mat, data = df) 
+summary(lm1)
+```
+
+
+## B-splines 
+
+Instead of hills we are going to work with hills (or bells, from cubic function, and thus "b" splines). 
+
+```{r}
+#| code-fold: true
+plot_cubic <- create_spline_plot(df, "pred_cubic", "Cubic Spline (Degree 3)", "#e41a1c")
+plot_cubic
+```
+
+
+
+------
+
+
+3 (knots) + 3 (cubic) + intercept
+
+```{r}
+#| code-fold: true
+
+basis_mat2 <- bs(x, knots = i_knots, degree = 3, intercept = TRUE)
+basis_mat2
+
+```
+
+
+--------
+
+```{r}
+#| code-fold: true
+
+basis_df <- as.data.frame(basis_mat2)
+basis_df$x <- x
+basis_long <- pivot_longer(basis_df, cols = -x, names_to = "Basis", values_to = "Value")
+
+ggplot(basis_long, aes(x = x, y = Value, color = Basis)) +
+  geom_line(size = 1) +
+  geom_vline(xintercept = i_knots, linetype = "dashed", alpha = 0.5) +
+  labs(title = paste("Basis Functions with", length(i_knots), "Internal Knots"),
+       subtitle = paste("Total Basis Functions =", ncol(basis_mat))) +
+  theme_minimal()
+
+```
+
 
 
 ------
 
 Basis functions. We are describing many different "hills" for each value of x via how many knots. 
 
-How much does this specific hill overlap with this specific data point? Peak or down the hill a little
+How much does this specific hill overlap with this specific data point? 
+
+For every data point we are dividing up the hills into a percent that is equal to 1. 
 
 
 ```{r}
-#| code-fold: true
-library(ggplot2)
-library(splines)
-library(tidyr)
-library(dplyr)
-
-set.seed(123)
-x <- seq(0, 10, length.out = 100)
-y <- sin(x) + rnorm(100, sd = 0.2)
-df <- data.frame(x = x, y = y)
-
-basis_matrix <- bs(x, df = 6, intercept = TRUE) 
-basis_matrix
+basis_mat2
 ```
 
 ------------
 
-The matrix is unpacked, much like a categorical variable into a dummy. You get something like: y ~ Column1 + Column2 + Column3 + Column4 + Column5 + Column6
-
-Tells us how tall each hill is. 
 
 ```{r}
 #| code-fold: true
-model <- lm(y ~ 0 + basis_matrix) 
-coeffs <- coef(model)
-summary(model)
+model2 <- lm(y ~ 0 + basis_mat2) 
+coefs<-coef(model2)
+summary(model2)
 ```
 
 
@@ -257,7 +315,7 @@ $$f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)$$
 
 ```{r}
 #| code-fold: true
-scaled_basis <- basis_matrix %*% diag(coeffs)
+scaled_basis <- basis_mat2 %*% diag(coefs)
 basis_df <- as.data.frame(scaled_basis)
 basis_df$x <- x
 basis_df$Total_Curve <- rowSums(scaled_basis) 
@@ -278,35 +336,6 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
-
-## 4 knots
-
-
-```{r}
-#| code-fold: true
-set.seed(123)
-x <- seq(0, 10, length.out = 100)
-y <- sin(x) + rnorm(100, sd = 0.2)
-df <- data.frame(x = x, y = y)
-basis_matrix <- bs(x, df = 4, intercept = TRUE) 
-model <- lm(y ~ basis_matrix - 1) 
-coeffs <- coef(model)
-scaled_basis <- basis_matrix %*% diag(coeffs)
-basis_df <- as.data.frame(scaled_basis)
-basis_df$x <- x
-basis_df$Total_Curve <- rowSums(scaled_basis) 
-basis_long <- basis_df %>%
-  pivot_longer(cols = starts_with("V"), names_to = "Basis_Function", values_to = "Value")
-
-ggplot() +
-  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +
-  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), 
-            alpha = 0.5, position = "identity") +
-  geom_line(data = basis_df, aes(x = x, y = Total_Curve), 
-            color = "black", size = 1.5, linetype = "solid") +
-  theme_minimal() +
-  theme(legend.position = "none")
-```
 
 
 
@@ -339,21 +368,27 @@ ggplot() +
 ```
 
 
-## GAMs
+---------
 
-- Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Plus more! 
+```{r}
+summary(model)
+```
 
--   GAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models
 
-## Generalized additive models
 
-Similar to going from general linear model to generalized linear model. One more generalization.
+## Basis dimension
 
-$$y \sim ExpoFam(\mu, etc.)$$ $$E(y) = \mu$$
 
-$$g(\mu) = b_0 + f(x_1) + f(x_2) \;...\;+f(x_p)$$
+- Low number results in less wiggliness. May be under fit
 
-The key difference is that the linear predictor now incorporates smooth functions of at least some (possibly all) features, represented as f(x), and this will allow for nonlinear relationships between the features and the target variable y.
+- High number results in more wiggliness. May over fit. 
+
+
+
+
+
+
+
 
 
 ## Cherry blossom data
@@ -413,6 +448,7 @@ d %>%
 
 
 ```{r}
+#| code-fold: true
 library(splines)
 library(brms)
 library(purrr)
@@ -449,24 +485,6 @@ b %>%
 
 
 ![](gam1.png)
-
---------
-
-
-```{r}
-#| code-fold: true
-d3 <-
-  d2 %>% 
-  mutate(B = B) 
-
-# take a look at the structure of `d3
-d3 %>% glimpse()
-```
-
-
-The B column is a matrix column, which contains the same number of rows as the others, but also smuggled in 17 columns within that column. Each of those 17 columns corresponds to one of our synthetic variables. 
-
-y ~ b as opposed to y ~ b1 + b2 + b3 ..... 
 
 
 ## estimation
@@ -542,6 +560,27 @@ f %>%
 ```
 
 
+
+## GAMs
+
+- Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Plus more! 
+
+-   GAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models
+
+## Generalized additive models
+
+Similar to going from general linear model to generalized linear model. One more generalization.
+
+$$y \sim ExpoFam(\mu, etc.)$$
+
+$$ \mu = \beta_0  + \beta_1 (x)  $$
+Instead of one coefficient per predictor, in GAMs we have many. 
+
+$$f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)$$
+
+
+
+
 ## actual gam model
 
 ```{r}
@@ -586,7 +625,6 @@ fitted(spline2) %>%
   theme(panel.background = element_rect(fill = "#4f455c"), 
         panel.grid = element_blank())
 ```
-
 
 
 ## Penalized estimation
