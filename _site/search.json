@@ -1439,7 +1439,7 @@
     "href": "gams-4a.html#knots-1",
     "title": "gams",
     "section": "50 knots",
-    "text": "50 knots\n\n\nCode\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- sin(x) + rnorm(100, sd = 0.2)\ndf &lt;- data.frame(x = x, y = y)\nbasis_matrix &lt;- bs(x, df = 50, intercept = TRUE) \nmodel &lt;- lm(y ~ basis_matrix - 1) \ncoeffs &lt;- coef(model)\nscaled_basis &lt;- basis_matrix %*% diag(coeffs)\nbasis_df &lt;- as.data.frame(scaled_basis)\nbasis_df$x &lt;- x\nbasis_df$Total_Curve &lt;- rowSums(scaled_basis) \nbasis_long &lt;- basis_df %&gt;%\n  pivot_longer(cols = starts_with(\"V\"), names_to = \"Basis_Function\", values_to = \"Value\")\n\nggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", size = 1.5, linetype = \"solid\") +\n  theme_minimal() +\n  theme(legend.position = \"none\")"
+    "text": "50 knots\n\n\nCode\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- sin(x) + rnorm(100, sd = 0.2)\ndf &lt;- data.frame(x = x, y = y)\nbasis_matrix &lt;- bs(x, df = 50, intercept = TRUE) \nmodel &lt;- lm(y ~ basis_matrix - 1) \ncoeffs &lt;- coef(model)\nscaled_basis &lt;- basis_matrix %*% diag(coeffs)\nbasis_df &lt;- as.data.frame(scaled_basis)\nbasis_df$x &lt;- x\nbasis_df$Total_Curve &lt;- rowSums(scaled_basis) \nbasis_long &lt;- basis_df %&gt;%\n  pivot_longer(cols = starts_with(\"V\"), names_to = \"Basis_Function\", values_to = \"Value\")\n\n\nn_coeffs &lt;- length(coeffs)\nscaffold_x &lt;- seq(min(x), max(x), length.out = n_coeffs)\nscaffold_df &lt;- data.frame(\n  x = scaffold_x,\n  y = as.numeric(coeffs),\n  Type = \"Control Point (Coefficient)\"\n)\n\n\na50&lt;- ggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", size = 1.5, linetype = \"solid\") +\n  theme_minimal() +\n  theme(legend.position = \"none\")\n\n\nb50&lt;- ggplot() +\n  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = basis_df, aes(x = x, y = Total_Curve), \n            color = \"black\", alpha = .4, size = 1.5, linetype = \"solid\") +\ngeom_point(data = scaffold_df, aes(x = x, y = y),alpha = 0.3) +\n geom_line(data = scaffold_df, aes(x = x, y = y), linetype = \"dashed\") +\n  geom_point(data = scaffold_df, aes(x = x, y = y), size = 3)  +\n  theme_minimal() +\n  theme(legend.position = \"none\") \n\n\n\na50"
   },
   {
     "objectID": "gams-4a.html#knots-2",
@@ -1453,14 +1453,14 @@
     "href": "gams-4a.html#gams",
     "title": "gams",
     "section": "GAMs",
-    "text": "GAMs\n\nOffer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Plus more!\nGAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models"
+    "text": "GAMs\n\nOffer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Fit lots of basis function, see if it improved the fit.\nGAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models"
   },
   {
     "objectID": "gams-4a.html#generalized-additive-models",
     "href": "gams-4a.html#generalized-additive-models",
     "title": "gams",
     "section": "Generalized additive models",
-    "text": "Generalized additive models\nSimilar to going from general linear model to generalized linear model. One more generalization.\n\\[y \\sim ExpoFam(\\mu, etc.)\\]\n\\[ \\mu = \\beta_0  + \\beta_1 (x)  \\] Instead of one coefficient per predictor, in GAMs we have many.\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot B_j(x)\\]"
+    "text": "Generalized additive models\nSimilar to going from general linear model to generalized linear model. One more generalization.\n\\[y \\sim ExpoFam(\\mu, etc.)\\]\n\\[ \\mu = f(x)  \\] Instead of one coefficient per predictor, in GAMs we have many.\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot B_j(x)\\]"
   },
   {
     "objectID": "gams-4a.html#cherry-blossom-data",
@@ -1481,7 +1481,7 @@
     "href": "gams-4a.html#basis-function",
     "title": "gams",
     "section": "Basis function",
-    "text": "Basis function\n\n\nCode\nlibrary(splines)\nlibrary(brms)\nlibrary(purrr)\nlibrary(stringr)\nB &lt;- bs(d2$year, knots = knot_list[-c(1, num_knots)], \n        degree = 3,  \n        intercept = TRUE)\n        \nB %&gt;% str()\n\n\n 'bs' num [1:827, 1:17] 1 0.96 0.767 0.563 0.545 ...\n - attr(*, \"dimnames\")=List of 2\n  ..$ : NULL\n  ..$ : chr [1:17] \"1\" \"2\" \"3\" \"4\" ...\n - attr(*, \"degree\")= int 3\n - attr(*, \"knots\")= Named num [1:13] 1036 1174 1269 1377 1454 ...\n  ..- attr(*, \"names\")= chr [1:13] \"7.142857%\" \"14.28571%\" \"21.42857%\" \"28.57143%\" ...\n - attr(*, \"Boundary.knots\")= int [1:2] 812 2015\n - attr(*, \"intercept\")= logi TRUE\n\n\nCode\nknot_list[c(1, num_knots)]\n\n\n  0% 100% \n 812 2015 \n\n\nCode\nb &lt;-B %&gt;% \n  data.frame() %&gt;% \n  # set_names(str_c(0, 1:9), 10:17) %&gt;%  \n  bind_cols(dplyr::select(d2,year)) %&gt;% \n  pivot_longer(-year,\n               names_to = \"bias_function\",\n               values_to = \"bias\")\n\n# plot\nb %&gt;% \n  ggplot(aes(x = year, y = bias, group = bias_function)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_line(color = \"#ffb7c5\", alpha = 1/2, linewidth = 1.5) +\n  ylab(\"bias value\") +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
+    "text": "Basis function\n\n\nCode\nlibrary(splines)\nlibrary(brms)\nlibrary(purrr)\nlibrary(stringr)\nB &lt;- bs(d2$year, knots = knot_list[-c(1, num_knots)], \n        degree = 3,  \n        intercept = TRUE)\n        \nB %&gt;% str()\n\n\n 'bs' num [1:827, 1:17] 1 0.96 0.767 0.563 0.545 ...\n - attr(*, \"dimnames\")=List of 2\n  ..$ : NULL\n  ..$ : chr [1:17] \"1\" \"2\" \"3\" \"4\" ...\n - attr(*, \"degree\")= int 3\n - attr(*, \"knots\")= Named num [1:13] 1036 1174 1269 1377 1454 ...\n  ..- attr(*, \"names\")= chr [1:13] \"7.142857%\" \"14.28571%\" \"21.42857%\" \"28.57143%\" ...\n - attr(*, \"Boundary.knots\")= int [1:2] 812 2015\n - attr(*, \"intercept\")= logi TRUE\n\n\nCode\nknot_list[c(1, num_knots)]\n\n\n  0% 100% \n 812 2015 \n\n\nCode\nb &lt;-B %&gt;% \n  data.frame() %&gt;% \n  set_names(str_c(0, 1:9), 10:17) %&gt;%  \n  bind_cols(dplyr::select(d2,year)) %&gt;% \n  pivot_longer(-year,\n               names_to = \"bias_function\",\n               values_to = \"bias\")\n\n# plot\nb %&gt;% \n  ggplot(aes(x = year, y = bias, group = bias_function)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_line(color = \"#ffb7c5\", alpha = 1/2, linewidth = 1.5) +\n  ylab(\"bias value\") +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
   },
   {
     "objectID": "gams-4a.html#estimation",
@@ -1502,7 +1502,7 @@
     "href": "gams-4a.html#penalized-estimation",
     "title": "gams",
     "section": "Penalized estimation",
-    "text": "Penalized estimation\n\nOne concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.\nThis is what is used in lasso or ridge regression or many other machine learning algorithms.\nA penalization parameter often called lambda uses cross validation to balance over vs under fitting"
+    "text": "Penalized estimation\n\nOne concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.\n\n\\[\\mathcal{L}_p = \\log(\\text{Likelihood})  - \\lambda W\\]\n\nIn mgcv, a penalization parameter often called lambda uses cross validation to balance over vs under fitting. It modifies the loss function to approximate leave-one-out cross-validation selection.\nAs λ increases, the result is a linear fit because any wiggliness will add too much to the loss function. As λ decreases closer to zero, wiggliness is incorporated into the model."
   },
   {
     "objectID": "hw2.html",
@@ -1523,14 +1523,14 @@
     "href": "gams-4a.html#basis-functions",
     "title": "gams",
     "section": "Basis Functions",
-    "text": "Basis Functions\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot \\text{Basis}_j(x)\\]\n\nSplines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots."
+    "text": "Basis Functions\n\\[f(x) = \\sum_{j=1}^{k} \\beta_j \\cdot \\text{Basis}_j(X_i)\\]\n\nSplines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots."
   },
   {
     "objectID": "gams-4a.html#b-splines",
     "href": "gams-4a.html#b-splines",
     "title": "gams",
     "section": "B-splines",
-    "text": "B-splines\nInstead of hills we are going to work with hills (or bells, from cubic function, and thus “b” splines).\n\n\nCode\nplot_cubic &lt;- create_spline_plot(df, \"pred_cubic\", \"Cubic Spline (Degree 3)\", \"#e41a1c\")\nplot_cubic"
+    "text": "B-splines\nInstead of tents we are going to work with hills (or bells, from cubic function). b-splines refer to basis splines and can take many forms (more later)\n\n\nCode\nplot_cubic &lt;- create_spline_plot(df, \"pred_cubic\", \"Cubic Spline (Degree 3)\", \"#e41a1c\")\nplot_cubic"
   },
   {
     "objectID": "gams-4a.html#basis-dimension",
@@ -1538,5 +1538,89 @@
     "title": "gams",
     "section": "Basis dimension",
     "text": "Basis dimension\n\nLow number results in less wiggliness. May be under fit\nHigh number results in more wiggliness. May over fit."
+  },
+  {
+    "objectID": "gams-4a.html#how-do-we-get-the-estimates",
+    "href": "gams-4a.html#how-do-we-get-the-estimates",
+    "title": "gams",
+    "section": "How do we get the estimates?",
+    "text": "How do we get the estimates?\n\\[\\hat{Y} = b_0+b_1 X_1\\]\n\\[\\hat{Y} = f(X)\\]\n\\[ \\hat{Y} = f(X) = \\sum_{j=1}^{d}\\beta_j \\cdot \\text{Basis}_j(X_i) \\]\nThese basis functions become extra columns in your dataframe, just like your squared or cubed terms in polynomial regression (or dummies in categorical)"
+  },
+  {
+    "objectID": "gams-4a.html#raw-data",
+    "href": "gams-4a.html#raw-data",
+    "title": "gams",
+    "section": "Raw data",
+    "text": "Raw data\n\n\nCode\nlibrary(splines)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(gridExtra) \n\nset.seed(123)\nx &lt;- seq(0, 10, length.out = 100)\ny &lt;- 3 * sin(x / 1.5) + 2 + rnorm(100, sd = 0.5)\ndata_df &lt;- data.frame(x = x, y = y)\nknots &lt;- c(2.5, 5, 7.5)\nB &lt;- bs(x, knots = knots, degree = 1, intercept = TRUE)\nmodel &lt;- lm(y ~ 0 + B) \ncoeffs &lt;- coef(model)  \nraw_basis_df &lt;- as.data.frame(B)\nraw_basis_df$x &lt;- x\nraw_long &lt;- pivot_longer(raw_basis_df, cols = 1:5, names_to = \"Tent\", values_to = \"Height\")\nscaled_B &lt;- B %*% diag(coeffs)\nscaled_df &lt;- as.data.frame(scaled_B)\nscaled_df$x &lt;- x\nscaled_long &lt;- pivot_longer(scaled_df, cols = 1:5, names_to = \"Tent\", values_to = \"Height\")\ncoeff_df &lt;- data.frame(\n  Tent = paste0(\"V\", 1:5),\n  Coefficient = as.numeric(coeffs)\n)\np1 &lt;- ggplot(raw_long, aes(x = x, y = Height, color = Tent)) +\n  geom_line(size = 1) +\n  geom_vline(xintercept = knots, linetype = \"dotted\") +\n  labs(title = \"1. The Raw Basis Functions\", \n       subtitle = \"Every tent has max height = 1.0\",\n       y = \"Basis Value\") +\n  theme_minimal() + theme(legend.position = \"none\")\n\np2 &lt;- ggplot(coeff_df, aes(x = Tent, y = Coefficient, fill = Tent)) +\n  geom_col() +\n  geom_text(aes(label = round(Coefficient, 1)), vjust = -0.5) +\n  labs(title = \"2. The Coefficients\", \n       y = \"Coefficient Value\") +\n  theme_minimal() + theme(legend.position = \"none\")\n\np3 &lt;- ggplot() +\n  geom_point(data = data_df, aes(x = x, y = y), alpha = 0.3) +\n  geom_area(data = scaled_long, aes(x = x, y = Height, fill = Tent), \n            alpha = 0.5, position = \"identity\") +\n  geom_line(data = data.frame(x=x, y=predict(model)), aes(x=x, y=y), \n            size = 1, linetype = \"dashed\") +\n  labs(title = \"3. The Weighted Tents\", \n       subtitle = \"Tent Height = Coefficient Value\",\n       y = \"Y Value\") +\n  theme_minimal() + theme(legend.position = \"none\")\n\np4 &lt;-ggplot() +\n  geom_point(data = data_df, aes(x = x, y = y), alpha = 0.7)+\n  theme_minimal() \n\n\np4"
+  },
+  {
+    "objectID": "gams-4a.html#raw-basis-functions",
+    "href": "gams-4a.html#raw-basis-functions",
+    "title": "gams",
+    "section": "Raw Basis Functions",
+    "text": "Raw Basis Functions\n\np1"
+  },
+  {
+    "objectID": "gams-4a.html#run-the-model",
+    "href": "gams-4a.html#run-the-model",
+    "title": "gams",
+    "section": "Run the model",
+    "text": "Run the model\n\nsummary(model)\n\n\nCall:\nlm(formula = y ~ 0 + B)\n\nResiduals:\n     Min       1Q   Median       3Q      Max \n-1.34454 -0.35409 -0.01426  0.35668  1.32633 \n\nCoefficients:\n   Estimate Std. Error t value Pr(&gt;|t|)    \nB1   2.4887     0.1968  12.648  &lt; 2e-16 ***\nB2   5.5237     0.1484  37.212  &lt; 2e-16 ***\nB3   1.4076     0.1447   9.729 6.27e-16 ***\nB4  -1.5600     0.1484 -10.509  &lt; 2e-16 ***\nB5   3.3650     0.1968  17.101  &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 0.5443 on 95 degrees of freedom\nMultiple R-squared:  0.9678,    Adjusted R-squared:  0.9661 \nF-statistic: 570.9 on 5 and 95 DF,  p-value: &lt; 2.2e-16"
+  },
+  {
+    "objectID": "gams-4a.html#scaled-basis-functions",
+    "href": "gams-4a.html#scaled-basis-functions",
+    "title": "gams",
+    "section": "Scaled basis functions",
+    "text": "Scaled basis functions\nFeeding our data through the model tells us the predicted height for each data point, based on the scaled heights of each tent.\n\nscaled_long \n\n# A tibble: 500 × 3\n       x Tent  Height\n   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;\n 1 0     V1     2.49 \n 2 0     V2     0    \n 3 0     V3     0    \n 4 0     V4     0    \n 5 0     V5     0    \n 6 0.101 V1     2.39 \n 7 0.101 V2     0.223\n 8 0.101 V3     0    \n 9 0.101 V4     0    \n10 0.101 V5     0    \n# ℹ 490 more rows"
+  },
+  {
+    "objectID": "gams-4a.html#example-but-with-cubic-splines",
+    "href": "gams-4a.html#example-but-with-cubic-splines",
+    "title": "gams",
+    "section": "example but with cubic splines",
+    "text": "example but with cubic splines\n\np4"
+  },
+  {
+    "objectID": "gams-4a.html#with-coeffs-plotted",
+    "href": "gams-4a.html#with-coeffs-plotted",
+    "title": "gams",
+    "section": "with coeffs plotted",
+    "text": "with coeffs plotted\n\nb50"
+  },
+  {
+    "objectID": "gams-4a.html#basis-dimensions",
+    "href": "gams-4a.html#basis-dimensions",
+    "title": "gams",
+    "section": "Basis dimensions",
+    "text": "Basis dimensions\n\nLow number results in less wiggliness. May be under fit\nHigh number results in more wiggliness. May over fit."
+  },
+  {
+    "objectID": "gams-4a.html#scaled-bias",
+    "href": "gams-4a.html#scaled-bias",
+    "title": "gams",
+    "section": "scaled bias",
+    "text": "scaled bias\n\n\nCode\npost &lt;- as_draws_df(spline)\n\npost %&gt;% \n  dplyr::select(b_B1:b_B17) %&gt;% \n  set_names(c(str_c(0, 1:9), 10:17)) %&gt;% \n  pivot_longer(everything(), names_to = \"bias_function\") %&gt;% \n  group_by(bias_function) %&gt;% \n  summarise(weight = mean(value)) %&gt;% \n  full_join(b, by = \"bias_function\") %&gt;% \n  ggplot(aes(x = year, y = bias * weight, group = bias_function)) +\n  geom_vline(xintercept = knot_list, color = \"white\", alpha = 1/2) +\n  geom_line(color = \"#ffb7c5\", alpha = 1/2, linewidth = 1.5) +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
+  },
+  {
+    "objectID": "gams-4a.html#compare-with-spline",
+    "href": "gams-4a.html#compare-with-spline",
+    "title": "gams",
+    "section": "compare with spline",
+    "text": "compare with spline\n\n\nCode\nf %&gt;% \n  data.frame() %&gt;% \n  bind_cols(d2) %&gt;% \n  \n  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) + \n  geom_hline(yintercept = fixef(spline)[1, 1], color = \"white\", linetype = 2) +\n  geom_point(color = \"#ffb7c5\", alpha = 1/2) +\n  geom_ribbon(fill = \"white\", alpha = 2/3) +\n  labs(x = \"year\",\n       y = \"day in year\") +\n  theme_bw() +\n  theme(panel.background = element_rect(fill = \"#4f455c\"),\n        panel.grid = element_blank())"
+  },
+  {
+    "objectID": "gams-4a.html#other-basis-functions",
+    "href": "gams-4a.html#other-basis-functions",
+    "title": "gams",
+    "section": "Other basis functions",
+    "text": "Other basis functions"
+  },
+  {
+    "objectID": "gams-4a.html#types-of-smoothing-functions",
+    "href": "gams-4a.html#types-of-smoothing-functions",
+    "title": "gams",
+    "section": "types of smoothing functions",
+    "text": "types of smoothing functions\n\n\n\n\n\n\n\n\n\n\nBasis Type\nR Code\nPro and con\nBest Use Case\n\n\n\n\n\nThin Plate\nbs=\"tp\"\nNo manual knots but slow\nDefault choice\n\n\n\nB-Spline\nbs=\"bs\"\nMathematically simple but requires knot placement.\nWhen you know knot locations.\n\n\n\nFactor Smooth\nbs=\"fs\"\nSeparate curve per subject\nLongitudinal studies\n\n\n\nRandom Effect\nbs=\"re\"\nTreats variable as random intercept/slope.\nHierarchical models"
   }
 ]

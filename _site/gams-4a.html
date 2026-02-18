@@ -476,7 +476,7 @@
 <ul>
 <li><p>What does this equation look like?</p></li>
 <li><p>We are transforming our X variable into multiple “synthetic” variables.</p></li>
-<li><p>Right now, think of this as categorizing a continuous varible.</p></li>
+<li><p>Right now, think of this as categorizing a continuous variable.</p></li>
 </ul>
 </section>
 <section class="slide level2">
@@ -527,11 +527,16 @@
 </ul>
 <p>Where <span class="math inline">\(X_1\)</span> = x if x is between -10, &amp; -5, zero for all else.</p>
 <p>Where <span class="math inline">\(X_2\)</span> = x if x is between -5, &amp; 0, zero for all else.</p>
-<p>** technically this is not what is happening, as this does not lead to having our ends of each segment meet one another, but this transformation is a good starting point **</p>
+<p>** technically this is not what is happening, as this does not lead to having our ends of each segment meet one another, but this transformation is a good conceptual starting point **</p>
+</section>
+<section class="slide level2">
+
+<p><span class="math display">\[y\sim \mathcal{N}(\mu, \sigma^2)\]</span></p>
+<p>Standard regression: <span class="math display">\[\mu = b_0+b_1 X_1\]</span> Polynomial <span class="math display">\[\mu = b_0+b_1 X_1+b_2X^2\]</span> Splines/GAMs, where we have j synthetic variables, B. <span class="math display">\[\mu = \beta_0 + \sum_{j=1}^{k} \beta_j B_j(X_i) \]</span></p>
 </section>
 <section id="basis-functions" class="slide level2">
 <h2>Basis Functions</h2>
-<p><span class="math display">\[f(x) = \sum_{j=1}^{k} \beta_j \cdot \text{Basis}_j(x)\]</span></p>
+<p><span class="math display">\[f(x) = \sum_{j=1}^{k} \beta_j \cdot \text{Basis}_j(X_i)\]</span></p>
 <ul>
 <li>Splines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots.</li>
 </ul>
@@ -697,21 +702,67 @@ attr(,"class")
 </section>
 <section class="slide level2">
 
+<p>Same info as bs function, reordered for each data point.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>plot_linear</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>basis_long</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+      x2 Tent     Value
+   &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt;
+ 1 0     Basis_1 1     
+ 2 0     Basis_2 0     
+ 3 0     Basis_3 0     
+ 4 0     Basis_4 0     
+ 5 0     Basis_5 0     
+ 6 0.101 Basis_1 0.960 
+ 7 0.101 Basis_2 0.0404
+ 8 0.101 Basis_3 0     
+ 9 0.101 Basis_4 0     
+10 0.101 Basis_5 0     
+# ℹ 490 more rows</code></pre>
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>basis_long <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">filter</span>(x2 <span class="sc">&gt;</span> <span class="fl">4.5</span> <span class="sc">&amp;</span> x2 <span class="sc">&lt;</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 25 × 3
+      x2 Tent    Value
+   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;
+ 1  4.55 Basis_1 0    
+ 2  4.55 Basis_2 0.182
+ 3  4.55 Basis_3 0.818
+ 4  4.55 Basis_4 0    
+ 5  4.55 Basis_5 0    
+ 6  4.65 Basis_1 0    
+ 7  4.65 Basis_2 0.141
+ 8  4.65 Basis_3 0.859
+ 9  4.65 Basis_4 0    
+10  4.65 Basis_5 0    
+# ℹ 15 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="how-do-we-get-the-estimates" class="slide level2">
+<h2>How do we get the estimates?</h2>
+<p><span class="math display">\[\hat{Y} = b_0+b_1 X_1\]</span></p>
+<p><span class="math display">\[\hat{Y} = f(X)\]</span></p>
+<p><span class="math display">\[ \hat{Y} = f(X) = \sum_{j=1}^{d}\beta_j \cdot \text{Basis}_j(X_i) \]</span></p>
+<p>These basis functions become extra columns in your dataframe, just like your squared or cubed terms in polynomial regression (or dummies in categorical)</p>
+</section>
 <section class="slide level2">
 
 <p>The matrix is unpacked, much like a categorical variable into a dummy. You get something like: y ~ Column1 + Column2 + Column3 + Column4 + Column5</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>i_knots <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">5</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a>basis_mat <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">knots =</span> i_knots, <span class="at">degree =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-3"><a href="#cb7-3"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> basis_mat, <span class="at">data =</span> df) </span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="fu">summary</span>(lm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>i_knots <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">5</span>)</span>
+<span id="cb10-2"><a href="#cb10-2"></a>basis_mat <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">knots =</span> i_knots, <span class="at">degree =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-3"><a href="#cb10-3"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> basis_mat, <span class="at">data =</span> df) </span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="fu">summary</span>(lm1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -738,26 +789,178 @@ F-statistic: 2.885 on 5 and 95 DF,  p-value: 0.01808</code></pre>
 </div>
 </div>
 </section>
-<section id="b-splines" class="slide level2">
-<h2>B-splines</h2>
-<p>Instead of hills we are going to work with hills (or bells, from cubic function, and thus “b” splines).</p>
+<section class="slide level2">
+
+<p>Are these slopes or are these tent positions?</p>
+<p>You can think of these as a scaling factor. How tall does the first tent need to be, then how tall the second tent needs to be and so on</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>plot_cubic <span class="ot">&lt;-</span> <span class="fu">create_spline_plot</span>(df, <span class="st">"pred_cubic"</span>, <span class="st">"Cubic Spline (Degree 3)"</span>, <span class="st">"#e41a1c"</span>)</span>
-<span id="cb9-2"><a href="#cb9-2"></a>plot_cubic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>plot_linear</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="raw-data" class="slide level2">
+<h2>Raw data</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="fu">library</span>(gridExtra) </span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb13-8"><a href="#cb13-8"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb13-9"><a href="#cb13-9"></a>y <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">sin</span>(x <span class="sc">/</span> <span class="fl">1.5</span>) <span class="sc">+</span> <span class="dv">2</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.5</span>)</span>
+<span id="cb13-10"><a href="#cb13-10"></a>data_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb13-11"><a href="#cb13-11"></a>knots <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="dv">5</span>, <span class="fl">7.5</span>)</span>
+<span id="cb13-12"><a href="#cb13-12"></a>B <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">knots =</span> knots, <span class="at">degree =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-13"><a href="#cb13-13"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> B) </span>
+<span id="cb13-14"><a href="#cb13-14"></a>coeffs <span class="ot">&lt;-</span> <span class="fu">coef</span>(model)  </span>
+<span id="cb13-15"><a href="#cb13-15"></a>raw_basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(B)</span>
+<span id="cb13-16"><a href="#cb13-16"></a>raw_basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb13-17"><a href="#cb13-17"></a>raw_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(raw_basis_df, <span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">names_to =</span> <span class="st">"Tent"</span>, <span class="at">values_to =</span> <span class="st">"Height"</span>)</span>
+<span id="cb13-18"><a href="#cb13-18"></a>scaled_B <span class="ot">&lt;-</span> B <span class="sc">%*%</span> <span class="fu">diag</span>(coeffs)</span>
+<span id="cb13-19"><a href="#cb13-19"></a>scaled_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(scaled_B)</span>
+<span id="cb13-20"><a href="#cb13-20"></a>scaled_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb13-21"><a href="#cb13-21"></a>scaled_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(scaled_df, <span class="at">cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">names_to =</span> <span class="st">"Tent"</span>, <span class="at">values_to =</span> <span class="st">"Height"</span>)</span>
+<span id="cb13-22"><a href="#cb13-22"></a>coeff_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-23"><a href="#cb13-23"></a>  <span class="at">Tent =</span> <span class="fu">paste0</span>(<span class="st">"V"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb13-24"><a href="#cb13-24"></a>  <span class="at">Coefficient =</span> <span class="fu">as.numeric</span>(coeffs)</span>
+<span id="cb13-25"><a href="#cb13-25"></a>)</span>
+<span id="cb13-26"><a href="#cb13-26"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(raw_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Height, <span class="at">color =</span> Tent)) <span class="sc">+</span></span>
+<span id="cb13-27"><a href="#cb13-27"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-28"><a href="#cb13-28"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knots, <span class="at">linetype =</span> <span class="st">"dotted"</span>) <span class="sc">+</span></span>
+<span id="cb13-29"><a href="#cb13-29"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"1. The Raw Basis Functions"</span>, </span>
+<span id="cb13-30"><a href="#cb13-30"></a>       <span class="at">subtitle =</span> <span class="st">"Every tent has max height = 1.0"</span>,</span>
+<span id="cb13-31"><a href="#cb13-31"></a>       <span class="at">y =</span> <span class="st">"Basis Value"</span>) <span class="sc">+</span></span>
+<span id="cb13-32"><a href="#cb13-32"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb13-33"><a href="#cb13-33"></a></span>
+<span id="cb13-34"><a href="#cb13-34"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(coeff_df, <span class="fu">aes</span>(<span class="at">x =</span> Tent, <span class="at">y =</span> Coefficient, <span class="at">fill =</span> Tent)) <span class="sc">+</span></span>
+<span id="cb13-35"><a href="#cb13-35"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb13-36"><a href="#cb13-36"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(Coefficient, <span class="dv">1</span>)), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb13-37"><a href="#cb13-37"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"2. The Coefficients"</span>, </span>
+<span id="cb13-38"><a href="#cb13-38"></a>       <span class="at">y =</span> <span class="st">"Coefficient Value"</span>) <span class="sc">+</span></span>
+<span id="cb13-39"><a href="#cb13-39"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb13-40"><a href="#cb13-40"></a></span>
+<span id="cb13-41"><a href="#cb13-41"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb13-42"><a href="#cb13-42"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb13-43"><a href="#cb13-43"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> scaled_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Height, <span class="at">fill =</span> Tent), </span>
+<span id="cb13-44"><a href="#cb13-44"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb13-45"><a href="#cb13-45"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(<span class="at">x=</span>x, <span class="at">y=</span><span class="fu">predict</span>(model)), <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), </span>
+<span id="cb13-46"><a href="#cb13-46"></a>            <span class="at">size =</span> <span class="dv">1</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb13-47"><a href="#cb13-47"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"3. The Weighted Tents"</span>, </span>
+<span id="cb13-48"><a href="#cb13-48"></a>       <span class="at">subtitle =</span> <span class="st">"Tent Height = Coefficient Value"</span>,</span>
+<span id="cb13-49"><a href="#cb13-49"></a>       <span class="at">y =</span> <span class="st">"Y Value"</span>) <span class="sc">+</span></span>
+<span id="cb13-50"><a href="#cb13-50"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb13-51"><a href="#cb13-51"></a></span>
+<span id="cb13-52"><a href="#cb13-52"></a>p4 <span class="ot">&lt;-</span><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb13-53"><a href="#cb13-53"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.7</span>)<span class="sc">+</span></span>
+<span id="cb13-54"><a href="#cb13-54"></a>  <span class="fu">theme_minimal</span>() </span>
+<span id="cb13-55"><a href="#cb13-55"></a></span>
+<span id="cb13-56"><a href="#cb13-56"></a></span>
+<span id="cb13-57"><a href="#cb13-57"></a>p4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section id="raw-basis-functions" class="slide level2">
+<h2>Raw Basis Functions</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<section id="run-the-model" class="slide level2">
+<h2>Run the model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ 0 + B)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.34454 -0.35409 -0.01426  0.35668  1.32633 
+
+Coefficients:
+   Estimate Std. Error t value Pr(&gt;|t|)    
+B1   2.4887     0.1968  12.648  &lt; 2e-16 ***
+B2   5.5237     0.1484  37.212  &lt; 2e-16 ***
+B3   1.4076     0.1447   9.729 6.27e-16 ***
+B4  -1.5600     0.1484 -10.509  &lt; 2e-16 ***
+B5   3.3650     0.1968  17.101  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.5443 on 95 degrees of freedom
+Multiple R-squared:  0.9678,    Adjusted R-squared:  0.9661 
+F-statistic: 570.9 on 5 and 95 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">grid.arrange</span>(p1, p2, p3, <span class="at">layout_matrix =</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<section id="scaled-basis-functions" class="slide level2">
+<h2>Scaled basis functions</h2>
+<p>Feeding our data through the model tells us the predicted height for each data point, based on the scaled heights of each tent.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>scaled_long </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 500 × 3
+       x Tent  Height
+   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+ 1 0     V1     2.49 
+ 2 0     V2     0    
+ 3 0     V3     0    
+ 4 0     V4     0    
+ 5 0     V5     0    
+ 6 0.101 V1     2.39 
+ 7 0.101 V2     0.223
+ 8 0.101 V3     0    
+ 9 0.101 V4     0    
+10 0.101 V5     0    
+# ℹ 490 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="b-splines" class="slide level2">
+<h2>B-splines</h2>
+<p>Instead of tents we are going to work with hills (or bells, from cubic function). b-splines refer to basis splines and can take many forms (more later)</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>plot_cubic <span class="ot">&lt;-</span> <span class="fu">create_spline_plot</span>(df, <span class="st">"pred_cubic"</span>, <span class="st">"Cubic Spline (Degree 3)"</span>, <span class="st">"#e41a1c"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2"></a>plot_cubic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-14-1.png" width="960" class="r-stretch"></section>
+<section id="example-but-with-cubic-splines" class="slide level2">
+<h2>example but with cubic splines</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>p4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>3 (knots) + 3 (cubic) + intercept</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>basis_mat2 <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">knots =</span> i_knots, <span class="at">degree =</span> <span class="dv">3</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a>basis_mat2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>knots <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="dv">5</span>, <span class="fl">7.5</span>)</span>
+<span id="cb22-2"><a href="#cb22-2"></a>basis_mat2 <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">knots =</span> knots, <span class="at">degree =</span> <span class="dv">3</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb22-3"><a href="#cb22-3"></a>basis_mat2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  1            2            3            4            5
@@ -965,9 +1168,9 @@ F-statistic: 2.885 on 5 and 95 DF,  p-value: 0.01808</code></pre>
 attr(,"degree")
 [1] 3
 attr(,"knots")
-[1] -5  0  5
+[1] 2.5 5.0 7.5
 attr(,"Boundary.knots")
-[1] -10  10
+[1]  0 10
 attr(,"intercept")
 [1] TRUE
 attr(,"class")
@@ -980,27 +1183,25 @@ attr(,"class")
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(basis_mat2)</span>
-<span id="cb12-2"><a href="#cb12-2"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
-<span id="cb12-3"><a href="#cb12-3"></a>basis_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(basis_df, <span class="at">cols =</span> <span class="sc">-</span>x, <span class="at">names_to =</span> <span class="st">"Basis"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="fu">ggplot</span>(basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">color =</span> Basis)) <span class="sc">+</span></span>
-<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb12-7"><a href="#cb12-7"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> i_knots, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Basis Functions with"</span>, <span class="fu">length</span>(i_knots), <span class="st">"Internal Knots"</span>),</span>
-<span id="cb12-9"><a href="#cb12-9"></a>       <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">"Total Basis Functions ="</span>, <span class="fu">ncol</span>(basis_mat))) <span class="sc">+</span></span>
-<span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(basis_mat2)</span>
+<span id="cb24-2"><a href="#cb24-2"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb24-3"><a href="#cb24-3"></a>basis_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(basis_df, <span class="at">cols =</span> <span class="sc">-</span>x, <span class="at">names_to =</span> <span class="st">"Basis"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="fu">ggplot</span>(basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">color =</span> Basis)) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knots, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Basis Functions with"</span>, <span class="fu">length</span>(i_knots), <span class="st">"Internal Knots"</span>),</span>
+<span id="cb24-9"><a href="#cb24-9"></a>       <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">"Total Basis Functions ="</span>, <span class="fu">ncol</span>(basis_mat2))) <span class="sc">+</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
-<p>Basis functions. We are describing many different “hills” for each value of x via how many knots.</p>
-<p>How much does this specific hill overlap with this specific data point?</p>
-<p>For every data point we are dividing up the hills into a percent that is equal to 1.</p>
+<p>Basis functions. We are describing many different “hills”, asking how much does this specific hill overlap with this specific data point? For every data point we are dividing up the hills into a probability that is equal to 1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>basis_mat2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>basis_mat2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  1            2            3            4            5
   [1,] 1.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
@@ -1207,9 +1408,9 @@ attr(,"class")
 attr(,"degree")
 [1] 3
 attr(,"knots")
-[1] -5  0  5
+[1] 2.5 5.0 7.5
 attr(,"Boundary.knots")
-[1] -10  10
+[1]  0 10
 attr(,"intercept")
 [1] TRUE
 attr(,"class")
@@ -1222,34 +1423,34 @@ attr(,"class")
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> basis_mat2) </span>
-<span id="cb15-2"><a href="#cb15-2"></a>coefs<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)</span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> basis_mat2, data_df) </span>
+<span id="cb27-2"><a href="#cb27-2"></a>coefs<span class="ot">&lt;-</span><span class="fu">coef</span>(model2)</span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = y ~ 0 + basis_mat2)
+lm(formula = y ~ 0 + basis_mat2, data = data_df)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--1.22360 -0.38529  0.00699  0.46465  0.95876 
+-1.02511 -0.28004 -0.03737  0.28618  1.13254 
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-basis_mat21  -1.3704     0.3240  -4.229 5.48e-05 ***
-basis_mat22   4.0490     0.3755  10.783  &lt; 2e-16 ***
-basis_mat23  -2.3659     0.3682  -6.425 5.55e-09 ***
-basis_mat24   0.2239     0.3131   0.715    0.476    
-basis_mat25   1.9067     0.3682   5.178 1.29e-06 ***
-basis_mat26  -3.6462     0.3755  -9.710 8.39e-16 ***
-basis_mat27   1.4769     0.3240   4.558 1.57e-05 ***
+basis_mat21   2.1457     0.2709   7.921 4.96e-12 ***
+basis_mat22   3.7607     0.3139  11.980  &lt; 2e-16 ***
+basis_mat23   6.4575     0.3078  20.977  &lt; 2e-16 ***
+basis_mat24   1.4722     0.2617   5.625 1.94e-07 ***
+basis_mat25  -3.0923     0.3078 -10.045  &lt; 2e-16 ***
+basis_mat26   2.2265     0.3139   7.093 2.54e-10 ***
+basis_mat27   3.1369     0.2709  11.579  &lt; 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.5508 on 93 degrees of freedom
-Multiple R-squared:  0.7367,    Adjusted R-squared:  0.7169 
-F-statistic: 37.18 on 7 and 93 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 0.4605 on 93 degrees of freedom
+Multiple R-squared:  0.9774,    Adjusted R-squared:  0.9757 
+F-statistic: 575.5 on 7 and 93 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
@@ -1258,71 +1459,166 @@ F-statistic: 37.18 on 7 and 93 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>B is the basis and tells us where the hills are.</p>
 <p><span class="math inline">\(\beta_j\)</span> tells us how tall the hills are (weights)</p>
 <p>Multiplying together tells us the Weighted shapes</p>
-<p><span class="math display">\[f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)\]</span></p>
+<p><span class="math display">\[y = f(X)\]</span> <span class="math display">\[ y = \sum_{j=1}^{k} \beta_j B_j(X)\]</span></p>
 </section>
 <section class="slide level2">
 
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>scaled_basis <span class="ot">&lt;-</span> basis_mat2 <span class="sc">%*%</span> <span class="fu">diag</span>(coefs)</span>
-<span id="cb17-2"><a href="#cb17-2"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(scaled_basis)</span>
-<span id="cb17-3"><a href="#cb17-3"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
-<span id="cb17-4"><a href="#cb17-4"></a>basis_df<span class="sc">$</span>Total_Curve <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(scaled_basis) </span>
-<span id="cb17-5"><a href="#cb17-5"></a></span>
-<span id="cb17-6"><a href="#cb17-6"></a>basis_long <span class="ot">&lt;-</span> basis_df <span class="sc">%&gt;%</span></span>
-<span id="cb17-7"><a href="#cb17-7"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"V"</span>), <span class="at">names_to =</span> <span class="st">"Basis_Function"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
-<span id="cb17-8"><a href="#cb17-8"></a></span>
-<span id="cb17-9"><a href="#cb17-9"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb17-10"><a href="#cb17-10"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb17-11"><a href="#cb17-11"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
-<span id="cb17-12"><a href="#cb17-12"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb17-13"><a href="#cb17-13"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
-<span id="cb17-14"><a href="#cb17-14"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
-<span id="cb17-15"><a href="#cb17-15"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Anatomy of a Spline"</span>,</span>
-<span id="cb17-16"><a href="#cb17-16"></a>       <span class="at">subtitle =</span> <span class="st">"Colored Areas = Weighted Basis Functions </span><span class="sc">\n</span><span class="st">Black Line = The Combination "</span>,</span>
-<span id="cb17-17"><a href="#cb17-17"></a>       <span class="at">y =</span> <span class="st">"Y"</span>) <span class="sc">+</span></span>
-<span id="cb17-18"><a href="#cb17-18"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb17-19"><a href="#cb17-19"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>scaled_basis <span class="ot">&lt;-</span> basis_mat2 <span class="sc">%*%</span> <span class="fu">diag</span>(coefs)</span>
+<span id="cb29-2"><a href="#cb29-2"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(scaled_basis)</span>
+<span id="cb29-3"><a href="#cb29-3"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb29-4"><a href="#cb29-4"></a>basis_df<span class="sc">$</span>Total_Curve <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(scaled_basis) </span>
+<span id="cb29-5"><a href="#cb29-5"></a></span>
+<span id="cb29-6"><a href="#cb29-6"></a>basis_long <span class="ot">&lt;-</span> basis_df <span class="sc">%&gt;%</span></span>
+<span id="cb29-7"><a href="#cb29-7"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"V"</span>), <span class="at">names_to =</span> <span class="st">"Basis_Function"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
+<span id="cb29-8"><a href="#cb29-8"></a></span>
+<span id="cb29-9"><a href="#cb29-9"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-10"><a href="#cb29-10"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> data_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
+<span id="cb29-12"><a href="#cb29-12"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb29-13"><a href="#cb29-13"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
+<span id="cb29-14"><a href="#cb29-14"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb29-15"><a href="#cb29-15"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Anatomy of a Spline"</span>,</span>
+<span id="cb29-16"><a href="#cb29-16"></a>       <span class="at">subtitle =</span> <span class="st">"Colored Areas = Weighted Basis Functions </span><span class="sc">\n</span><span class="st">Black Line = The Combination "</span>,</span>
+<span id="cb29-17"><a href="#cb29-17"></a>       <span class="at">y =</span> <span class="st">"Y"</span>) <span class="sc">+</span></span>
+<span id="cb29-18"><a href="#cb29-18"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb29-19"><a href="#cb29-19"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<p>Here the coefficients represent the Height of a Control Point or Magnet</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">summary</span>(model2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ 0 + basis_mat2, data = data_df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.02511 -0.28004 -0.03737  0.28618  1.13254 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+basis_mat21   2.1457     0.2709   7.921 4.96e-12 ***
+basis_mat22   3.7607     0.3139  11.980  &lt; 2e-16 ***
+basis_mat23   6.4575     0.3078  20.977  &lt; 2e-16 ***
+basis_mat24   1.4722     0.2617   5.625 1.94e-07 ***
+basis_mat25  -3.0923     0.3078 -10.045  &lt; 2e-16 ***
+basis_mat26   2.2265     0.3139   7.093 2.54e-10 ***
+basis_mat27   3.1369     0.2709  11.579  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4605 on 93 degrees of freedom
+Multiple R-squared:  0.9774,    Adjusted R-squared:  0.9757 
+F-statistic: 575.5 on 7 and 93 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>n_coeffs <span class="ot">&lt;-</span> <span class="fu">length</span>(coefs)</span>
+<span id="cb32-2"><a href="#cb32-2"></a>scaffold_x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(x), <span class="fu">max</span>(x), <span class="at">length.out =</span> n_coeffs)</span>
+<span id="cb32-3"><a href="#cb32-3"></a>scaffold_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb32-4"><a href="#cb32-4"></a>  <span class="at">x =</span> scaffold_x,</span>
+<span id="cb32-5"><a href="#cb32-5"></a>  <span class="at">y =</span> <span class="fu">as.numeric</span>(coefs),</span>
+<span id="cb32-6"><a href="#cb32-6"></a>  <span class="at">Type =</span> <span class="st">"Control Point (Coefficient)"</span></span>
+<span id="cb32-7"><a href="#cb32-7"></a>)</span>
+<span id="cb32-8"><a href="#cb32-8"></a></span>
+<span id="cb32-9"><a href="#cb32-9"></a>scaffold_df <span class="sc">|&gt;</span> </span>
+<span id="cb32-10"><a href="#cb32-10"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb32-11"><a href="#cb32-11"></a><span class="fu">geom_point</span>( <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb32-12"><a href="#cb32-12"></a> <span class="fu">geom_line</span>(<span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb32-13"><a href="#cb32-13"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb32-14"><a href="#cb32-14"></a>   <span class="fu">geom_point</span>(<span class="at">data =</span> data_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb32-15"><a href="#cb32-15"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
+<span id="cb32-16"><a href="#cb32-16"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb32-17"><a href="#cb32-17"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
+<span id="cb32-18"><a href="#cb32-18"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">alpha =</span> .<span class="dv">5</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<ul>
+<li><p>The “scaled basis function” represented by the shaded hills tells you how much each basis function is influencing the model.</p></li>
+<li><p>Can think about it as for any value of x, the height of the curve is represented by weighted values of different basis functions roughly such that the main hill corresponds to 66% of the height while the left and right contribute ~ 16%</p></li>
+<li><p>These will be helpful in diagnosing over and under fitting.</p></li>
+</ul>
+</section>
 <section id="knots-1" class="slide level2">
 <h2>50 knots</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb18-2"><a href="#cb18-2"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
-<span id="cb18-3"><a href="#cb18-3"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
-<span id="cb18-4"><a href="#cb18-4"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
-<span id="cb18-5"><a href="#cb18-5"></a>basis_matrix <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">df =</span> <span class="dv">50</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>) </span>
-<span id="cb18-6"><a href="#cb18-6"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> basis_matrix <span class="sc">-</span> <span class="dv">1</span>) </span>
-<span id="cb18-7"><a href="#cb18-7"></a>coeffs <span class="ot">&lt;-</span> <span class="fu">coef</span>(model)</span>
-<span id="cb18-8"><a href="#cb18-8"></a>scaled_basis <span class="ot">&lt;-</span> basis_matrix <span class="sc">%*%</span> <span class="fu">diag</span>(coeffs)</span>
-<span id="cb18-9"><a href="#cb18-9"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(scaled_basis)</span>
-<span id="cb18-10"><a href="#cb18-10"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
-<span id="cb18-11"><a href="#cb18-11"></a>basis_df<span class="sc">$</span>Total_Curve <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(scaled_basis) </span>
-<span id="cb18-12"><a href="#cb18-12"></a>basis_long <span class="ot">&lt;-</span> basis_df <span class="sc">%&gt;%</span></span>
-<span id="cb18-13"><a href="#cb18-13"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"V"</span>), <span class="at">names_to =</span> <span class="st">"Basis_Function"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
-<span id="cb18-14"><a href="#cb18-14"></a></span>
-<span id="cb18-15"><a href="#cb18-15"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb18-16"><a href="#cb18-16"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
-<span id="cb18-17"><a href="#cb18-17"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
-<span id="cb18-18"><a href="#cb18-18"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
-<span id="cb18-19"><a href="#cb18-19"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
-<span id="cb18-20"><a href="#cb18-20"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
-<span id="cb18-21"><a href="#cb18-21"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb18-22"><a href="#cb18-22"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb33-2"><a href="#cb33-2"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb33-3"><a href="#cb33-3"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
+<span id="cb33-4"><a href="#cb33-4"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb33-5"><a href="#cb33-5"></a>basis_matrix <span class="ot">&lt;-</span> <span class="fu">bs</span>(x, <span class="at">df =</span> <span class="dv">50</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb33-6"><a href="#cb33-6"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> basis_matrix <span class="sc">-</span> <span class="dv">1</span>) </span>
+<span id="cb33-7"><a href="#cb33-7"></a>coeffs <span class="ot">&lt;-</span> <span class="fu">coef</span>(model)</span>
+<span id="cb33-8"><a href="#cb33-8"></a>scaled_basis <span class="ot">&lt;-</span> basis_matrix <span class="sc">%*%</span> <span class="fu">diag</span>(coeffs)</span>
+<span id="cb33-9"><a href="#cb33-9"></a>basis_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(scaled_basis)</span>
+<span id="cb33-10"><a href="#cb33-10"></a>basis_df<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb33-11"><a href="#cb33-11"></a>basis_df<span class="sc">$</span>Total_Curve <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(scaled_basis) </span>
+<span id="cb33-12"><a href="#cb33-12"></a>basis_long <span class="ot">&lt;-</span> basis_df <span class="sc">%&gt;%</span></span>
+<span id="cb33-13"><a href="#cb33-13"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"V"</span>), <span class="at">names_to =</span> <span class="st">"Basis_Function"</span>, <span class="at">values_to =</span> <span class="st">"Value"</span>)</span>
+<span id="cb33-14"><a href="#cb33-14"></a></span>
+<span id="cb33-15"><a href="#cb33-15"></a></span>
+<span id="cb33-16"><a href="#cb33-16"></a>n_coeffs <span class="ot">&lt;-</span> <span class="fu">length</span>(coeffs)</span>
+<span id="cb33-17"><a href="#cb33-17"></a>scaffold_x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(x), <span class="fu">max</span>(x), <span class="at">length.out =</span> n_coeffs)</span>
+<span id="cb33-18"><a href="#cb33-18"></a>scaffold_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb33-19"><a href="#cb33-19"></a>  <span class="at">x =</span> scaffold_x,</span>
+<span id="cb33-20"><a href="#cb33-20"></a>  <span class="at">y =</span> <span class="fu">as.numeric</span>(coeffs),</span>
+<span id="cb33-21"><a href="#cb33-21"></a>  <span class="at">Type =</span> <span class="st">"Control Point (Coefficient)"</span></span>
+<span id="cb33-22"><a href="#cb33-22"></a>)</span>
+<span id="cb33-23"><a href="#cb33-23"></a></span>
+<span id="cb33-24"><a href="#cb33-24"></a></span>
+<span id="cb33-25"><a href="#cb33-25"></a>a50<span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb33-26"><a href="#cb33-26"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb33-27"><a href="#cb33-27"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
+<span id="cb33-28"><a href="#cb33-28"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb33-29"><a href="#cb33-29"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
+<span id="cb33-30"><a href="#cb33-30"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb33-31"><a href="#cb33-31"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb33-32"><a href="#cb33-32"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb33-33"><a href="#cb33-33"></a></span>
+<span id="cb33-34"><a href="#cb33-34"></a></span>
+<span id="cb33-35"><a href="#cb33-35"></a>b50<span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb33-36"><a href="#cb33-36"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb33-37"><a href="#cb33-37"></a>  <span class="fu">geom_area</span>(<span class="at">data =</span> basis_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Value, <span class="at">fill =</span> Basis_Function), </span>
+<span id="cb33-38"><a href="#cb33-38"></a>            <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb33-39"><a href="#cb33-39"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> basis_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> Total_Curve), </span>
+<span id="cb33-40"><a href="#cb33-40"></a>            <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">alpha =</span> .<span class="dv">4</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">linetype =</span> <span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb33-41"><a href="#cb33-41"></a><span class="fu">geom_point</span>(<span class="at">data =</span> scaffold_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y),<span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb33-42"><a href="#cb33-42"></a> <span class="fu">geom_line</span>(<span class="at">data =</span> scaffold_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb33-43"><a href="#cb33-43"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> scaffold_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>)  <span class="sc">+</span></span>
+<span id="cb33-44"><a href="#cb33-44"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb33-45"><a href="#cb33-45"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) </span>
+<span id="cb33-46"><a href="#cb33-46"></a></span>
+<span id="cb33-47"><a href="#cb33-47"></a></span>
+<span id="cb33-48"><a href="#cb33-48"></a></span>
+<span id="cb33-49"><a href="#cb33-49"></a>a50</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-13-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1393,8 +1689,15 @@ F-statistic: 25.31 on 50 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </section>
-<section id="basis-dimension" class="slide level2">
-<h2>Basis dimension</h2>
+<section id="with-coeffs-plotted" class="slide level2">
+<h2>with coeffs plotted</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>b50</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-25-1.png" width="960" class="r-stretch"></section>
+<section id="basis-dimensions" class="slide level2">
+<h2>Basis dimensions</h2>
 <ul>
 <li><p>Low number results in less wiggliness. May be under fit</p></li>
 <li><p>High number results in more wiggliness. May over fit.</p></li>
@@ -1405,67 +1708,59 @@ F-statistic: 25.31 on 50 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">library</span>(rethinking)</span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="fu">data</span>(cherry_blossoms)</span>
-<span id="cb21-3"><a href="#cb21-3"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="fu">rm</span>(cherry_blossoms)</span>
-<span id="cb21-5"><a href="#cb21-5"></a><span class="fu">detach</span>(package<span class="sc">:</span>rethinking, <span class="at">unload =</span> T)</span>
-<span id="cb21-6"><a href="#cb21-6"></a></span>
-<span id="cb21-7"><a href="#cb21-7"></a>d <span class="sc">%&gt;%</span> </span>
-<span id="cb21-8"><a href="#cb21-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy)) <span class="sc">+</span></span>
-<span id="cb21-9"><a href="#cb21-9"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb21-10"><a href="#cb21-10"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb21-11"><a href="#cb21-11"></a>    <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
-<span id="cb21-12"><a href="#cb21-12"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="fu">data</span>(cherry_blossoms)</span>
+<span id="cb37-3"><a href="#cb37-3"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
+<span id="cb37-4"><a href="#cb37-4"></a><span class="fu">rm</span>(cherry_blossoms)</span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="fu">detach</span>(package<span class="sc">:</span>rethinking, <span class="at">unload =</span> T)</span>
+<span id="cb37-6"><a href="#cb37-6"></a></span>
+<span id="cb37-7"><a href="#cb37-7"></a>d <span class="sc">%&gt;%</span> </span>
+<span id="cb37-8"><a href="#cb37-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy)) <span class="sc">+</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb37-10"><a href="#cb37-10"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb37-11"><a href="#cb37-11"></a>    <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb37-12"><a href="#cb37-12"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-15-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
-<p><span class="math display">\[f(x) = w_1 B_{i, 1} + w_2 B_{i, 2} + w_3 B_{i, 3} + \dots\]</span></p>
-<ul>
-<li><p>B-splines invent a series of entirely new, synthetic predictor variables. The hills. Each of these synthetic variables exists only to gradually turn a specific parameter on and off within a specific range of the real predictor variable.</p></li>
-<li><p>Each of the synthetic variables is called a basis function and serve as weights</p></li>
-</ul>
-</section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-26-1.png" width="960" class="r-stretch"></section>
 <section id="knots-2" class="slide level2">
 <h2>knots</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>d2 <span class="ot">&lt;-</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a>  d <span class="sc">%&gt;%</span> </span>
-<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">drop_na</span>(doy)</span>
-<span id="cb22-4"><a href="#cb22-4"></a></span>
-<span id="cb22-5"><a href="#cb22-5"></a>num_knots <span class="ot">&lt;-</span> <span class="dv">15</span></span>
-<span id="cb22-6"><a href="#cb22-6"></a>knot_list <span class="ot">&lt;-</span> <span class="fu">quantile</span>(d2<span class="sc">$</span>year, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> num_knots))</span>
-<span id="cb22-7"><a href="#cb22-7"></a></span>
-<span id="cb22-8"><a href="#cb22-8"></a>d <span class="sc">%&gt;%</span> </span>
-<span id="cb22-9"><a href="#cb22-9"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy)) <span class="sc">+</span></span>
-<span id="cb22-10"><a href="#cb22-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb22-11"><a href="#cb22-11"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb22-12"><a href="#cb22-12"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb22-13"><a href="#cb22-13"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
-<span id="cb22-14"><a href="#cb22-14"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>d2 <span class="ot">&lt;-</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb38-3"><a href="#cb38-3"></a>  <span class="fu">drop_na</span>(doy)</span>
+<span id="cb38-4"><a href="#cb38-4"></a></span>
+<span id="cb38-5"><a href="#cb38-5"></a>num_knots <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb38-6"><a href="#cb38-6"></a>knot_list <span class="ot">&lt;-</span> <span class="fu">quantile</span>(d2<span class="sc">$</span>year, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> num_knots))</span>
+<span id="cb38-7"><a href="#cb38-7"></a></span>
+<span id="cb38-8"><a href="#cb38-8"></a>d <span class="sc">%&gt;%</span> </span>
+<span id="cb38-9"><a href="#cb38-9"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy)) <span class="sc">+</span></span>
+<span id="cb38-10"><a href="#cb38-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb38-11"><a href="#cb38-11"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb38-12"><a href="#cb38-12"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb38-13"><a href="#cb38-13"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb38-14"><a href="#cb38-14"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-16-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-27-1.png" width="960" class="r-stretch"></section>
 <section id="basis-function" class="slide level2">
 <h2>Basis function</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">library</span>(splines)</span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="fu">library</span>(brms)</span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="fu">library</span>(stringr)</span>
-<span id="cb23-5"><a href="#cb23-5"></a>B <span class="ot">&lt;-</span> <span class="fu">bs</span>(d2<span class="sc">$</span>year, <span class="at">knots =</span> knot_list[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, num_knots)], </span>
-<span id="cb23-6"><a href="#cb23-6"></a>        <span class="at">degree =</span> <span class="dv">3</span>,  </span>
-<span id="cb23-7"><a href="#cb23-7"></a>        <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb23-8"><a href="#cb23-8"></a>        </span>
-<span id="cb23-9"><a href="#cb23-9"></a>B <span class="sc">%&gt;%</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="fu">library</span>(splines)</span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="fu">library</span>(brms)</span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="fu">library</span>(purrr)</span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb39-5"><a href="#cb39-5"></a>B <span class="ot">&lt;-</span> <span class="fu">bs</span>(d2<span class="sc">$</span>year, <span class="at">knots =</span> knot_list[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>, num_knots)], </span>
+<span id="cb39-6"><a href="#cb39-6"></a>        <span class="at">degree =</span> <span class="dv">3</span>,  </span>
+<span id="cb39-7"><a href="#cb39-7"></a>        <span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-8"><a href="#cb39-8"></a>        </span>
+<span id="cb39-9"><a href="#cb39-9"></a>B <span class="sc">%&gt;%</span> <span class="fu">str</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> 'bs' num [1:827, 1:17] 1 0.96 0.767 0.563 0.545 ...
@@ -1480,7 +1775,7 @@ F-statistic: 25.31 on 50 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>knot_list[<span class="fu">c</span>(<span class="dv">1</span>, num_knots)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>knot_list[<span class="fu">c</span>(<span class="dv">1</span>, num_knots)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  0% 100% 
@@ -1488,27 +1783,27 @@ F-statistic: 25.31 on 50 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>b <span class="ot">&lt;-</span>B <span class="sc">%&gt;%</span> </span>
-<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb27-3"><a href="#cb27-3"></a>  <span class="co"># set_names(str_c(0, 1:9), 10:17) %&gt;%  </span></span>
-<span id="cb27-4"><a href="#cb27-4"></a>  <span class="fu">bind_cols</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(d2,year)) <span class="sc">%&gt;%</span> </span>
-<span id="cb27-5"><a href="#cb27-5"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>year,</span>
-<span id="cb27-6"><a href="#cb27-6"></a>               <span class="at">names_to =</span> <span class="st">"bias_function"</span>,</span>
-<span id="cb27-7"><a href="#cb27-7"></a>               <span class="at">values_to =</span> <span class="st">"bias"</span>)</span>
-<span id="cb27-8"><a href="#cb27-8"></a></span>
-<span id="cb27-9"><a href="#cb27-9"></a><span class="co"># plot</span></span>
-<span id="cb27-10"><a href="#cb27-10"></a>b <span class="sc">%&gt;%</span> </span>
-<span id="cb27-11"><a href="#cb27-11"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> bias, <span class="at">group =</span> bias_function)) <span class="sc">+</span></span>
-<span id="cb27-12"><a href="#cb27-12"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb27-13"><a href="#cb27-13"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb27-14"><a href="#cb27-14"></a>  <span class="fu">ylab</span>(<span class="st">"bias value"</span>) <span class="sc">+</span></span>
-<span id="cb27-15"><a href="#cb27-15"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb27-16"><a href="#cb27-16"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
-<span id="cb27-17"><a href="#cb27-17"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a>b <span class="ot">&lt;-</span>B <span class="sc">%&gt;%</span> </span>
+<span id="cb43-2"><a href="#cb43-2"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb43-3"><a href="#cb43-3"></a>  <span class="fu">set_names</span>(<span class="fu">str_c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>), <span class="dv">10</span><span class="sc">:</span><span class="dv">17</span>) <span class="sc">%&gt;%</span>  </span>
+<span id="cb43-4"><a href="#cb43-4"></a>  <span class="fu">bind_cols</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(d2,year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb43-5"><a href="#cb43-5"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>year,</span>
+<span id="cb43-6"><a href="#cb43-6"></a>               <span class="at">names_to =</span> <span class="st">"bias_function"</span>,</span>
+<span id="cb43-7"><a href="#cb43-7"></a>               <span class="at">values_to =</span> <span class="st">"bias"</span>)</span>
+<span id="cb43-8"><a href="#cb43-8"></a></span>
+<span id="cb43-9"><a href="#cb43-9"></a><span class="co"># plot</span></span>
+<span id="cb43-10"><a href="#cb43-10"></a>b <span class="sc">%&gt;%</span> </span>
+<span id="cb43-11"><a href="#cb43-11"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> bias, <span class="at">group =</span> bias_function)) <span class="sc">+</span></span>
+<span id="cb43-12"><a href="#cb43-12"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb43-13"><a href="#cb43-13"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb43-14"><a href="#cb43-14"></a>  <span class="fu">ylab</span>(<span class="st">"bias value"</span>) <span class="sc">+</span></span>
+<span id="cb43-15"><a href="#cb43-15"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb43-16"><a href="#cb43-16"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb43-17"><a href="#cb43-17"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-28-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 
@@ -1516,24 +1811,23 @@ F-statistic: 25.31 on 50 and 50 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="estimation" class="slide level2">
 <h2>estimation</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>spline <span class="ot">&lt;-</span> </span>
-<span id="cb28-2"><a href="#cb28-2"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d3,</span>
-<span id="cb28-3"><a href="#cb28-3"></a>      <span class="at">family =</span> gaussian,</span>
-<span id="cb28-4"><a href="#cb28-4"></a>      doy <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> B,</span>
-<span id="cb28-5"><a href="#cb28-5"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">100</span>, <span class="dv">10</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb28-6"><a href="#cb28-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
-<span id="cb28-7"><a href="#cb28-7"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb28-8"><a href="#cb28-8"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb28-9"><a href="#cb28-9"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
-<span id="cb28-10"><a href="#cb28-10"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb28-11"><a href="#cb28-11"></a>      <span class="at">file =</span> <span class="st">"spline"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1"></a>spline <span class="ot">&lt;-</span> </span>
+<span id="cb44-2"><a href="#cb44-2"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d3,</span>
+<span id="cb44-3"><a href="#cb44-3"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb44-4"><a href="#cb44-4"></a>      doy <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> B,</span>
+<span id="cb44-5"><a href="#cb44-5"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">100</span>, <span class="dv">10</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb44-6"><a href="#cb44-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb44-7"><a href="#cb44-7"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb44-8"><a href="#cb44-8"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb44-9"><a href="#cb44-9"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb44-10"><a href="#cb44-10"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb44-11"><a href="#cb44-11"></a>      <span class="at">file =</span> <span class="st">"spline"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
-<p>The parameter estimates are very difficult to interpret directly. It’s often easier to just plot the results</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">summary</span>(spline)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="fu">summary</span>(spline)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1573,61 +1867,59 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 </div>
 </section>
+<section id="scaled-bias" class="slide level2">
+<h2>scaled bias</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>post <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(spline)</span>
+<span id="cb47-2"><a href="#cb47-2"></a></span>
+<span id="cb47-3"><a href="#cb47-3"></a>post <span class="sc">%&gt;%</span> </span>
+<span id="cb47-4"><a href="#cb47-4"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(b_B1<span class="sc">:</span>b_B17) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-5"><a href="#cb47-5"></a>  <span class="fu">set_names</span>(<span class="fu">c</span>(<span class="fu">str_c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>), <span class="dv">10</span><span class="sc">:</span><span class="dv">17</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-6"><a href="#cb47-6"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"bias_function"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-7"><a href="#cb47-7"></a>  <span class="fu">group_by</span>(bias_function) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-8"><a href="#cb47-8"></a>  <span class="fu">summarise</span>(<span class="at">weight =</span> <span class="fu">mean</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-9"><a href="#cb47-9"></a>  <span class="fu">full_join</span>(b, <span class="at">by =</span> <span class="st">"bias_function"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-10"><a href="#cb47-10"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> bias <span class="sc">*</span> weight, <span class="at">group =</span> bias_function)) <span class="sc">+</span></span>
+<span id="cb47-11"><a href="#cb47-11"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb47-12"><a href="#cb47-12"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb47-14"><a href="#cb47-14"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb47-15"><a href="#cb47-15"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-31-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>post <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(spline)</span>
-<span id="cb31-2"><a href="#cb31-2"></a></span>
-<span id="cb31-3"><a href="#cb31-3"></a>post <span class="sc">%&gt;%</span> </span>
-<span id="cb31-4"><a href="#cb31-4"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(b_B1<span class="sc">:</span>b_B17) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-5"><a href="#cb31-5"></a>  <span class="fu">set_names</span>(<span class="fu">c</span>(<span class="fu">str_c</span>(<span class="dv">0</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>), <span class="dv">10</span><span class="sc">:</span><span class="dv">17</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-6"><a href="#cb31-6"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"bias_function"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-7"><a href="#cb31-7"></a>  <span class="fu">group_by</span>(bias_function) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-8"><a href="#cb31-8"></a>  <span class="fu">summarise</span>(<span class="at">weight =</span> <span class="fu">mean</span>(value)) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-9"><a href="#cb31-9"></a>  <span class="fu">full_join</span>(b, <span class="at">by =</span> <span class="st">"bias_function"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb31-10"><a href="#cb31-10"></a>  </span>
-<span id="cb31-11"><a href="#cb31-11"></a>  <span class="co"># plot</span></span>
-<span id="cb31-12"><a href="#cb31-12"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> bias <span class="sc">*</span> weight, <span class="at">group =</span> bias_function)) <span class="sc">+</span></span>
-<span id="cb31-13"><a href="#cb31-13"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb31-14"><a href="#cb31-14"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb31-15"><a href="#cb31-15"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb31-16"><a href="#cb31-16"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
-<span id="cb31-17"><a href="#cb31-17"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1"></a>f <span class="ot">&lt;-</span> <span class="fu">fitted</span>(spline)</span>
+<span id="cb48-2"><a href="#cb48-2"></a></span>
+<span id="cb48-3"><a href="#cb48-3"></a>f <span class="sc">%&gt;%</span> </span>
+<span id="cb48-4"><a href="#cb48-4"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb48-5"><a href="#cb48-5"></a>  <span class="fu">bind_cols</span>(d2) <span class="sc">%&gt;%</span> </span>
+<span id="cb48-6"><a href="#cb48-6"></a>  </span>
+<span id="cb48-7"><a href="#cb48-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>)) <span class="sc">+</span> </span>
+<span id="cb48-8"><a href="#cb48-8"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb48-9"><a href="#cb48-9"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">fixef</span>(spline)[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb48-10"><a href="#cb48-10"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb48-11"><a href="#cb48-11"></a>  <span class="fu">geom_ribbon</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb48-12"><a href="#cb48-12"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"year"</span>,</span>
+<span id="cb48-13"><a href="#cb48-13"></a>       <span class="at">y =</span> <span class="st">"day in year"</span>) <span class="sc">+</span></span>
+<span id="cb48-14"><a href="#cb48-14"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb48-15"><a href="#cb48-15"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb48-16"><a href="#cb48-16"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-20-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>f <span class="ot">&lt;-</span> <span class="fu">fitted</span>(spline)</span>
-<span id="cb32-2"><a href="#cb32-2"></a></span>
-<span id="cb32-3"><a href="#cb32-3"></a>f <span class="sc">%&gt;%</span> </span>
-<span id="cb32-4"><a href="#cb32-4"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb32-5"><a href="#cb32-5"></a>  <span class="fu">bind_cols</span>(d2) <span class="sc">%&gt;%</span> </span>
-<span id="cb32-6"><a href="#cb32-6"></a>  </span>
-<span id="cb32-7"><a href="#cb32-7"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>)) <span class="sc">+</span> </span>
-<span id="cb32-8"><a href="#cb32-8"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> knot_list, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb32-9"><a href="#cb32-9"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">fixef</span>(spline)[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb32-10"><a href="#cb32-10"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb32-11"><a href="#cb32-11"></a>  <span class="fu">geom_ribbon</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb32-12"><a href="#cb32-12"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"year"</span>,</span>
-<span id="cb32-13"><a href="#cb32-13"></a>       <span class="at">y =</span> <span class="st">"day in year"</span>) <span class="sc">+</span></span>
-<span id="cb32-14"><a href="#cb32-14"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb32-15"><a href="#cb32-15"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
-<span id="cb32-16"><a href="#cb32-16"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-21-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-32-1.png" width="960" class="r-stretch"></section>
 <section id="gams" class="slide level2">
 <h2>GAMs</h2>
 <ul>
-<li><p>Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Plus more!</p></li>
+<li><p>Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Fit lots of basis function, see if it improved the fit.</p></li>
 <li><p>GAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models</p></li>
 </ul>
 </section>
@@ -1635,31 +1927,31 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <h2>Generalized additive models</h2>
 <p>Similar to going from general linear model to generalized linear model. One more generalization.</p>
 <p><span class="math display">\[y \sim ExpoFam(\mu, etc.)\]</span></p>
-<p><span class="math display">\[ \mu = \beta_0  + \beta_1 (x)  \]</span> Instead of one coefficient per predictor, in GAMs we have many.</p>
+<p><span class="math display">\[ \mu = f(x)  \]</span> Instead of one coefficient per predictor, in GAMs we have many.</p>
 <p><span class="math display">\[f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)\]</span></p>
 </section>
 <section id="actual-gam-model" class="slide level2">
 <h2>actual gam model</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>spline2 <span class="ot">&lt;-</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2,</span>
-<span id="cb33-3"><a href="#cb33-3"></a>      <span class="at">family =</span> gaussian,</span>
-<span id="cb33-4"><a href="#cb33-4"></a>      doy <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">s</span>(year),</span>
-<span id="cb33-5"><a href="#cb33-5"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">100</span>, <span class="dv">10</span>), <span class="at">class =</span> Intercept),</span>
-<span id="cb33-6"><a href="#cb33-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
-<span id="cb33-7"><a href="#cb33-7"></a>                <span class="fu">prior</span>(<span class="fu">student_t</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="fl">5.9</span>), <span class="at">class =</span> sds),</span>
-<span id="cb33-8"><a href="#cb33-8"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
-<span id="cb33-9"><a href="#cb33-9"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
-<span id="cb33-10"><a href="#cb33-10"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
-<span id="cb33-11"><a href="#cb33-11"></a>      <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">99</span>),</span>
-<span id="cb33-12"><a href="#cb33-12"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
-<span id="cb33-13"><a href="#cb33-13"></a>      <span class="at">file =</span> <span class="st">"spline2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>spline2 <span class="ot">&lt;-</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2,</span>
+<span id="cb49-3"><a href="#cb49-3"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb49-4"><a href="#cb49-4"></a>      doy <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">s</span>(year),</span>
+<span id="cb49-5"><a href="#cb49-5"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">100</span>, <span class="dv">10</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb49-6"><a href="#cb49-6"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb49-7"><a href="#cb49-7"></a>                <span class="fu">prior</span>(<span class="fu">student_t</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="fl">5.9</span>), <span class="at">class =</span> sds),</span>
+<span id="cb49-8"><a href="#cb49-8"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb49-9"><a href="#cb49-9"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb49-10"><a href="#cb49-10"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb49-11"><a href="#cb49-11"></a>      <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> .<span class="dv">99</span>),</span>
+<span id="cb49-12"><a href="#cb49-12"></a>      <span class="at">backend =</span> <span class="st">"cmdstanr"</span>,</span>
+<span id="cb49-13"><a href="#cb49-13"></a>      <span class="at">file =</span> <span class="st">"spline2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">summary</span>(spline2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a><span class="fu">summary</span>(spline2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
@@ -1692,30 +1984,115 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="fu">fitted</span>(spline2) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-2"><a href="#cb36-2"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">bind_cols</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(d2, year, doy)) <span class="sc">%&gt;%</span> </span>
-<span id="cb36-4"><a href="#cb36-4"></a>  </span>
-<span id="cb36-5"><a href="#cb36-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>)) <span class="sc">+</span></span>
-<span id="cb36-6"><a href="#cb36-6"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">fixef</span>(spline2)[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb36-7"><a href="#cb36-7"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb36-8"><a href="#cb36-8"></a>  <span class="fu">geom_ribbon</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb36-9"><a href="#cb36-9"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"b4.7 using s(year)"</span>,</span>
-<span id="cb36-10"><a href="#cb36-10"></a>       <span class="at">y =</span> <span class="st">"day in year"</span>) <span class="sc">+</span></span>
-<span id="cb36-11"><a href="#cb36-11"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb36-12"><a href="#cb36-12"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>), </span>
-<span id="cb36-13"><a href="#cb36-13"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="fu">fitted</span>(spline2) <span class="sc">%&gt;%</span> </span>
+<span id="cb52-2"><a href="#cb52-2"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb52-3"><a href="#cb52-3"></a>  <span class="fu">bind_cols</span>(dplyr<span class="sc">::</span><span class="fu">select</span>(d2, year, doy)) <span class="sc">%&gt;%</span> </span>
+<span id="cb52-4"><a href="#cb52-4"></a>  </span>
+<span id="cb52-5"><a href="#cb52-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>)) <span class="sc">+</span></span>
+<span id="cb52-6"><a href="#cb52-6"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">fixef</span>(spline2)[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb52-7"><a href="#cb52-7"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb52-8"><a href="#cb52-8"></a>  <span class="fu">geom_ribbon</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb52-9"><a href="#cb52-9"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"using s(year)"</span>,</span>
+<span id="cb52-10"><a href="#cb52-10"></a>       <span class="at">y =</span> <span class="st">"day in year"</span>) <span class="sc">+</span></span>
+<span id="cb52-11"><a href="#cb52-11"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb52-12"><a href="#cb52-12"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>), </span>
+<span id="cb52-13"><a href="#cb52-13"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-24-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-35-1.png" width="960" class="r-stretch"></section>
+<section id="compare-with-spline" class="slide level2">
+<h2>compare with spline</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>f <span class="sc">%&gt;%</span> </span>
+<span id="cb53-2"><a href="#cb53-2"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb53-3"><a href="#cb53-3"></a>  <span class="fu">bind_cols</span>(d2) <span class="sc">%&gt;%</span> </span>
+<span id="cb53-4"><a href="#cb53-4"></a>  </span>
+<span id="cb53-5"><a href="#cb53-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> doy, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>)) <span class="sc">+</span> </span>
+<span id="cb53-6"><a href="#cb53-6"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">fixef</span>(spline)[<span class="dv">1</span>, <span class="dv">1</span>], <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb53-7"><a href="#cb53-7"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#ffb7c5"</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb53-8"><a href="#cb53-8"></a>  <span class="fu">geom_ribbon</span>(<span class="at">fill =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb53-9"><a href="#cb53-9"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"year"</span>,</span>
+<span id="cb53-10"><a href="#cb53-10"></a>       <span class="at">y =</span> <span class="st">"day in year"</span>) <span class="sc">+</span></span>
+<span id="cb53-11"><a href="#cb53-11"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb53-12"><a href="#cb53-12"></a>  <span class="fu">theme</span>(<span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#4f455c"</span>),</span>
+<span id="cb53-13"><a href="#cb53-13"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1"></a><span class="fu">library</span>(mgcv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="types-of-smoothing-functions" class="slide level2">
+<h2>types of smoothing functions</h2>
+<table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Basis Type</th>
+<th style="text-align: left;">R Code</th>
+<th style="text-align: left;">Pro and con</th>
+<th style="text-align: left;">Best Use Case</th>
+<th style="text-align: left;"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Thin Plate</td>
+<td style="text-align: left;"><code>bs="tp"</code></td>
+<td style="text-align: left;">No manual knots but slow</td>
+<td style="text-align: left;">Default choice</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B-Spline</td>
+<td style="text-align: left;"><code>bs="bs"</code></td>
+<td style="text-align: left;">Mathematically simple but requires knot placement.</td>
+<td style="text-align: left;">When you know knot locations.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Factor Smooth</td>
+<td style="text-align: left;"><code>bs="fs"</code></td>
+<td style="text-align: left;">Separate curve per subject</td>
+<td style="text-align: left;">Longitudinal studies</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Random Effect</td>
+<td style="text-align: left;"><code>bs="re"</code></td>
+<td style="text-align: left;">Treats variable as random intercept/slope.</td>
+<td style="text-align: left;">Hierarchical models</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="penalized-estimation" class="slide level2">
 <h2>Penalized estimation</h2>
 <ul>
-<li><p>One concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.</p></li>
-<li><p>This is what is used in lasso or ridge regression or many other machine learning algorithms.</p></li>
-<li><p>A penalization parameter often called lambda uses cross validation to balance over vs under fitting</p></li>
+<li>One concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.</li>
 </ul>
+<p><span class="math display">\[\mathcal{L}_p = \log(\text{Likelihood})  - \lambda W\]</span></p>
+<ul>
+<li><p>In mgcv, a penalization parameter often called lambda uses cross validation to balance over vs under fitting. It modifies the loss function to approximate leave-one-out cross-validation selection.</p></li>
+<li><p>As λ increases, the result is a linear fit because any wiggliness will add too much to the loss function. As λ decreases closer to zero, wiggliness is incorporated into the model.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
 
 <div class="footer footer-default">
 

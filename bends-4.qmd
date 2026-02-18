@@ -506,7 +506,9 @@ t2
 -   In the first, the two slope coefficients represent the actual slope in the respective time period.
 -   In the second, the coefficient for time 2 represents the deviation from the slope in period 1.
 
+
 ------------
+
 
 ```{r}
 #| code-fold: true
@@ -514,10 +516,10 @@ text <-
   tibble(exper = c(5, 5, 0.5, 0.5, 1),
          lnw   = c(2.24, 2.2, 2, 1.96, 1.62),
          label = c("Slope~differential",
-                   "Pre-Post~knot~(gamma[2][italic(i)])",
+             "Pre-Post~knot~(gamma[2][italic(i)])",
                    "Rate~of~change",
                    "Pre~knot~(gamma[1][italic(i)])",
-                   "DV~at~time~0(gamma[0][italic(i)])"),
+               "DV~at~time~0(gamma[0][italic(i)])"),
          hjust = c(.5, .5, 0, 0, 0))
 
 arrow <-
@@ -526,7 +528,6 @@ arrow <-
          lnw   = c(2.18, 1.93, 1.64),
          yend  = c(2.15, 1.84, 1.74))
 
-p2 <-
   tibble(exper = c(0, 3, 3, 10),
          ged   = rep(0:1, each = 2)) %>% 
  tidyr::expand(model = letters[1:2],
@@ -536,7 +537,6 @@ p2 <-
     model == "a" ~ 1.75 + 0.04 * exper,
     model == "b" ~ 1.75 + 0.04 * exper + 0.15 * postexp),
   model = fct_rev(model)) %>%
-  
   plot(aes(x = exper, y = lnw)) +
   annotate(geom = "curve",
            x = 8.5, xend = 8.8,
@@ -544,11 +544,12 @@ p2 <-
            arrow = arrow(length = unit(0.05, "inches"), type = "closed", ends = "both"),
            size = 1/4, linetype = 2, curvature = -0.85)+ xlab("time") +ylab("DV")
   
-p2  
 ```
 
 
+
 ## mlm example
+
 
 level 1:
 

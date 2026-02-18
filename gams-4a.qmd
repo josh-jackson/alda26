@@ -96,7 +96,8 @@ ggplot() +
 
 - We are transforming our X variable into multiple "synthetic" variables. 
 
-- Right now, think of this as categorizing a continuous varible. 
+- Right now, think of this as categorizing a continuous variable. 
+
 
 
 ----------------
@@ -148,12 +149,23 @@ Where $X_1$ = x if x is between -10, & -5, zero for all else.
 
 Where $X_2$ = x if x is between -5, & 0, zero for all else.
 
-** technically this is not what is happening, as this does not lead to having our ends of each segment meet one another, but this transformation is a good starting point **
+** technically this is not what is happening, as this does not lead to having our ends of each segment meet one another, but this transformation is a good conceptual starting point **
+
+----------
+
+$$y\sim \mathcal{N}(\mu, \sigma^2)$$
+
+Standard regression: 
+$$\mu = b_0+b_1 X_1$$
+Polynomial
+$$\mu = b_0+b_1 X_1+b_2X^2$$
+Splines/GAMs, where we have j synthetic variables, B. 
+$$\mu = \beta_0 + \sum_{j=1}^{k} \beta_j B_j(X_i) $$
 
 
 ## Basis Functions
 
-$$f(x) = \sum_{j=1}^{k} \beta_j \cdot \text{Basis}_j(x)$$
+$$f(x) = \sum_{j=1}^{k} \beta_j \cdot \text{Basis}_j(X_i)$$
 
 - Splines have Local effects rather than polynomials where the curve is across the entire range of X. To fit these local curves inbetween knots, we need to create a series of j basis functions to essential turn on and off the effect at different values of X across our different k knots.  
 
@@ -196,7 +208,6 @@ bs(x2, knots = internal_knots, degree = 1, intercept = TRUE)
 ```
 
 
-
 -------
 
 Normal regression has 1 function
@@ -208,11 +219,34 @@ $\text{Internal Knots} + \text{Degree} + \text{Intercept}$
 3 + 1 (linear) + intercept
 
 
------------
+----------
+
+Same info as bs function, reordered for each data point. 
 
 ```{r}
-plot_linear
+basis_long
 ```
+
+
+----------
+
+```{r}
+basis_long |> 
+  filter(x2 > 4.5 & x2 < 5)
+```
+
+
+
+## How do we get the estimates? 
+
+$$\hat{Y} = b_0+b_1 X_1$$
+
+$$\hat{Y} = f(X)$$ 
+
+
+$$ \hat{Y} = f(X) = \sum_{j=1}^{d}\beta_j \cdot \text{Basis}_j(X_i) $$
+
+These basis functions become extra columns in your dataframe, just like your squared or cubed terms in polynomial regression (or dummies in categorical)
 
 
 --------------------
@@ -222,7 +256,6 @@ The matrix is unpacked, much like a categorical variable into a dummy. You get s
 
 ```{r}
 #| code-fold: true
-
 i_knots <- c(-5, 0, 5)
 basis_mat <- bs(x, knots = i_knots, degree = 1, intercept = TRUE)
 lm1 <- lm(y ~ 0 + basis_mat, data = df) 
@@ -230,9 +263,121 @@ summary(lm1)
 ```
 
 
+------------
+
+Are these slopes or are these tent positions? 
+
+You can think of these as a scaling factor. How tall does the first tent need to be, then how tall the second tent needs to be and so on
+
+```{r}
+#| code-fold: true
+plot_linear
+```
+
+
+## Raw data
+
+```{r}
+#| code-fold: true
+library(splines)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra) 
+
+set.seed(123)
+x <- seq(0, 10, length.out = 100)
+y <- 3 * sin(x / 1.5) + 2 + rnorm(100, sd = 0.5)
+data_df <- data.frame(x = x, y = y)
+knots <- c(2.5, 5, 7.5)
+B <- bs(x, knots = knots, degree = 1, intercept = TRUE)
+model <- lm(y ~ 0 + B) 
+coeffs <- coef(model)  
+raw_basis_df <- as.data.frame(B)
+raw_basis_df$x <- x
+raw_long <- pivot_longer(raw_basis_df, cols = 1:5, names_to = "Tent", values_to = "Height")
+scaled_B <- B %*% diag(coeffs)
+scaled_df <- as.data.frame(scaled_B)
+scaled_df$x <- x
+scaled_long <- pivot_longer(scaled_df, cols = 1:5, names_to = "Tent", values_to = "Height")
+coeff_df <- data.frame(
+  Tent = paste0("V", 1:5),
+  Coefficient = as.numeric(coeffs)
+)
+p1 <- ggplot(raw_long, aes(x = x, y = Height, color = Tent)) +
+  geom_line(size = 1) +
+  geom_vline(xintercept = knots, linetype = "dotted") +
+  labs(title = "1. The Raw Basis Functions", 
+       subtitle = "Every tent has max height = 1.0",
+       y = "Basis Value") +
+  theme_minimal() + theme(legend.position = "none")
+
+p2 <- ggplot(coeff_df, aes(x = Tent, y = Coefficient, fill = Tent)) +
+  geom_col() +
+  geom_text(aes(label = round(Coefficient, 1)), vjust = -0.5) +
+  labs(title = "2. The Coefficients", 
+       y = "Coefficient Value") +
+  theme_minimal() + theme(legend.position = "none")
+
+p3 <- ggplot() +
+  geom_point(data = data_df, aes(x = x, y = y), alpha = 0.3) +
+  geom_area(data = scaled_long, aes(x = x, y = Height, fill = Tent), 
+            alpha = 0.5, position = "identity") +
+  geom_line(data = data.frame(x=x, y=predict(model)), aes(x=x, y=y), 
+            size = 1, linetype = "dashed") +
+  labs(title = "3. The Weighted Tents", 
+       subtitle = "Tent Height = Coefficient Value",
+       y = "Y Value") +
+  theme_minimal() + theme(legend.position = "none")
+
+p4 <-ggplot() +
+  geom_point(data = data_df, aes(x = x, y = y), alpha = 0.7)+
+  theme_minimal() 
+
+
+p4
+```
+
+
+## Raw Basis Functions
+
+```{r}
+p1
+```
+
+
+
+## Run the model
+
+
+```{r}
+summary(model)
+```
+
+
+
+----------
+
+```{r}
+
+grid.arrange(p1, p2, p3, layout_matrix = rbind(c(1, 2), c(3, 3)))
+```
+
+
+
+## Scaled basis functions 
+
+Feeding our data through the model tells us the predicted height for each data point, based on the scaled heights of each tent. 
+
+```{r}
+scaled_long 
+```
+
+
+
 ## B-splines 
 
-Instead of hills we are going to work with hills (or bells, from cubic function, and thus "b" splines). 
+Instead of tents we are going to work with hills (or bells, from cubic function). b-splines refer to basis splines and can take many forms (more later) 
 
 ```{r}
 #| code-fold: true
@@ -242,15 +387,24 @@ plot_cubic
 
 
 
-------
+## example but with cubic splines
 
+```{r}
+p4
+```
+
+
+
+
+-------
 
 3 (knots) + 3 (cubic) + intercept
 
 ```{r}
 #| code-fold: true
 
-basis_mat2 <- bs(x, knots = i_knots, degree = 3, intercept = TRUE)
+knots <- c(2.5, 5, 7.5)
+basis_mat2 <- bs(x, knots = knots, degree = 3, intercept = TRUE)
 basis_mat2
 
 ```
@@ -267,9 +421,9 @@ basis_long <- pivot_longer(basis_df, cols = -x, names_to = "Basis", values_to = 
 
 ggplot(basis_long, aes(x = x, y = Value, color = Basis)) +
   geom_line(size = 1) +
-  geom_vline(xintercept = i_knots, linetype = "dashed", alpha = 0.5) +
+  geom_vline(xintercept = knots, linetype = "dashed", alpha = 0.5) +
   labs(title = paste("Basis Functions with", length(i_knots), "Internal Knots"),
-       subtitle = paste("Total Basis Functions =", ncol(basis_mat))) +
+       subtitle = paste("Total Basis Functions =", ncol(basis_mat2))) +
   theme_minimal()
 
 ```
@@ -278,11 +432,7 @@ ggplot(basis_long, aes(x = x, y = Value, color = Basis)) +
 
 ------
 
-Basis functions. We are describing many different "hills" for each value of x via how many knots. 
-
-How much does this specific hill overlap with this specific data point? 
-
-For every data point we are dividing up the hills into a percent that is equal to 1. 
+Basis functions. We are describing many different "hills", asking how much does this specific hill overlap with this specific data point? For every data point we are dividing up the hills into a probability that is equal to 1. 
 
 
 ```{r}
@@ -294,7 +444,7 @@ basis_mat2
 
 ```{r}
 #| code-fold: true
-model2 <- lm(y ~ 0 + basis_mat2) 
+model2 <- lm(y ~ 0 + basis_mat2, data_df) 
 coefs<-coef(model2)
 summary(model2)
 ```
@@ -308,7 +458,8 @@ $\beta_j$ tells us how tall the hills are (weights)
 
 Multiplying together tells us the Weighted shapes
 
-$$f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)$$
+$$y = f(X)$$ 
+$$ y = \sum_{j=1}^{k} \beta_j B_j(X)$$
 
 
 ---------
@@ -324,7 +475,7 @@ basis_long <- basis_df %>%
   pivot_longer(cols = starts_with("V"), names_to = "Basis_Function", values_to = "Value")
 
 ggplot() +
-  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +
+  geom_point(data = data_df, aes(x = x, y = y), alpha = 0.3) +
   geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), 
             alpha = 0.5, position = "identity") +
   geom_line(data = basis_df, aes(x = x, y = Total_Curve), 
@@ -336,6 +487,53 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
+
+
+---------------
+
+
+
+Here the coefficients represent the Height of a Control Point or Magnet
+
+```{r}
+summary(model2)
+```
+
+
+-------------
+
+```{r}
+#| code-fold: true
+n_coeffs <- length(coefs)
+scaffold_x <- seq(min(x), max(x), length.out = n_coeffs)
+scaffold_df <- data.frame(
+  x = scaffold_x,
+  y = as.numeric(coefs),
+  Type = "Control Point (Coefficient)"
+)
+
+scaffold_df |> 
+ggplot(aes(x=x, y=y)) +
+geom_point( alpha = 0.3) +
+ geom_line(linetype = "dashed") +
+  geom_point(size = 3) +
+   geom_point(data = data_df, aes(x = x, y = y), alpha = 0.3) +
+  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), 
+            alpha = 0.5, position = "identity") +
+  geom_line(data = basis_df, aes(x = x, y = Total_Curve), 
+            color = "black", alpha = .5, size = 1.5, linetype = "solid") + theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+----------
+
+- The "scaled basis function" represented by the shaded hills tells you how much each basis function is influencing the model. 
+
+- Can think about it as for any value of x, the height of the curve is represented by weighted values of different basis functions roughly such that the main hill corresponds to 66% of the height while the left and right contribute ~ 16% 
+
+- These will be helpful in diagnosing over and under fitting. 
 
 
 
@@ -357,7 +555,17 @@ basis_df$Total_Curve <- rowSums(scaled_basis)
 basis_long <- basis_df %>%
   pivot_longer(cols = starts_with("V"), names_to = "Basis_Function", values_to = "Value")
 
-ggplot() +
+
+n_coeffs <- length(coeffs)
+scaffold_x <- seq(min(x), max(x), length.out = n_coeffs)
+scaffold_df <- data.frame(
+  x = scaffold_x,
+  y = as.numeric(coeffs),
+  Type = "Control Point (Coefficient)"
+)
+
+
+a50<- ggplot() +
   geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +
   geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), 
             alpha = 0.5, position = "identity") +
@@ -365,7 +573,26 @@ ggplot() +
             color = "black", size = 1.5, linetype = "solid") +
   theme_minimal() +
   theme(legend.position = "none")
+
+
+b50<- ggplot() +
+  geom_point(data = df, aes(x = x, y = y), alpha = 0.3) +
+  geom_area(data = basis_long, aes(x = x, y = Value, fill = Basis_Function), 
+            alpha = 0.5, position = "identity") +
+  geom_line(data = basis_df, aes(x = x, y = Total_Curve), 
+            color = "black", alpha = .4, size = 1.5, linetype = "solid") +
+geom_point(data = scaffold_df, aes(x = x, y = y),alpha = 0.3) +
+ geom_line(data = scaffold_df, aes(x = x, y = y), linetype = "dashed") +
+  geom_point(data = scaffold_df, aes(x = x, y = y), size = 3)  +
+  theme_minimal() +
+  theme(legend.position = "none") 
+
+
+
+a50
+
 ```
+
 
 
 ---------
@@ -374,20 +601,20 @@ ggplot() +
 summary(model)
 ```
 
+## with coeffs plotted
+
+```{r}
+b50
+```
 
 
-## Basis dimension
+
+## Basis dimensions
 
 
 - Low number results in less wiggliness. May be under fit
 
 - High number results in more wiggliness. May over fit. 
-
-
-
-
-
-
 
 
 
@@ -411,15 +638,6 @@ d %>%
 
 
 ```
-
-
---------
-
-$$f(x) = w_1 B_{i, 1} + w_2 B_{i, 2} + w_3 B_{i, 3} + \dots$$
-
-- B-splines invent a series of entirely new, synthetic predictor variables. The hills. Each of these synthetic variables exists only to gradually turn a specific parameter on and off within a specific range of the real predictor variable. 
-
-- Each of the synthetic variables is called a basis function and serve as weights
 
 
 ## knots
@@ -463,7 +681,7 @@ knot_list[c(1, num_knots)]
 
 b <-B %>% 
   data.frame() %>% 
-  # set_names(str_c(0, 1:9), 10:17) %>%  
+  set_names(str_c(0, 1:9), 10:17) %>%  
   bind_cols(dplyr::select(d2,year)) %>% 
   pivot_longer(-year,
                names_to = "bias_function",
@@ -487,6 +705,8 @@ b %>%
 ![](gam1.png)
 
 
+
+
 ## estimation
 
 ```{r}
@@ -505,14 +725,12 @@ spline <-
 
 --------
 
-The parameter estimates are very difficult to interpret directly. It’s often easier to just plot the results
-
 ```{r}
 summary(spline)
 ```
 
 
----------
+## scaled bias
 
 
 ```{r}
@@ -526,8 +744,6 @@ post %>%
   group_by(bias_function) %>% 
   summarise(weight = mean(value)) %>% 
   full_join(b, by = "bias_function") %>% 
-  
-  # plot
   ggplot(aes(x = year, y = bias * weight, group = bias_function)) +
   geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
   geom_line(color = "#ffb7c5", alpha = 1/2, linewidth = 1.5) +
@@ -563,7 +779,7 @@ f %>%
 
 ## GAMs
 
-- Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Plus more! 
+- Offer a solution to the regression spline issue of how many knots should we fit by utilizing penalized (regularized) splines. Fit lots of basis function, see if it improved the fit. 
 
 -   GAMs offer a middle ground from simple lines to localized lowess curves: they can be fit to complex, nonlinear relationships and make good predictions in these cases, but we are still able to do inferential statistics and understand and explain the underlying structure of our models
 
@@ -573,12 +789,10 @@ Similar to going from general linear model to generalized linear model. One more
 
 $$y \sim ExpoFam(\mu, etc.)$$
 
-$$ \mu = \beta_0  + \beta_1 (x)  $$
+$$ \mu = f(x)  $$
 Instead of one coefficient per predictor, in GAMs we have many. 
 
 $$f(x) = \sum_{j=1}^{k} \beta_j \cdot B_j(x)$$
-
-
 
 
 ## actual gam model
@@ -619,18 +833,72 @@ fitted(spline2) %>%
   geom_hline(yintercept = fixef(spline2)[1, 1], color = "white", linetype = 2) +
   geom_point(color = "#ffb7c5", alpha = 1/2) +
   geom_ribbon(fill = "white", alpha = 2/3) +
-  labs(subtitle = "b4.7 using s(year)",
+  labs(subtitle = "using s(year)",
        y = "day in year") +
   theme_bw() +
   theme(panel.background = element_rect(fill = "#4f455c"), 
         panel.grid = element_blank())
 ```
 
+## compare with spline
+
+
+
+```{r}
+#| code-fold: true
+f %>% 
+  data.frame() %>% 
+  bind_cols(d2) %>% 
+  
+  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) + 
+  geom_hline(yintercept = fixef(spline)[1, 1], color = "white", linetype = 2) +
+  geom_point(color = "#ffb7c5", alpha = 1/2) +
+  geom_ribbon(fill = "white", alpha = 2/3) +
+  labs(x = "year",
+       y = "day in year") +
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "#4f455c"),
+        panel.grid = element_blank())
+```
+
+
+----------
+
+
+```{r}
+library(mgcv)
+```
+
+
+
+
+## types of smoothing functions
+
+
+| Basis Type | R Code | Pro and con | Best Use Case |
+|:---|:---|:---|:---|:---|
+| Thin Plate | `bs="tp"` | No manual knots but slow | Default choice |
+| B-Spline | `bs="bs"` | Mathematically simple but requires knot placement. | When you know knot locations. |
+| Factor Smooth | `bs="fs"` | Separate curve per subject | Longitudinal studies|
+| Random Effect | `bs="re"` | Treats variable as random intercept/slope. | Hierarchical models |
+
+
+
 
 ## Penalized estimation
 
 -   One concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.
 
--   This is what is used in lasso or ridge regression or many other machine learning algorithms.
+$$\mathcal{L}_p = \log(\text{Likelihood})  - \lambda W$$
 
--   A penalization parameter often called lambda uses cross validation to balance over vs under fitting
+-   In mgcv, a penalization parameter often called lambda uses cross validation to balance over vs under fitting. It modifies the loss function to approximate leave-one-out cross-validation selection.
+
+- As λ increases, the result is a linear fit because any wiggliness will add too much to the loss function. As λ decreases closer to zero, wiggliness is incorporated into the model. 
+
+
+
+
+
+------------
+
+
