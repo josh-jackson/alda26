@@ -1621,14 +1621,14 @@
     "href": "gams-4a.html#types-of-smoothing-functions",
     "title": "gams",
     "section": "types of smoothing functions",
-    "text": "types of smoothing functions\n\n\n\n\n\n\n\n\n\n\nBasis Type\nR Code\nPro and con\nBest Use Case\n\n\n\n\n\nThin Plate\nbs=\"tp\"\nNo manual knots but slow\nDefault choice\n\n\n\nB-Spline\nbs=\"bs\"\nMathematically simple but requires knot placement.\nWhen you know knot locations.\n\n\n\nFactor Smooth\nbs=\"fs\"\nSeparate curve per subject\nLongitudinal studies\n\n\n\nRandom Effect\nbs=\"re\"\nTreats variable as random intercept/slope.\nHierarchical models"
+    "text": "types of smoothing functions\n\n\n\n\n\n\n\n\n\n\nBasis Type\nR Code\nPro and con\nBest Use Case\n\n\n\n\n\nThin Plate\nbs=\"tp\"\nNo manual knots but slow\nDefault choice\n\n\n\nB-Spline\nbs=\"bs\"\nSimple but requires knots\nKnow knot locations\n\n\n\nFactor Smooth\nbs=\"fs\"\nSeparate curve per subject\nLongitudinal studies\n\n\n\nRandom Effect\nbs=\"re\"\nTreats variable as random intercept/slope.\nHierarchical models"
   },
   {
     "objectID": "gams-4a.html#edf",
     "href": "gams-4a.html#edf",
     "title": "gams",
     "section": "EDF",
-    "text": "EDF\n\nEffective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term.\nAn EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. &gt;3 gets more wiggly.\n\n\ncoef(gam1)\n\n(Intercept)   s(year).1   s(year).2   s(year).3   s(year).4   s(year).5 \n 29.5452876  -0.2194494   0.4787857  -0.2132092  -0.3063732  -0.1812577 \n  s(year).6   s(year).7   s(year).8   s(year).9 \n  0.3075354   0.1965416  -1.2241744  -0.1033622"
+    "text": "EDF\n\nEffective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term.\nAn EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. &gt;3 gets more wiggly."
   },
   {
     "objectID": "gams-4a.html#thin-plate",
@@ -1705,7 +1705,7 @@
     "href": "gams-4a.html#factor-smooths",
     "title": "gams",
     "section": "factor smooths",
-    "text": "factor smooths\n\nThe basis function coefficients partially pooled toward the mean\nIf the group overall is fairly smooth, \\(\\lambda\\) goes up. This shared penalty acts like a gravitational pull, dragging everyone’s wild individual wiggles back toward the global trajectory."
+    "text": "factor smooths\n\nThe basis function coefficients partially pooled toward the mean\nIf the group overall is fairly smooth, \\(\\lambda\\) goes up. This shared penalty acts like a gravitational pull, dragging everyone’s individual wiggles back toward the global trajectory."
   },
   {
     "objectID": "gams-4a.html#unique-trajectories-but-shared-smooth",
@@ -1748,5 +1748,19 @@
     "title": "gams",
     "section": "Is it wiggliness or is it noise?",
     "text": "Is it wiggliness or is it noise?\n\nThus far we have been working with gams which are different from multi-level or hierarchical gams. When would we need those? When we want to relax the assumption of zero correlation across time points.\nIf you ignore this assumption, your model will think it has more independent pieces of information than it actually does. The penalty (\\(\\lambda\\)) will be too loose, the curves will overfit the noise.\nTime-series data has “memory,” in that observations tend to be correleated such that if you overshoot your predicted trajectory at one timepoint, you are likely to be at the next timepoint."
+  },
+  {
+    "objectID": "gams-4a.html#hidden-basis-coefficients",
+    "href": "gams-4a.html#hidden-basis-coefficients",
+    "title": "gams",
+    "section": "Hidden basis coefficients",
+    "text": "Hidden basis coefficients\n\ncoef(gam1)\n\n(Intercept)   s(year).1   s(year).2   s(year).3   s(year).4   s(year).5 \n 29.5452876  -0.2194494   0.4787857  -0.2132092  -0.3063732  -0.1812577 \n  s(year).6   s(year).7   s(year).8   s(year).9 \n  0.3075354   0.1965416  -1.2241744  -0.1033622"
+  },
+  {
+    "objectID": "gams-4a.html#can-we-differentiate-our-tw0-types",
+    "href": "gams-4a.html#can-we-differentiate-our-tw0-types",
+    "title": "gams",
+    "section": "Can we differentiate our tw0 types?",
+    "text": "Can we differentiate our tw0 types?\n\n\nCode\npred9_s &lt;- predictions(gam9, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))\npred9_w &lt;- predictions(gam9, newdata = datagrid(id = c(11:20), time = 1:10))\n\n\nggplot() +\n  geom_line(data = pred9_s, aes(x = time, y = estimate, group = id), \n            alpha = 0.4) +\n  geom_line(data = pred9_w, aes(x = time, y = estimate, group = id), \n            color = \"blue\")"
   }
 ]

@@ -938,7 +938,9 @@ summary(gam1)
 
 - Effective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term. 
 
-- An EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. >3 gets more wiggly. 
+- An EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. >3 gets more wiggly.
+
+## Hidden basis coefficients
 
 ```{r}
 coef(gam1)
@@ -950,7 +952,7 @@ coef(gam1)
 ```{r}
 #| code-fold: true
 library(marginaleffects)
-plot_predictions(gam1, condition = "year")
+plot_predictions(gam1, condition = "year") 
 ```
 
 
@@ -963,7 +965,8 @@ plot_predictions(gam1, condition = "year")
 #| code-fold: true
 library(lme4)
 lm.1<- lmer(extraversion ~ year + I(year^2) + (1 + year | mapid), data=personality)
-plot_predictions(lm.1, condition = "year")
+
+plot_predictions(lm.1, condition = "year") 
 ```
 
 
@@ -980,7 +983,7 @@ summary(lm.1)
 | Basis Type | R Code | Pro and con | Best Use Case |
 |:---|:---|:---|:---|:---|
 | Thin Plate | `bs="tp"` | No manual knots but slow | Default choice |
-| B-Spline | `bs="bs"` | Mathematically simple but requires knot placement. | When you know knot locations. |
+| B-Spline | `bs="bs"` | Simple but requires knots  | Know knot locations |
 | Factor Smooth | `bs="fs"` | Separate curve per subject | Longitudinal studies|
 | Random Effect | `bs="re"` | Treats variable as random intercept/slope. | Hierarchical models |
 
@@ -1002,7 +1005,7 @@ predict(gam1, type = "lpmatrix")
 -----------------
 
 ```{r}
-
+#| code-fold: true
 x_val <- seq(0, 10, length.out = 200)
 df <- data.frame(x = x_val, y = rnorm(200))
 sm_bs <- smoothCon(s(x, bs = "bs", k = 9), data = df, absorb.cons = FALSE)[[1]]
@@ -1198,29 +1201,6 @@ ggplot(pred5, aes(year, estimate, group = mapid)) +
 GAMs penalize the second derivative, shrinking curves toward a straight, flat line. By setting m=1, we penalize the first derivative, which shrinks the individual subject curves toward the global curve. It essentially tells the model: "Make the subjects look like the global average, unless they have strong data proving otherwise."
 
 
-```{r}
-
-gam6 <-gam(extraversion ~  s(mapid, bs="re")+ s(year, by = mapid), data = personality)
-summary(gam6)
-```
-
-----------
-
-```{r}
-#| code-fold: true
-pred6 <- predictions(gam6, newdata = datagrid(mapid = unique, year = 0:12))
-ggplot(pred6, aes(year, estimate, group = mapid)) +
-      geom_line(alpha = .2) 
-```
-
-
-
-------
-
-A factor smooth (bs="fs") forces everyone to share the same penalty ($\lambda$). If you have a dataset where Subject A is highly volatile (needs high wiggliness) but Subject B is incredibly stable (needs high stiffness), the shared penalty will compromise and fit them both poorly.
-
-
-
 ---------------
 
 Need more timepoints, and wiggliness
@@ -1274,8 +1254,8 @@ summary(gam7)
 
 ```{r}
 #| code-fold: true
-pred7_i <- predictions(gam7, newdata = datagrid(id = unique, time = 1:10))
-pred7_g <- predictions(gam7, newdata = datagrid(id = unique, time = 1:10), by = "time")
+pred7_i <- predictions(gam7, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
+pred7_g <- predictions(gam7, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)), by = "time")
 
 ggplot() +
   geom_line(data = pred7_i, aes(x = time, y = estimate, group = id), 
@@ -1301,8 +1281,8 @@ Notice, similar to the latent basis, everyone shares a similar global trend shap
 
 ```{r}
 #| code-fold: true
-pred8_i <- predictions(gam8, newdata = datagrid(id = unique, time = 1:10))
-pred8_g <- predictions(gam8, newdata = datagrid(id = unique, time = 1:10), by = "time")
+pred8_i <- predictions(gam8, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
+pred8_g <- predictions(gam8, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)), by = "time")
 
 ggplot() +
   geom_line(data = pred8_i, aes(x = time, y = estimate, group = id), 
@@ -1317,7 +1297,7 @@ ggplot() +
 
 - The basis function coefficients partially pooled toward the mean
 
-- If the group overall is fairly smooth, $\lambda$ goes up. This shared penalty acts like a gravitational pull, dragging everyone's wild individual wiggles back toward the global trajectory.
+- If the group overall is fairly smooth, $\lambda$ goes up. This shared penalty acts like a gravitational pull, dragging everyone's  individual wiggles back toward the global trajectory.
 
 
 ## unique trajectories, but shared smooth
@@ -1333,16 +1313,34 @@ summary(gam9)
 
 ```{r}
 #| code-fold: true
-pred9_i <- predictions(gam9, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
-pred9_g <- predictions(gam9, newdata = datagrid(id = unique, time = 1:10), by = "time")
+pred9_ii <- predictions(gam9, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
+pred9_g <- predictions(gam9, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)), by = "time")
 
 ggplot() +
-  geom_line(data = pred9_i, aes(x = time, y = estimate, group = id), 
+  geom_line(data = pred9_ii, aes(x = time, y = estimate, group = id), 
             alpha = 0.4) +
   geom_line(data = pred9_g, aes(x = time, y = estimate), 
             color = "blue", linewidth = 1.5) 
 
 ```
+
+
+## Can we differentiate our tw0 types? 
+
+```{r}
+#| code-fold: true
+pred9_s <- predictions(gam9, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
+pred9_w <- predictions(gam9, newdata = datagrid(id = c(11:20), time = 1:10))
+
+
+ggplot() +
+  geom_line(data = pred9_s, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred9_w, aes(x = time, y = estimate, group = id), 
+            color = "blue") 
+
+```
+
 
 
 ## Pooling with FS
@@ -1559,6 +1557,7 @@ ggplot() +
 -------
 
 ```{r}
+#| code-fold: true
 data.sim <- data.sim %>%
   arrange(id, time) %>%
   mutate(start_point = time == min(time))

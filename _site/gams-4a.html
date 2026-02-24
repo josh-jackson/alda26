@@ -2116,6 +2116,9 @@ GCV = 43.216  Scale est. = 43.136    n = 1634</code></pre>
 <li><p>Effective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term.</p></li>
 <li><p>An EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. &gt;3 gets more wiggly.</p></li>
 </ul>
+</section>
+<section id="hidden-basis-coefficients" class="slide level2">
+<h2>Hidden basis coefficients</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="fu">coef</span>(gam1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -2132,7 +2135,7 @@ GCV = 43.216  Scale est. = 43.136    n = 1634</code></pre>
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1"></a><span class="fu">library</span>(marginaleffects)</span>
-<span id="cb59-2"><a href="#cb59-2"></a><span class="fu">plot_predictions</span>(gam1, <span class="at">condition =</span> <span class="st">"year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb59-2"><a href="#cb59-2"></a><span class="fu">plot_predictions</span>(gam1, <span class="at">condition =</span> <span class="st">"year"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -2144,7 +2147,8 @@ GCV = 43.216  Scale est. = 43.136    n = 1634</code></pre>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb60"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1"></a><span class="fu">library</span>(lme4)</span>
 <span id="cb60-2"><a href="#cb60-2"></a>lm<span class="fl">.1</span><span class="ot">&lt;-</span> <span class="fu">lmer</span>(extraversion <span class="sc">~</span> year <span class="sc">+</span> <span class="fu">I</span>(year<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> year <span class="sc">|</span> mapid), <span class="at">data=</span>personality)</span>
-<span id="cb60-3"><a href="#cb60-3"></a><span class="fu">plot_predictions</span>(lm<span class="fl">.1</span>, <span class="at">condition =</span> <span class="st">"year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb60-3"><a href="#cb60-3"></a></span>
+<span id="cb60-4"><a href="#cb60-4"></a><span class="fu">plot_predictions</span>(lm<span class="fl">.1</span>, <span class="at">condition =</span> <span class="st">"year"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -2214,8 +2218,8 @@ I(year^2)  0.195 -0.926</code></pre>
 <tr class="even">
 <td style="text-align: left;">B-Spline</td>
 <td style="text-align: left;"><code>bs="bs"</code></td>
-<td style="text-align: left;">Mathematically simple but requires knot placement.</td>
-<td style="text-align: left;">When you know knot locations.</td>
+<td style="text-align: left;">Simple but requires knots</td>
+<td style="text-align: left;">Know knot locations</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="odd">
@@ -5528,6 +5532,8 @@ attr(,"model.offset")
 <section class="slide level2">
 
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1"></a>x_val <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
 <span id="cb65-2"><a href="#cb65-2"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x_val, <span class="at">y =</span> <span class="fu">rnorm</span>(<span class="dv">200</span>))</span>
 <span id="cb65-3"><a href="#cb65-3"></a>sm_bs <span class="ot">&lt;-</span> <span class="fu">smoothCon</span>(<span class="fu">s</span>(x, <span class="at">bs =</span> <span class="st">"bs"</span>, <span class="at">k =</span> <span class="dv">9</span>), <span class="at">data =</span> df, <span class="at">absorb.cons =</span> <span class="cn">FALSE</span>)[[<span class="dv">1</span>]]</span>
@@ -5563,6 +5569,7 @@ attr(,"model.offset")
 <span id="cb65-33"><a href="#cb65-33"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
 <span id="cb65-34"><a href="#cb65-34"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">"bold"</span>),</span>
 <span id="cb65-35"><a href="#cb65-35"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"grey90"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 
 </div>
 <img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-44-1.png" width="960" class="r-stretch"></section>
@@ -5849,50 +5856,6 @@ GCV = 42.263  Scale est. = 41.588    n = 1634</code></pre>
 <section class="slide level2">
 
 <p>GAMs penalize the second derivative, shrinking curves toward a straight, flat line. By setting m=1, we penalize the first derivative, which shrinks the individual subject curves toward the global curve. It essentially tells the model: “Make the subjects look like the global average, unless they have strong data proving otherwise.”</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>gam6 <span class="ot">&lt;-</span><span class="fu">gam</span>(extraversion <span class="sc">~</span>  <span class="fu">s</span>(mapid, <span class="at">bs=</span><span class="st">"re"</span>)<span class="sc">+</span> <span class="fu">s</span>(year, <span class="at">by =</span> mapid), <span class="at">data =</span> personality)</span>
-<span id="cb84-2"><a href="#cb84-2"></a><span class="fu">summary</span>(gam6)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Family: gaussian 
-Link function: identity 
-
-Formula:
-extraversion ~ s(mapid, bs = "re") + s(year, by = mapid)
-
-Parametric coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  27.5598     0.7419   37.15   &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Approximate significance of smooth terms:
-                     edf Ref.df     F p-value    
-s(mapid)      -2.115e-13  0.000   Inf  &lt;2e-16 ***
-s(year):mapid  3.015e+00  3.501 2.094  0.0836 .  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-R-sq.(adj) =  0.00693   Deviance explained = 0.877%
-GCV = 43.064  Scale est. = 42.959    n = 1634</code></pre>
-</div>
-</div>
-</section>
-<section class="slide level2">
-
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>pred6 <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam6, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">mapid =</span> unique, <span class="at">year =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">12</span>))</span>
-<span id="cb86-2"><a href="#cb86-2"></a><span class="fu">ggplot</span>(pred6, <span class="fu">aes</span>(year, estimate, <span class="at">group =</span> mapid)) <span class="sc">+</span></span>
-<span id="cb86-3"><a href="#cb86-3"></a>      <span class="fu">geom_line</span>(<span class="at">alpha =</span> .<span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-58-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
-<p>A factor smooth (bs=“fs”) forces everyone to share the same penalty (<span class="math inline">\(\lambda\)</span>). If you have a dataset where Subject A is highly volatile (needs high wiggliness) but Subject B is incredibly stable (needs high stiffness), the shared penalty will compromise and fit them both poorly.</p>
 </section>
 <section class="slide level2">
 
@@ -5900,48 +5863,48 @@ GCV = 43.064  Scale est. = 42.959    n = 1634</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>) </span>
-<span id="cb87-2"><a href="#cb87-2"></a>n_subjects <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb87-3"><a href="#cb87-3"></a>n_timepoints <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb87-4"><a href="#cb87-4"></a>df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
-<span id="cb87-5"><a href="#cb87-5"></a>  <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span>n_timepoints,</span>
-<span id="cb87-6"><a href="#cb87-6"></a>  <span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span>n_subjects)</span>
-<span id="cb87-7"><a href="#cb87-7"></a>)</span>
-<span id="cb87-8"><a href="#cb87-8"></a></span>
-<span id="cb87-9"><a href="#cb87-9"></a>subjects <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb87-10"><a href="#cb87-10"></a>  <span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span>n_subjects),</span>
-<span id="cb87-11"><a href="#cb87-11"></a>  <span class="at">Profile =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Smooth"</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">"Volatile"</span>, <span class="dv">10</span>)),</span>
-<span id="cb87-12"><a href="#cb87-12"></a>  <span class="at">Base_Int =</span> <span class="fu">rnorm</span>(n_subjects, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">10</span>),</span>
-<span id="cb87-13"><a href="#cb87-13"></a>  <span class="at">Base_Slope =</span> <span class="fu">rnorm</span>(n_subjects, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">2</span>),</span>
-<span id="cb87-14"><a href="#cb87-14"></a>  <span class="at">Wiggle_Amp =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="fu">runif</span>(<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">15</span>)),   </span>
-<span id="cb87-15"><a href="#cb87-15"></a>  <span class="at">Wiggle_Freq =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="fu">runif</span>(<span class="dv">10</span>, <span class="fl">1.2</span>, <span class="fl">2.5</span>)) </span>
-<span id="cb87-16"><a href="#cb87-16"></a>)</span>
-<span id="cb87-17"><a href="#cb87-17"></a></span>
-<span id="cb87-18"><a href="#cb87-18"></a>data.sim <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb87-19"><a href="#cb87-19"></a>  <span class="fu">left_join</span>(subjects, <span class="at">by =</span> <span class="st">"id"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb87-20"><a href="#cb87-20"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb87-21"><a href="#cb87-21"></a>    <span class="at">Y =</span> Base_Int <span class="sc">+</span> (Base_Slope <span class="sc">*</span> time) <span class="sc">+</span> (Wiggle_Amp <span class="sc">*</span> <span class="fu">sin</span>(Wiggle_Freq <span class="sc">*</span> time)) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="dv">0</span>, <span class="dv">2</span>)</span>
-<span id="cb87-22"><a href="#cb87-22"></a>  )</span>
-<span id="cb87-23"><a href="#cb87-23"></a></span>
-<span id="cb87-24"><a href="#cb87-24"></a><span class="fu">ggplot</span>(data.sim, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> Y, <span class="at">group =</span> id, <span class="at">color =</span> Profile)) <span class="sc">+</span></span>
-<span id="cb87-25"><a href="#cb87-25"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb87-26"><a href="#cb87-26"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb87-27"><a href="#cb87-27"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Profile) <span class="sc">+</span></span>
-<span id="cb87-28"><a href="#cb87-28"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Wave"</span>, <span class="at">y =</span> <span class="st">"DV"</span>) <span class="sc">+</span></span>
-<span id="cb87-29"><a href="#cb87-29"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb87-30"><a href="#cb87-30"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb87-31"><a href="#cb87-31"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a><span class="fu">set.seed</span>(<span class="dv">74</span>) </span>
+<span id="cb84-2"><a href="#cb84-2"></a>n_subjects <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb84-3"><a href="#cb84-3"></a>n_timepoints <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb84-4"><a href="#cb84-4"></a>df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb84-5"><a href="#cb84-5"></a>  <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span>n_timepoints,</span>
+<span id="cb84-6"><a href="#cb84-6"></a>  <span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span>n_subjects)</span>
+<span id="cb84-7"><a href="#cb84-7"></a>)</span>
+<span id="cb84-8"><a href="#cb84-8"></a></span>
+<span id="cb84-9"><a href="#cb84-9"></a>subjects <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb84-10"><a href="#cb84-10"></a>  <span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span>n_subjects),</span>
+<span id="cb84-11"><a href="#cb84-11"></a>  <span class="at">Profile =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"Smooth"</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">"Volatile"</span>, <span class="dv">10</span>)),</span>
+<span id="cb84-12"><a href="#cb84-12"></a>  <span class="at">Base_Int =</span> <span class="fu">rnorm</span>(n_subjects, <span class="at">mean =</span> <span class="dv">50</span>, <span class="at">sd =</span> <span class="dv">10</span>),</span>
+<span id="cb84-13"><a href="#cb84-13"></a>  <span class="at">Base_Slope =</span> <span class="fu">rnorm</span>(n_subjects, <span class="at">mean =</span> <span class="dv">1</span>, <span class="at">sd =</span> <span class="dv">2</span>),</span>
+<span id="cb84-14"><a href="#cb84-14"></a>  <span class="at">Wiggle_Amp =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="fu">runif</span>(<span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">15</span>)),   </span>
+<span id="cb84-15"><a href="#cb84-15"></a>  <span class="at">Wiggle_Freq =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="fu">runif</span>(<span class="dv">10</span>, <span class="fl">1.2</span>, <span class="fl">2.5</span>)) </span>
+<span id="cb84-16"><a href="#cb84-16"></a>)</span>
+<span id="cb84-17"><a href="#cb84-17"></a></span>
+<span id="cb84-18"><a href="#cb84-18"></a>data.sim <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb84-19"><a href="#cb84-19"></a>  <span class="fu">left_join</span>(subjects, <span class="at">by =</span> <span class="st">"id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb84-20"><a href="#cb84-20"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb84-21"><a href="#cb84-21"></a>    <span class="at">Y =</span> Base_Int <span class="sc">+</span> (Base_Slope <span class="sc">*</span> time) <span class="sc">+</span> (Wiggle_Amp <span class="sc">*</span> <span class="fu">sin</span>(Wiggle_Freq <span class="sc">*</span> time)) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="dv">0</span>, <span class="dv">2</span>)</span>
+<span id="cb84-22"><a href="#cb84-22"></a>  )</span>
+<span id="cb84-23"><a href="#cb84-23"></a></span>
+<span id="cb84-24"><a href="#cb84-24"></a><span class="fu">ggplot</span>(data.sim, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> Y, <span class="at">group =</span> id, <span class="at">color =</span> Profile)) <span class="sc">+</span></span>
+<span id="cb84-25"><a href="#cb84-25"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb84-26"><a href="#cb84-26"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb84-27"><a href="#cb84-27"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Profile) <span class="sc">+</span></span>
+<span id="cb84-28"><a href="#cb84-28"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Wave"</span>, <span class="at">y =</span> <span class="st">"DV"</span>) <span class="sc">+</span></span>
+<span id="cb84-29"><a href="#cb84-29"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb84-30"><a href="#cb84-30"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb84-31"><a href="#cb84-31"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-59-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-57-1.png" width="960" class="r-stretch"></section>
 <section id="random-intercept-equivalent" class="slide level2">
 <h2>Random intercept equivalent</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a>gam7 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>), <span class="at">data =</span> data.sim)</span>
-<span id="cb88-2"><a href="#cb88-2"></a><span class="fu">summary</span>(gam7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>gam7 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>), <span class="at">data =</span> data.sim)</span>
+<span id="cb85-2"><a href="#cb85-2"></a><span class="fu">summary</span>(gam7)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -5974,25 +5937,25 @@ GCV = 81.593  Scale est. = 72.085    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>pred7_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam7, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
-<span id="cb90-2"><a href="#cb90-2"></a>pred7_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam7, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"time"</span>)</span>
-<span id="cb90-3"><a href="#cb90-3"></a></span>
-<span id="cb90-4"><a href="#cb90-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb90-5"><a href="#cb90-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred7_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb90-6"><a href="#cb90-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb90-7"><a href="#cb90-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred7_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
-<span id="cb90-8"><a href="#cb90-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1"></a>pred7_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam7, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb87-2"><a href="#cb87-2"></a>pred7_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam7, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)), <span class="at">by =</span> <span class="st">"time"</span>)</span>
+<span id="cb87-3"><a href="#cb87-3"></a></span>
+<span id="cb87-4"><a href="#cb87-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb87-5"><a href="#cb87-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred7_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb87-6"><a href="#cb87-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb87-7"><a href="#cb87-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred7_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
+<span id="cb87-8"><a href="#cb87-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-61-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-59-1.png" width="960" class="r-stretch"></section>
 <section id="random-slope-equivalent" class="slide level2">
 <h2>Random slope equivalent</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a>gam8 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"re"</span>), <span class="at">data =</span> data.sim)</span>
-<span id="cb91-2"><a href="#cb91-2"></a><span class="fu">summary</span>(gam8)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a>gam8 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"re"</span>), <span class="at">data =</span> data.sim)</span>
+<span id="cb88-2"><a href="#cb88-2"></a><span class="fu">summary</span>(gam8)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -6027,23 +5990,23 @@ GCV = 50.534  Scale est. = 40.672    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>pred8_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam8, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
-<span id="cb93-2"><a href="#cb93-2"></a>pred8_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam8, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"time"</span>)</span>
-<span id="cb93-3"><a href="#cb93-3"></a></span>
-<span id="cb93-4"><a href="#cb93-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb93-5"><a href="#cb93-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred8_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb93-6"><a href="#cb93-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb93-7"><a href="#cb93-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred8_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
-<span id="cb93-8"><a href="#cb93-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>pred8_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam8, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb90-2"><a href="#cb90-2"></a>pred8_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam8, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)), <span class="at">by =</span> <span class="st">"time"</span>)</span>
+<span id="cb90-3"><a href="#cb90-3"></a></span>
+<span id="cb90-4"><a href="#cb90-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb90-5"><a href="#cb90-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred8_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb90-6"><a href="#cb90-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb90-7"><a href="#cb90-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred8_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
+<span id="cb90-8"><a href="#cb90-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-63-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-61-1.png" width="960" class="r-stretch"></section>
 <section id="factor-smooths" class="slide level2">
 <h2>factor smooths</h2>
 <ul>
 <li><p>The basis function coefficients partially pooled toward the mean</p></li>
-<li><p>If the group overall is fairly smooth, <span class="math inline">\(\lambda\)</span> goes up. This shared penalty acts like a gravitational pull, dragging everyone’s wild individual wiggles back toward the global trajectory.</p></li>
+<li><p>If the group overall is fairly smooth, <span class="math inline">\(\lambda\)</span> goes up. This shared penalty acts like a gravitational pull, dragging everyone’s individual wiggles back toward the global trajectory.</p></li>
 </ul>
 </section>
 <section id="unique-trajectories-but-shared-smooth" class="slide level2">
@@ -6051,8 +6014,8 @@ GCV = 50.534  Scale est. = 40.672    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>gam9 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>, <span class="at">k=</span><span class="dv">8</span>), <span class="at">data =</span> data.sim)</span>
-<span id="cb94-2"><a href="#cb94-2"></a><span class="fu">summary</span>(gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1"></a>gam9 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>, <span class="at">k=</span><span class="dv">8</span>), <span class="at">data =</span> data.sim)</span>
+<span id="cb91-2"><a href="#cb91-2"></a><span class="fu">summary</span>(gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -6085,57 +6048,75 @@ GCV = 21.679  Scale est. = 5.013     n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1"></a>pred9_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb96-2"><a href="#cb96-2"></a>pred9_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"time"</span>)</span>
-<span id="cb96-3"><a href="#cb96-3"></a></span>
-<span id="cb96-4"><a href="#cb96-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb96-5"><a href="#cb96-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb96-6"><a href="#cb96-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb96-7"><a href="#cb96-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
-<span id="cb96-8"><a href="#cb96-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>pred9_ii <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb93-2"><a href="#cb93-2"></a>pred9_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)), <span class="at">by =</span> <span class="st">"time"</span>)</span>
+<span id="cb93-3"><a href="#cb93-3"></a></span>
+<span id="cb93-4"><a href="#cb93-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb93-5"><a href="#cb93-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_ii, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb93-6"><a href="#cb93-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb93-7"><a href="#cb93-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
+<span id="cb93-8"><a href="#cb93-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-65-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-63-1.png" width="960" class="r-stretch"></section>
+<section id="can-we-differentiate-our-tw0-types" class="slide level2">
+<h2>Can we differentiate our tw0 types?</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>pred9_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb94-2"><a href="#cb94-2"></a>pred9_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
+<span id="cb94-3"><a href="#cb94-3"></a></span>
+<span id="cb94-4"><a href="#cb94-4"></a></span>
+<span id="cb94-5"><a href="#cb94-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb94-6"><a href="#cb94-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb94-7"><a href="#cb94-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb94-8"><a href="#cb94-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred9_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb94-9"><a href="#cb94-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-64-1.png" width="960" class="r-stretch"></section>
 <section id="pooling-with-fs" class="slide level2">
 <h2>Pooling with FS</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb97-2"><a href="#cb97-2"></a>time_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">50</span>)</span>
-<span id="cb97-3"><a href="#cb97-3"></a>df_normal <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">18</span>))</span>
-<span id="cb97-4"><a href="#cb97-4"></a>df_normal<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> df_normal<span class="sc">$</span>Time </span>
-<span id="cb97-5"><a href="#cb97-5"></a>df_normal<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_normal<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df_normal), <span class="dv">0</span>, <span class="dv">2</span>)</span>
-<span id="cb97-6"><a href="#cb97-6"></a></span>
-<span id="cb97-7"><a href="#cb97-7"></a>wild_trajectory <span class="ot">&lt;-</span> <span class="cf">function</span>(t) { <span class="dv">2</span> <span class="sc">*</span> t <span class="sc">+</span> <span class="dv">6</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="fl">1.5</span> <span class="sc">*</span> t) }</span>
-<span id="cb97-8"><a href="#cb97-8"></a></span>
-<span id="cb97-9"><a href="#cb97-9"></a>df_high <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"High_Data"</span>))</span>
-<span id="cb97-10"><a href="#cb97-10"></a>df_high<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(df_high<span class="sc">$</span>Time)</span>
-<span id="cb97-11"><a href="#cb97-11"></a>df_high<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_high<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
-<span id="cb97-12"><a href="#cb97-12"></a></span>
-<span id="cb97-13"><a href="#cb97-13"></a>df_low <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>), <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"Low_Data"</span>))</span>
-<span id="cb97-14"><a href="#cb97-14"></a>df_low<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(df_low<span class="sc">$</span>Time)</span>
-<span id="cb97-15"><a href="#cb97-15"></a>df_low<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_low<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
-<span id="cb97-16"><a href="#cb97-16"></a></span>
-<span id="cb97-17"><a href="#cb97-17"></a>df_sim <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_normal, df_high, df_low)</span>
-<span id="cb97-18"><a href="#cb97-18"></a>df_sim<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df_sim<span class="sc">$</span>ID)</span>
-<span id="cb97-19"><a href="#cb97-19"></a></span>
-<span id="cb97-20"><a href="#cb97-20"></a>mod_tug <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(Time) <span class="sc">+</span> <span class="fu">s</span>(Time, ID, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>), <span class="at">data =</span> df_sim)</span>
-<span id="cb97-21"><a href="#cb97-21"></a></span>
-<span id="cb97-22"><a href="#cb97-22"></a>global_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"High_Data"</span>)) </span>
-<span id="cb97-23"><a href="#cb97-23"></a>global_grid<span class="sc">$</span>Pred_Global <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod_tug, <span class="at">newdata =</span> global_grid, <span class="at">exclude =</span> <span class="st">"s(Time,ID)"</span>)</span>
-<span id="cb97-24"><a href="#cb97-24"></a></span>
-<span id="cb97-25"><a href="#cb97-25"></a>specials_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"High_Data"</span>, <span class="st">"Low_Data"</span>)))</span>
-<span id="cb97-26"><a href="#cb97-26"></a>specials_grid<span class="sc">$</span>Pred_Individual <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod_tug, <span class="at">newdata =</span> specials_grid)</span>
-<span id="cb97-27"><a href="#cb97-27"></a>specials_grid<span class="sc">$</span>True_Trajectory <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(specials_grid<span class="sc">$</span>Time)</span>
-<span id="cb97-28"><a href="#cb97-28"></a></span>
-<span id="cb97-29"><a href="#cb97-29"></a></span>
-<span id="cb97-30"><a href="#cb97-30"></a>plot_data <span class="ot">&lt;-</span> specials_grid <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(global_grid <span class="sc">%&gt;%</span> <span class="fu">select</span>(Time, Pred_Global), <span class="at">by =</span> <span class="st">"Time"</span>)</span>
-<span id="cb97-31"><a href="#cb97-31"></a>raw_points <span class="ot">&lt;-</span> df_sim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"High_Data"</span>, <span class="st">"Low_Data"</span>))</span>
-<span id="cb97-32"><a href="#cb97-32"></a></span>
-<span id="cb97-33"><a href="#cb97-33"></a></span>
-<span id="cb97-34"><a href="#cb97-34"></a><span class="fu">summary</span>(mod_tug)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb95-2"><a href="#cb95-2"></a>time_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb95-3"><a href="#cb95-3"></a>df_normal <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">18</span>))</span>
+<span id="cb95-4"><a href="#cb95-4"></a>df_normal<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> df_normal<span class="sc">$</span>Time </span>
+<span id="cb95-5"><a href="#cb95-5"></a>df_normal<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_normal<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(df_normal), <span class="dv">0</span>, <span class="dv">2</span>)</span>
+<span id="cb95-6"><a href="#cb95-6"></a></span>
+<span id="cb95-7"><a href="#cb95-7"></a>wild_trajectory <span class="ot">&lt;-</span> <span class="cf">function</span>(t) { <span class="dv">2</span> <span class="sc">*</span> t <span class="sc">+</span> <span class="dv">6</span> <span class="sc">*</span> <span class="fu">sin</span>(<span class="fl">1.5</span> <span class="sc">*</span> t) }</span>
+<span id="cb95-8"><a href="#cb95-8"></a></span>
+<span id="cb95-9"><a href="#cb95-9"></a>df_high <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"High_Data"</span>))</span>
+<span id="cb95-10"><a href="#cb95-10"></a>df_high<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(df_high<span class="sc">$</span>Time)</span>
+<span id="cb95-11"><a href="#cb95-11"></a>df_high<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_high<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
+<span id="cb95-12"><a href="#cb95-12"></a></span>
+<span id="cb95-13"><a href="#cb95-13"></a>df_low <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>), <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"Low_Data"</span>))</span>
+<span id="cb95-14"><a href="#cb95-14"></a>df_low<span class="sc">$</span>True_Y <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(df_low<span class="sc">$</span>Time)</span>
+<span id="cb95-15"><a href="#cb95-15"></a>df_low<span class="sc">$</span>Y <span class="ot">&lt;-</span> df_low<span class="sc">$</span>True_Y <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">3</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
+<span id="cb95-16"><a href="#cb95-16"></a></span>
+<span id="cb95-17"><a href="#cb95-17"></a>df_sim <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df_normal, df_high, df_low)</span>
+<span id="cb95-18"><a href="#cb95-18"></a>df_sim<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df_sim<span class="sc">$</span>ID)</span>
+<span id="cb95-19"><a href="#cb95-19"></a></span>
+<span id="cb95-20"><a href="#cb95-20"></a>mod_tug <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(Time) <span class="sc">+</span> <span class="fu">s</span>(Time, ID, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>), <span class="at">data =</span> df_sim)</span>
+<span id="cb95-21"><a href="#cb95-21"></a></span>
+<span id="cb95-22"><a href="#cb95-22"></a>global_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="st">"High_Data"</span>)) </span>
+<span id="cb95-23"><a href="#cb95-23"></a>global_grid<span class="sc">$</span>Pred_Global <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod_tug, <span class="at">newdata =</span> global_grid, <span class="at">exclude =</span> <span class="st">"s(Time,ID)"</span>)</span>
+<span id="cb95-24"><a href="#cb95-24"></a></span>
+<span id="cb95-25"><a href="#cb95-25"></a>specials_grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">Time =</span> time_seq, <span class="at">ID =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"High_Data"</span>, <span class="st">"Low_Data"</span>)))</span>
+<span id="cb95-26"><a href="#cb95-26"></a>specials_grid<span class="sc">$</span>Pred_Individual <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod_tug, <span class="at">newdata =</span> specials_grid)</span>
+<span id="cb95-27"><a href="#cb95-27"></a>specials_grid<span class="sc">$</span>True_Trajectory <span class="ot">&lt;-</span> <span class="fu">wild_trajectory</span>(specials_grid<span class="sc">$</span>Time)</span>
+<span id="cb95-28"><a href="#cb95-28"></a></span>
+<span id="cb95-29"><a href="#cb95-29"></a></span>
+<span id="cb95-30"><a href="#cb95-30"></a>plot_data <span class="ot">&lt;-</span> specials_grid <span class="sc">%&gt;%</span> <span class="fu">left_join</span>(global_grid <span class="sc">%&gt;%</span> <span class="fu">select</span>(Time, Pred_Global), <span class="at">by =</span> <span class="st">"Time"</span>)</span>
+<span id="cb95-31"><a href="#cb95-31"></a>raw_points <span class="ot">&lt;-</span> df_sim <span class="sc">%&gt;%</span> <span class="fu">filter</span>(ID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"High_Data"</span>, <span class="st">"Low_Data"</span>))</span>
+<span id="cb95-32"><a href="#cb95-32"></a></span>
+<span id="cb95-33"><a href="#cb95-33"></a></span>
+<span id="cb95-34"><a href="#cb95-34"></a><span class="fu">summary</span>(mod_tug)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -6168,47 +6149,47 @@ GCV = 4.5119  Scale est. = 3.9826    n = 953</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>predm_h <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> <span class="st">"High_Data"</span>, <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb99-2"><a href="#cb99-2"></a>predm_l <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> <span class="st">"Low_Data"</span>, <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb99-3"><a href="#cb99-3"></a>predm_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> unique, <span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"Time"</span>)</span>
-<span id="cb99-4"><a href="#cb99-4"></a></span>
-<span id="cb99-5"><a href="#cb99-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb99-6"><a href="#cb99-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> predm_h, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate, <span class="at">group =</span> ID), </span>
-<span id="cb99-7"><a href="#cb99-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb99-8"><a href="#cb99-8"></a>   <span class="fu">geom_line</span>(<span class="at">data =</span> predm_l, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate, <span class="at">group =</span> ID), </span>
-<span id="cb99-9"><a href="#cb99-9"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb99-10"><a href="#cb99-10"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> predm_g, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate), </span>
-<span id="cb99-11"><a href="#cb99-11"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1"></a>predm_h <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> <span class="st">"High_Data"</span>, <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb97-2"><a href="#cb97-2"></a>predm_l <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> <span class="st">"Low_Data"</span>, <span class="at">Time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb97-3"><a href="#cb97-3"></a>predm_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_tug, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">ID =</span> unique, <span class="at">Time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"Time"</span>)</span>
+<span id="cb97-4"><a href="#cb97-4"></a></span>
+<span id="cb97-5"><a href="#cb97-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb97-6"><a href="#cb97-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> predm_h, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate, <span class="at">group =</span> ID), </span>
+<span id="cb97-7"><a href="#cb97-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb97-8"><a href="#cb97-8"></a>   <span class="fu">geom_line</span>(<span class="at">data =</span> predm_l, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate, <span class="at">group =</span> ID), </span>
+<span id="cb97-9"><a href="#cb97-9"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb97-10"><a href="#cb97-10"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> predm_g, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate), </span>
+<span id="cb97-11"><a href="#cb97-11"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-67-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-66-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> Time)) <span class="sc">+</span></span>
-<span id="cb100-2"><a href="#cb100-2"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> True_Trajectory), <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb100-3"><a href="#cb100-3"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Pred_Global), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
-<span id="cb100-4"><a href="#cb100-4"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Pred_Individual), <span class="at">color =</span> <span class="st">"firebrick"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb100-5"><a href="#cb100-5"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> raw_points, <span class="fu">aes</span>(<span class="at">y =</span> Y), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb100-6"><a href="#cb100-6"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>ID) <span class="sc">+</span></span>
-<span id="cb100-7"><a href="#cb100-7"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"The Shrinkage Tug-of-War: Likelihood vs. Penalty"</span>,</span>
-<span id="cb100-8"><a href="#cb100-8"></a>       <span class="at">subtitle =</span> <span class="st">"Blue Dashed = True Path | Black Dotted = Global Average | Solid Red = GAM Prediction"</span>,</span>
-<span id="cb100-9"><a href="#cb100-9"></a>       <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Outcome"</span>) <span class="sc">+</span></span>
-<span id="cb100-10"><a href="#cb100-10"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb100-11"><a href="#cb100-11"></a>  <span class="fu">theme</span>(<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> Time)) <span class="sc">+</span></span>
+<span id="cb98-2"><a href="#cb98-2"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> True_Trajectory), <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb98-3"><a href="#cb98-3"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Pred_Global), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb98-4"><a href="#cb98-4"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Pred_Individual), <span class="at">color =</span> <span class="st">"firebrick"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb98-5"><a href="#cb98-5"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> raw_points, <span class="fu">aes</span>(<span class="at">y =</span> Y), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb98-6"><a href="#cb98-6"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>ID) <span class="sc">+</span></span>
+<span id="cb98-7"><a href="#cb98-7"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"The Shrinkage Tug-of-War: Likelihood vs. Penalty"</span>,</span>
+<span id="cb98-8"><a href="#cb98-8"></a>       <span class="at">subtitle =</span> <span class="st">"Blue Dashed = True Path | Black Dotted = Global Average | Solid Red = GAM Prediction"</span>,</span>
+<span id="cb98-9"><a href="#cb98-9"></a>       <span class="at">x =</span> <span class="st">"Time"</span>, <span class="at">y =</span> <span class="st">"Outcome"</span>) <span class="sc">+</span></span>
+<span id="cb98-10"><a href="#cb98-10"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb98-11"><a href="#cb98-11"></a>  <span class="fu">theme</span>(<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-68-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-67-1.png" width="960" class="r-stretch"></section>
 <section id="factor-smooths-vs-random-effects" class="slide level2">
 <h2>Factor smooths vs random effects</h2>
 <p>The model allows the timing and shape of the change to be completely unique to the individual.</p>
 <p>We can also directly compare</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a><span class="fu">anova</span>(gam8, gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a><span class="fu">anova</span>(gam8, gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Deviance Table
 
@@ -6222,7 +6203,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a><span class="fu">AIC</span>(gam8, gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1"></a><span class="fu">AIC</span>(gam8, gam9)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           df       AIC
 gam8  40.0312 1345.3261
@@ -6240,8 +6221,8 @@ gam9 154.7523  906.6271</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>gam10 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id, <span class="at">k=</span><span class="dv">5</span>), <span class="at">data =</span> data.sim)</span>
-<span id="cb105-2"><a href="#cb105-2"></a><span class="fu">summary</span>(gam10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>gam10 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id, <span class="at">k=</span><span class="dv">5</span>), <span class="at">data =</span> data.sim)</span>
+<span id="cb103-2"><a href="#cb103-2"></a><span class="fu">summary</span>(gam10)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -6293,43 +6274,43 @@ GCV = 45.318  Scale est. = 33.957    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>pred10_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb107-2"><a href="#cb107-2"></a>pred10_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"time"</span>)</span>
-<span id="cb107-3"><a href="#cb107-3"></a></span>
-<span id="cb107-4"><a href="#cb107-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb107-5"><a href="#cb107-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb107-6"><a href="#cb107-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb107-7"><a href="#cb107-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
-<span id="cb107-8"><a href="#cb107-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1"></a>pred10_i <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb105-2"><a href="#cb105-2"></a>pred10_g <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> unique, <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">by =</span> <span class="st">"time"</span>)</span>
+<span id="cb105-3"><a href="#cb105-3"></a></span>
+<span id="cb105-4"><a href="#cb105-4"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb105-5"><a href="#cb105-5"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_i, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb105-6"><a href="#cb105-6"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb105-7"><a href="#cb105-7"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_g, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate), </span>
+<span id="cb105-8"><a href="#cb105-8"></a>            <span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">linewidth =</span> <span class="fl">1.5</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-72-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-71-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1"></a>pred10_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb108-2"><a href="#cb108-2"></a>pred10_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
-<span id="cb108-3"><a href="#cb108-3"></a></span>
-<span id="cb108-4"><a href="#cb108-4"></a></span>
-<span id="cb108-5"><a href="#cb108-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb108-6"><a href="#cb108-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb108-7"><a href="#cb108-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb108-8"><a href="#cb108-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb108-9"><a href="#cb108-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1"></a>pred10_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb106-2"><a href="#cb106-2"></a>pred10_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam10, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
+<span id="cb106-3"><a href="#cb106-3"></a></span>
+<span id="cb106-4"><a href="#cb106-4"></a></span>
+<span id="cb106-5"><a href="#cb106-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb106-6"><a href="#cb106-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb106-7"><a href="#cb106-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb106-8"><a href="#cb106-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred10_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb106-9"><a href="#cb106-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-73-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-72-1.png" width="960" class="r-stretch"></section>
 <section id="increase-knots" class="slide level2">
 <h2>increase knots</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>gam11 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id, <span class="at">k=</span><span class="dv">8</span>), <span class="at">data =</span> data.sim)</span>
-<span id="cb109-2"><a href="#cb109-2"></a><span class="fu">summary</span>(gam11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1"></a>gam11 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id, <span class="at">k=</span><span class="dv">8</span>), <span class="at">data =</span> data.sim)</span>
+<span id="cb107-2"><a href="#cb107-2"></a><span class="fu">summary</span>(gam11)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -6381,26 +6362,26 @@ GCV = 24.037  Scale est. = 13.395    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>pred11_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam11, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb111-2"><a href="#cb111-2"></a>pred11_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam11, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb111-3"><a href="#cb111-3"></a></span>
-<span id="cb111-4"><a href="#cb111-4"></a></span>
-<span id="cb111-5"><a href="#cb111-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb111-6"><a href="#cb111-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred11_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb111-7"><a href="#cb111-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb111-8"><a href="#cb111-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred11_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb111-9"><a href="#cb111-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>pred11_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam11, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb109-2"><a href="#cb109-2"></a>pred11_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam11, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb109-3"><a href="#cb109-3"></a></span>
+<span id="cb109-4"><a href="#cb109-4"></a></span>
+<span id="cb109-5"><a href="#cb109-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb109-6"><a href="#cb109-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred11_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb109-7"><a href="#cb109-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb109-8"><a href="#cb109-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred11_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb109-9"><a href="#cb109-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-75-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-74-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <p>default number of knots is 10. Because we are using by, effectively fitting separate models for each trajectory, they are very susceptible to number of knots and overfitting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a><span class="co">#| code-fold: true</span></span>
-<span id="cb112-2"><a href="#cb112-2"></a>gam12 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id), <span class="at">data =</span> data.sim)</span>
-<span id="cb112-3"><a href="#cb112-3"></a><span class="fu">summary</span>(gam12)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb110-2"><a href="#cb110-2"></a>gam12 <span class="ot">&lt;-</span> <span class="fu">gam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(id, <span class="at">bs =</span> <span class="st">"re"</span>) <span class="sc">+</span> <span class="fu">s</span>(time, <span class="at">by =</span> id), <span class="at">data =</span> data.sim)</span>
+<span id="cb110-3"><a href="#cb110-3"></a><span class="fu">summary</span>(gam12)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Family: gaussian 
@@ -6451,19 +6432,19 @@ GCV = 28.821  Scale est. = 16.561    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1"></a>pred12_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam12, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb114-2"><a href="#cb114-2"></a>pred12_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam12, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb114-3"><a href="#cb114-3"></a></span>
-<span id="cb114-4"><a href="#cb114-4"></a></span>
-<span id="cb114-5"><a href="#cb114-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb114-6"><a href="#cb114-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred12_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb114-7"><a href="#cb114-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb114-8"><a href="#cb114-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred12_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb114-9"><a href="#cb114-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a>pred12_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam12, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb112-2"><a href="#cb112-2"></a>pred12_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam12, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb112-3"><a href="#cb112-3"></a></span>
+<span id="cb112-4"><a href="#cb112-4"></a></span>
+<span id="cb112-5"><a href="#cb112-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb112-6"><a href="#cb112-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred12_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb112-7"><a href="#cb112-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb112-8"><a href="#cb112-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred12_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb112-9"><a href="#cb112-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-77-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-76-1.png" width="960" class="r-stretch"></section>
 <section id="is-it-wiggliness-or-is-it-noise" class="slide level2">
 <h2>Is it wiggliness or is it noise?</h2>
 <ul>
@@ -6475,16 +6456,19 @@ GCV = 28.821  Scale est. = 16.561    n = 200</code></pre>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a>data.sim <span class="ot">&lt;-</span> data.sim <span class="sc">%&gt;%</span></span>
-<span id="cb115-2"><a href="#cb115-2"></a>  <span class="fu">arrange</span>(id, time) <span class="sc">%&gt;%</span></span>
-<span id="cb115-3"><a href="#cb115-3"></a>  <span class="fu">mutate</span>(<span class="at">start_point =</span> time <span class="sc">==</span> <span class="fu">min</span>(time))</span>
-<span id="cb115-4"><a href="#cb115-4"></a></span>
-<span id="cb115-5"><a href="#cb115-5"></a>mod_ar1 <span class="ot">&lt;-</span> <span class="fu">bam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>, <span class="at">k=</span><span class="dv">7</span>),</span>
-<span id="cb115-6"><a href="#cb115-6"></a>               <span class="at">data =</span> data.sim, </span>
-<span id="cb115-7"><a href="#cb115-7"></a>               <span class="at">rho =</span> <span class="fl">0.4</span>,                 <span class="co"># The AR1 correlation parameter</span></span>
-<span id="cb115-8"><a href="#cb115-8"></a>               <span class="at">AR.start =</span> start_point,    <span class="co"># Resets the AR1 process for each new subject</span></span>
-<span id="cb115-9"><a href="#cb115-9"></a>               <span class="at">method =</span> <span class="st">"fREML"</span>)</span>
-<span id="cb115-10"><a href="#cb115-10"></a><span class="fu">summary</span>(mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1"></a>data.sim <span class="ot">&lt;-</span> data.sim <span class="sc">%&gt;%</span></span>
+<span id="cb113-2"><a href="#cb113-2"></a>  <span class="fu">arrange</span>(id, time) <span class="sc">%&gt;%</span></span>
+<span id="cb113-3"><a href="#cb113-3"></a>  <span class="fu">mutate</span>(<span class="at">start_point =</span> time <span class="sc">==</span> <span class="fu">min</span>(time))</span>
+<span id="cb113-4"><a href="#cb113-4"></a></span>
+<span id="cb113-5"><a href="#cb113-5"></a>mod_ar1 <span class="ot">&lt;-</span> <span class="fu">bam</span>(Y <span class="sc">~</span> <span class="fu">s</span>(time) <span class="sc">+</span> <span class="fu">s</span>(time, id, <span class="at">bs=</span><span class="st">"fs"</span>, <span class="at">m=</span><span class="dv">1</span>, <span class="at">k=</span><span class="dv">7</span>),</span>
+<span id="cb113-6"><a href="#cb113-6"></a>               <span class="at">data =</span> data.sim, </span>
+<span id="cb113-7"><a href="#cb113-7"></a>               <span class="at">rho =</span> <span class="fl">0.4</span>,                 <span class="co"># The AR1 correlation parameter</span></span>
+<span id="cb113-8"><a href="#cb113-8"></a>               <span class="at">AR.start =</span> start_point,    <span class="co"># Resets the AR1 process for each new subject</span></span>
+<span id="cb113-9"><a href="#cb113-9"></a>               <span class="at">method =</span> <span class="st">"fREML"</span>)</span>
+<span id="cb113-10"><a href="#cb113-10"></a><span class="fu">summary</span>(mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Family: gaussian 
@@ -6520,23 +6504,23 @@ fREML = 715.14  Scale est. = 49.454    n = 200</code></pre>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a>pred13_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_ar1, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb117-2"><a href="#cb117-2"></a>pred13_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_ar1, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb117-3"><a href="#cb117-3"></a></span>
-<span id="cb117-4"><a href="#cb117-4"></a></span>
-<span id="cb117-5"><a href="#cb117-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb117-6"><a href="#cb117-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred13_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb117-7"><a href="#cb117-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
-<span id="cb117-8"><a href="#cb117-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred13_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
-<span id="cb117-9"><a href="#cb117-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1"></a>pred13_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_ar1, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb115-2"><a href="#cb115-2"></a>pred13_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(mod_ar1, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb115-3"><a href="#cb115-3"></a></span>
+<span id="cb115-4"><a href="#cb115-4"></a></span>
+<span id="cb115-5"><a href="#cb115-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb115-6"><a href="#cb115-6"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred13_s, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb115-7"><a href="#cb115-7"></a>            <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb115-8"><a href="#cb115-8"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred13_w, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> estimate, <span class="at">group =</span> id), </span>
+<span id="cb115-9"><a href="#cb115-9"></a>            <span class="at">color =</span> <span class="st">"blue"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
-<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-79-1.png" width="960" class="r-stretch"></section>
+<img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-78-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a><span class="fu">AIC</span>(gam9,mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1"></a><span class="fu">AIC</span>(gam9,mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>               df       AIC
 gam9    154.75233  906.6271
@@ -6544,7 +6528,7 @@ mod_ar1  68.34544 1375.6406</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1"></a><span class="fu">anova</span>(gam9,mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1"></a><span class="fu">anova</span>(gam9,mod_ar1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Deviance Table
 
