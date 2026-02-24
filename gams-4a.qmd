@@ -1325,12 +1325,12 @@ ggplot() +
 ```
 
 
-## Can we differentiate our tw0 types? 
+## Can we differentiate our two types? 
 
 ```{r}
 #| code-fold: true
-pred9_s <- predictions(gam9, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
-pred9_w <- predictions(gam9, newdata = datagrid(id = c(11:20), time = 1:10))
+pred9_s <- predictions(gam9, newdata = datagrid(id = factor(1:10), time = seq(1, 10, length.out = 100)))
+pred9_w <- predictions(gam9, newdata = datagrid(id = factor(11:20), time = seq(1, 10, length.out = 100)))
 
 
 ggplot() +

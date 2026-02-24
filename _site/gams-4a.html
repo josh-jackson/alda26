@@ -6060,13 +6060,13 @@ GCV = 21.679  Scale est. = 5.013     n = 200</code></pre>
 
 </div>
 <img data-src="gams-4a_files/figure-revealjs/unnamed-chunk-63-1.png" width="960" class="r-stretch"></section>
-<section id="can-we-differentiate-our-tw0-types" class="slide level2">
-<h2>Can we differentiate our tw0 types?</h2>
+<section id="can-we-differentiate-our-two-types" class="slide level2">
+<h2>Can we differentiate our two types?</h2>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>pred9_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
-<span id="cb94-2"><a href="#cb94-2"></a>pred9_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>))</span>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1"></a>pred9_s <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
+<span id="cb94-2"><a href="#cb94-2"></a>pred9_w <span class="ot">&lt;-</span> <span class="fu">predictions</span>(gam9, <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">id =</span> <span class="fu">factor</span>(<span class="dv">11</span><span class="sc">:</span><span class="dv">20</span>), <span class="at">time =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)))</span>
 <span id="cb94-3"><a href="#cb94-3"></a></span>
 <span id="cb94-4"><a href="#cb94-4"></a></span>
 <span id="cb94-5"><a href="#cb94-5"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>

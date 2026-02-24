@@ -1762,5 +1762,12 @@
     "title": "gams",
     "section": "Can we differentiate our tw0 types?",
     "text": "Can we differentiate our tw0 types?\n\n\nCode\npred9_s &lt;- predictions(gam9, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))\npred9_w &lt;- predictions(gam9, newdata = datagrid(id = c(11:20), time = 1:10))\n\n\nggplot() +\n  geom_line(data = pred9_s, aes(x = time, y = estimate, group = id), \n            alpha = 0.4) +\n  geom_line(data = pred9_w, aes(x = time, y = estimate, group = id), \n            color = \"blue\")"
+  },
+  {
+    "objectID": "gams-4a.html#can-we-differentiate-our-two-types",
+    "href": "gams-4a.html#can-we-differentiate-our-two-types",
+    "title": "gams",
+    "section": "Can we differentiate our two types?",
+    "text": "Can we differentiate our two types?\n\n\nCode\npred9_s &lt;- predictions(gam9, newdata = datagrid(id = factor(1:10), time = seq(1, 10, length.out = 100)))\npred9_w &lt;- predictions(gam9, newdata = datagrid(id = factor(11:20), time = seq(1, 10, length.out = 100)))\n\n\nggplot() +\n  geom_line(data = pred9_s, aes(x = time, y = estimate, group = id), \n            alpha = 0.4) +\n  geom_line(data = pred9_w, aes(x = time, y = estimate, group = id), \n            color = \"blue\")"
   }
 ]
