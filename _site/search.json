@@ -1502,7 +1502,7 @@
     "href": "gams-4a.html#penalized-estimation",
     "title": "gams",
     "section": "Penalized estimation",
-    "text": "Penalized estimation\n\nOne concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.\n\n\\[\\mathcal{L}_p = \\log(\\text{Likelihood})  - \\lambda W\\]\n\nIn mgcv, a penalization parameter often called lambda uses cross validation to balance over vs under fitting. It modifies the loss function to approximate leave-one-out cross-validation selection.\nAs λ increases, the result is a linear fit because any wiggliness will add too much to the loss function. As λ decreases closer to zero, wiggliness is incorporated into the model."
+    "text": "Penalized estimation\n\nOne concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.\n\n\\[\\mathcal{L}_p = \\log(\\text{Likelihood})  - \\lambda W\\]\n\nLambda is a penalization parameter and W is our wiggliness parameter. It is the second derivative of our curve. The rate of change of the rate of change"
   },
   {
     "objectID": "hw2.html",
@@ -1622,5 +1622,131 @@
     "title": "gams",
     "section": "types of smoothing functions",
     "text": "types of smoothing functions\n\n\n\n\n\n\n\n\n\n\nBasis Type\nR Code\nPro and con\nBest Use Case\n\n\n\n\n\nThin Plate\nbs=\"tp\"\nNo manual knots but slow\nDefault choice\n\n\n\nB-Spline\nbs=\"bs\"\nMathematically simple but requires knot placement.\nWhen you know knot locations.\n\n\n\nFactor Smooth\nbs=\"fs\"\nSeparate curve per subject\nLongitudinal studies\n\n\n\nRandom Effect\nbs=\"re\"\nTreats variable as random intercept/slope.\nHierarchical models"
+  },
+  {
+    "objectID": "gams-4a.html#edf",
+    "href": "gams-4a.html#edf",
+    "title": "gams",
+    "section": "EDF",
+    "text": "EDF\n\nEffective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term.\nAn EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. &gt;3 gets more wiggly.\n\n\ncoef(gam1)\n\n(Intercept)   s(year).1   s(year).2   s(year).3   s(year).4   s(year).5 \n 29.5452876  -0.2194494   0.4787857  -0.2132092  -0.3063732  -0.1812577 \n  s(year).6   s(year).7   s(year).8   s(year).9 \n  0.3075354   0.1965416  -1.2241744  -0.1033622"
+  },
+  {
+    "objectID": "gams-4a.html#thin-plate",
+    "href": "gams-4a.html#thin-plate",
+    "title": "gams",
+    "section": "thin plate",
+    "text": "thin plate\n\nCubic splines can be tricky when data do not exist between knots as they are “local” whereas tp looks at entire dataset at once.\n\nIs focused on distance between data points, \\(r\\), with a basis fucntion of: \\(r^2 \\log(r)\\).\nBut this results in # basis functions = datapoints, which make it computationally expensive.\nUses Singular Value Decomposition (SVD) to reduce to the most important functions ~ 10"
+  },
+  {
+    "objectID": "gams-4a.html#interactions",
+    "href": "gams-4a.html#interactions",
+    "title": "gams",
+    "section": "Interactions",
+    "text": "Interactions\nThin Plate are “isotropic” meaning the independent variables are assumed to be on the same scale. So things get tricky with interactions.\n\ns(x, z, bs = 'tp')\n\n#tensor product smooths (really just cubic)\nte(x, z) or t2(x, z) or s(x) + s(z) + ti(x, z)"
+  },
+  {
+    "objectID": "gams-4a.html#longitudinal-models",
+    "href": "gams-4a.html#longitudinal-models",
+    "title": "gams",
+    "section": "Longitudinal models",
+    "text": "Longitudinal models\n\nHow unique?\nNeed to think about what we want to vary. Prior we varied intercepts and slopes. But they were relatively low rank so it is easy to think in terms of how people differed in amount\nWe now have more options in terms of wiggliness. Can people’s shapes be completely different? What about the wiggliness? People’s shapes are governed by the fixed effect in our previous models, should that still hold true here?"
+  },
+  {
+    "objectID": "gams-4a.html#random-intercept",
+    "href": "gams-4a.html#random-intercept",
+    "title": "gams",
+    "section": "Random intercept",
+    "text": "Random intercept\n\ngam2 &lt;- gam(extraversion ~ s(year) + s(mapid, bs = \"re\"), data = personality)\nsummary(gam2)\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nextraversion ~ s(year) + s(mapid, bs = \"re\")\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  27.8299     0.6926   40.18   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n            edf Ref.df     F p-value   \ns(year)  2.0250  2.513 2.204 0.11685   \ns(mapid) 0.8646  1.000 6.490 0.00621 **\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.00677   Deviance explained = 0.853%\nGCV = 43.068  Scale est. = 42.966    n = 1634"
+  },
+  {
+    "objectID": "gams-4a.html#random-intercept-and-slope",
+    "href": "gams-4a.html#random-intercept-and-slope",
+    "title": "gams",
+    "section": "Random intercept and slope",
+    "text": "Random intercept and slope\n\ngam3 &lt;- gam(extraversion ~ s(year) + s(mapid, bs = \"re\") + s(mapid, year, bs=\"re\"), data = personality)\nsummary(gam3)\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nextraversion ~ s(year) + s(mapid, bs = \"re\") + s(mapid, year, \n    bs = \"re\")\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)  27.8736     0.6845   40.72   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n                    edf Ref.df     F p-value   \ns(year)       1.990e+00  2.481 2.090 0.13118   \ns(mapid)      8.433e-01  1.000 6.318 0.00626 **\ns(mapid,year) 2.708e-05  1.000 0.000 0.76649   \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nRank: 11/12\nR-sq.(adj) =  0.00659   Deviance explained = 0.831%\nGCV = 43.075  Scale est. = 42.974    n = 1634"
+  },
+  {
+    "objectID": "gams-4a.html#section",
+    "href": "gams-4a.html#section",
+    "title": "gams",
+    "section": "",
+    "text": "# ==============================================================================\n# TEACHING LONGITUDINAL GAMs: FROM GLOBAL SMOOTHS TO FACTOR SMOOTHS\n# ==============================================================================\n\n# --- 0. Load Libraries ---\nlibrary(mgcv)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(marginaleffects)\n\n# --- 1. Simulate the Longitudinal Data ---\n# We simulate 60 subjects over 10 time points.\n# Subjects are assigned to a Condition (TX/Control) and a Dose (A, B, C).\nset.seed(123)\nn_subjects &lt;- 100\ntime_points &lt;- seq(0, 10, by = 1)\n\n# Assign groups\nsubjects &lt;- data.frame(\n  Subject = factor(1:n_subjects),\n  Condition = sample(c(\"TX\", \"Control\"), n_subjects, replace = TRUE),\n  Dose = sample(c(\"A\", \"B\", \"C\"), n_subjects, replace = TRUE)\n)\n\n# Build the longitudinal dataframe and add complex true effects\ndf &lt;- expand.grid(Subject = subjects$Subject, Time = time_points) %&gt;%\n  left_join(subjects, by = \"Subject\") %&gt;%\n  mutate(\n    # Factors must be explicitly classed as factors for mgcv!\n    Condition = factor(Condition, levels = c(\"Control\", \"TX\")),\n    Dose = factor(Dose, levels = c(\"A\", \"B\", \"C\")),\n    \n    # 1. Base non-linear trajectory for everyone\n    base_curve = sin(Time / 2) * 2,\n    \n    # 2. Condition Effect: TX goes up over time, Control stays flatter\n    cond_effect = ifelse(Condition == \"TX\", Time * 0.8, Time * 0.1),\n    \n    # 3. Dose Effect: A is flat, B bends slightly, C bends sharply\n    dose_effect = case_when(\n      Dose == \"A\" ~ 0,\n      Dose == \"B\" ~ sin(Time / 3) * 1.5,\n      Dose == \"C\" ~ sin(Time / 3) * 3.5\n    ),\n    \n    # 4. The Longitudinal \"Spaghetti\" (Individual Random Intercepts & Curves)\n    subj_int = rep(rnorm(n_subjects, 0, 3), each = length(time_points)),\n    subj_wiggle = rep(rnorm(n_subjects, 0, 1), each = length(time_points)) * sin(Time),\n    \n    # Final observed Y with some noise added\n    True_Y = 10 + base_curve + cond_effect + dose_effect + subj_int + subj_wiggle,\n    Y = True_Y + rnorm(nrow(df), 0, 1.5)\n  )\n\n# --- 2. Model 1: The \"Naive\" Global Average ---\n# What happens over time, ignoring groups and individuals?\ncat(\"\\nFitting Model 1: Global Smooth...\\n\")\n\n\nFitting Model 1: Global Smooth...\n\nmod1 &lt;- gam(Y ~ s(Time), data = df, method = \"REML\")\n\n\n# --- 3. Model 2: Group Differences ---\n# Does the shape of change depend on Condition and Dose?\n# NOTE FOR STUDENTS: When using 'by', you MUST include the parametric main effect \n# (Condition + Dose) so the smooths are centered properly!\ncat(\"Fitting Model 2: Group Smooths...\\n\")\n\nFitting Model 2: Group Smooths...\n\nmod2 &lt;- gam(Y ~ Condition + Dose + \n                s(Time, by = Condition) + \n                s(Time, by = Dose), \n            data = df, method = \"REML\")\n\n\n# --- 4. Model 3: The Hierarchical GAM (Factor Smooths) ---\n# Adding the individual subject curves (The Spaghetti)\n# bs=\"fs\" draws a unique curve for every subject, heavily penalized.\n# m=1 tells the model to shrink the subjects towards the group average.\ncat(\"Fitting Model 3: Hierarchical GAM with Factor Smooths...\\n\")\n\nFitting Model 3: Hierarchical GAM with Factor Smooths...\n\nmod3 &lt;- gam(Y ~ Condition + Dose + \n                s(Time, by = Condition) + \n                s(Time, by = Dose) + \n                s(Time, Subject, bs = \"fs\", m = 1), \n            data = df, method = \"REML\")\n\n\n# ==============================================================================\n# PLOTTING THE RESULTS FOR THE CLASS\n# ==============================================================================\n\n# --- Plot A: The Population Level (What we care about for the paper) ---\n# We use marginaleffects to easily plot the Group trajectories, \n# completely ignoring the messy individual subject variance.\n\n\nplot_population &lt;- plot_predictions(mod3, condition = c(\"Time\", \"Condition\", \"Dose\")) +\n  labs(title = \"The Population Trajectories (Fixed Effects)\",\n       subtitle = \"Model 3 predictions mapped across Condition and Dose\",\n       y = \"Predicted Y\", x = \"Time\") +\n  theme_bw() +\n  theme(strip.background = element_rect(fill = \"grey90\"),\n        legend.position = \"bottom\")\n\nprint(plot_population)\n\n\n\n# --- Plot B: The Individual Level (The X-Ray of the \"fs\" term) ---\n# Let's show the students what the bs=\"fs\" term actually did to the individuals.\n# We predict the specific values for every specific subject in the dataset.\ndf$Subject_Prediction &lt;- predict(mod3, type = \"response\")\n\n\n\nplot_spaghetti &lt;- ggplot(df, aes(x = Time, y = Subject_Prediction, group = Subject)) +\n  # Raw data points in the background\n  geom_point(aes(y = Y), alpha = 0.2, color = \"grey50\") +\n  # The smoothed individual curves colored by Condition\n  geom_line(aes(color = Condition), alpha = 0.7, linewidth = 0.8) +\n  facet_wrap(~Dose, labeller = label_both) +\n  labs(title = \"The 'Spaghetti' Plot (Hierarchical Subject Smooths)\",\n       subtitle = \"Every subject gets a unique curve, shrunken toward their group mean.\",\n       y = \"Fitted Y\", x = \"Time\") +\n  theme_bw() +\n  theme(legend.position = \"bottom\")\n\nprint(plot_spaghetti)"
+  },
+  {
+    "objectID": "gams-4a.html#residual-structure",
+    "href": "gams-4a.html#residual-structure",
+    "title": "gams",
+    "section": "residual structure",
+    "text": "residual structure\n\nThus far we have been working with gams which are different from multi-level or hierarchical gams. When would we need those? When we want to relax the assumption of zero correlation across time points."
+  },
+  {
+    "objectID": "gams-4a.html#random-effects-and-factor-smooths",
+    "href": "gams-4a.html#random-effects-and-factor-smooths",
+    "title": "gams",
+    "section": "Random effects and factor smooths",
+    "text": "Random effects and factor smooths\n\nBased on description, both are applicable for longitudinal models.\nDifferences are in the geometry. re penalizes the magnitude while fs penalizes the magnitude and geometry.\nre: differ in baseline/slope fs: differ in their entire trajectory\nWith 4 or less, need to use re. But with large data fitting unique curves with fs may cause computation problems"
+  },
+  {
+    "objectID": "gams-4a.html#random-intercept-equivalent",
+    "href": "gams-4a.html#random-intercept-equivalent",
+    "title": "gams",
+    "section": "Random intercept equivalent",
+    "text": "Random intercept equivalent\n\n\nCode\ngam7 &lt;- gam(Y ~ s(time) + s(id, bs = \"re\"), data = data.sim)\nsummary(gam7)\n\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nY ~ s(time) + s(id, bs = \"re\")\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   53.604      2.944   18.21   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n           edf Ref.df     F p-value    \ns(time)  4.097  5.059  3.85 0.00239 ** \ns(id)   18.210 19.000 23.04 &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.696   Deviance explained =   73%\nGCV = 81.593  Scale est. = 72.085    n = 200"
+  },
+  {
+    "objectID": "gams-4a.html#random-slope-equivalent",
+    "href": "gams-4a.html#random-slope-equivalent",
+    "title": "gams",
+    "section": "Random slope equivalent",
+    "text": "Random slope equivalent\n\n\nCode\ngam8 &lt;- gam(Y ~ s(time) + s(id, bs = \"re\") + s(time, id, bs=\"re\"), data = data.sim)\nsummary(gam8)\n\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nY ~ s(time) + s(id, bs = \"re\") + s(time, id, bs = \"re\")\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   53.604      3.293   16.28   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n              edf Ref.df       F p-value    \ns(time)     4.853  5.946   2.676  0.0174 *  \ns(id)      16.045 19.000 540.914  &lt;2e-16 ***\ns(time,id) 17.132 19.000 563.126  &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.828   Deviance explained = 86.1%\nGCV = 50.534  Scale est. = 40.672    n = 200"
+  },
+  {
+    "objectID": "gams-4a.html#factor-smooths",
+    "href": "gams-4a.html#factor-smooths",
+    "title": "gams",
+    "section": "factor smooths",
+    "text": "factor smooths\n\nThe basis function coefficients partially pooled toward the mean\nIf the group overall is fairly smooth, \\(\\lambda\\) goes up. This shared penalty acts like a gravitational pull, dragging everyone’s wild individual wiggles back toward the global trajectory."
+  },
+  {
+    "objectID": "gams-4a.html#unique-trajectories-but-shared-smooth",
+    "href": "gams-4a.html#unique-trajectories-but-shared-smooth",
+    "title": "gams",
+    "section": "unique trajectories, but shared smooth",
+    "text": "unique trajectories, but shared smooth\n\n\nCode\ngam9 &lt;- gam(Y ~ s(time) + s(time, id, bs=\"fs\", m=1, k=8), data = data.sim)\nsummary(gam9)\n\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nY ~ s(time) + s(time, id, bs = \"fs\", m = 1, k = 8)\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   53.604      2.944   18.21   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n               edf  Ref.df      F p-value    \ns(time)      6.827   7.258  1.081   0.334    \ns(time,id) 145.925 159.000 56.018  &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.979   Deviance explained = 99.5%\nGCV = 21.679  Scale est. = 5.013     n = 200"
+  },
+  {
+    "objectID": "gams-4a.html#pooling-with-fs",
+    "href": "gams-4a.html#pooling-with-fs",
+    "title": "gams",
+    "section": "Pooling with FS",
+    "text": "Pooling with FS\n\n\nCode\nset.seed(123)\ntime_seq &lt;- seq(0, 10, length.out = 50)\ndf_normal &lt;- expand.grid(Time = time_seq, ID = factor(1:18))\ndf_normal$True_Y &lt;- 2 * df_normal$Time \ndf_normal$Y &lt;- df_normal$True_Y + rnorm(nrow(df_normal), 0, 2)\n\nwild_trajectory &lt;- function(t) { 2 * t + 6 * sin(1.5 * t) }\n\ndf_high &lt;- data.frame(Time = time_seq, ID = factor(\"High_Data\"))\ndf_high$True_Y &lt;- wild_trajectory(df_high$Time)\ndf_high$Y &lt;- df_high$True_Y + rnorm(50, 0, 1.5)\n\ndf_low &lt;- data.frame(Time = c(2, 5, 8), ID = factor(\"Low_Data\"))\ndf_low$True_Y &lt;- wild_trajectory(df_low$Time)\ndf_low$Y &lt;- df_low$True_Y + rnorm(3, 0, 1.5)\n\ndf_sim &lt;- bind_rows(df_normal, df_high, df_low)\ndf_sim$ID &lt;- as.factor(df_sim$ID)\n\nmod_tug &lt;- gam(Y ~ s(Time) + s(Time, ID, bs=\"fs\", m=1), data = df_sim)\n\nglobal_grid &lt;- data.frame(Time = time_seq, ID = factor(\"High_Data\")) \nglobal_grid$Pred_Global &lt;- predict(mod_tug, newdata = global_grid, exclude = \"s(Time,ID)\")\n\nspecials_grid &lt;- expand.grid(Time = time_seq, ID = factor(c(\"High_Data\", \"Low_Data\")))\nspecials_grid$Pred_Individual &lt;- predict(mod_tug, newdata = specials_grid)\nspecials_grid$True_Trajectory &lt;- wild_trajectory(specials_grid$Time)\n\n\nplot_data &lt;- specials_grid %&gt;% left_join(global_grid %&gt;% select(Time, Pred_Global), by = \"Time\")\nraw_points &lt;- df_sim %&gt;% filter(ID %in% c(\"High_Data\", \"Low_Data\"))\n\n\nsummary(mod_tug)\n\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nY ~ s(Time) + s(Time, ID, bs = \"fs\", m = 1)\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept) 10.08553    0.07883   127.9   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n             edf Ref.df       F p-value    \ns(Time)      1.0      1 225.441  &lt;2e-16 ***\ns(Time,ID) 109.8    173   1.487  &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =    0.9   Deviance explained = 91.1%\nGCV = 4.5119  Scale est. = 3.9826    n = 953"
+  },
+  {
+    "objectID": "gams-4a.html#factor-smooths-vs-random-effects",
+    "href": "gams-4a.html#factor-smooths-vs-random-effects",
+    "title": "gams",
+    "section": "Factor smooths vs random effects",
+    "text": "Factor smooths vs random effects\nThe model allows the timing and shape of the change to be completely unique to the individual.\nWe can also directly compare\n\nanova(gam8, gam9)\n\nAnalysis of Deviance Table\n\nModel 1: Y ~ s(time) + s(id, bs = \"re\") + s(time, id, bs = \"re\")\nModel 2: Y ~ s(time) + s(time, id, bs = \"fs\", m = 1, k = 8)\n  Resid. Df Resid. Dev     Df Deviance      F    Pr(&gt;F)    \n1   156.123     6547.0                                     \n2    38.753      231.8 117.37   6315.1 10.733 4.164e-13 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\n\n\nAIC(gam8, gam9)\n\n           df       AIC\ngam8  40.0312 1345.3261\ngam9 154.7523  906.6271"
+  },
+  {
+    "objectID": "gams-4a.html#by-interactions",
+    "href": "gams-4a.html#by-interactions",
+    "title": "gams",
+    "section": "by interactions",
+    "text": "by interactions\nNo partial pooling, no learning across people.\nEach curve is still a penalized spline, so as to prevent some overfitting"
+  },
+  {
+    "objectID": "gams-4a.html#increase-knots",
+    "href": "gams-4a.html#increase-knots",
+    "title": "gams",
+    "section": "increase knots",
+    "text": "increase knots\n\n\nCode\ngam11 &lt;- gam(Y ~ s(id, bs = \"re\") + s(time, by = id, k=8), data = data.sim)\nsummary(gam11)\n\n\n\nFamily: gaussian \nLink function: identity \n\nFormula:\nY ~ s(id, bs = \"re\") + s(time, by = id, k = 8)\n\nParametric coefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)    \n(Intercept)   53.604      2.943   18.21   &lt;2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nApproximate significance of smooth terms:\n                edf Ref.df       F  p-value    \ns(id)        18.853 19.000 128.378  &lt; 2e-16 ***\ns(time):id1   1.242  1.443  21.161 1.06e-06 ***\ns(time):id2   1.000  1.000  49.054  &lt; 2e-16 ***\ns(time):id3   1.000  1.000   0.431  0.51307    \ns(time):id4   1.000  1.000  43.303  &lt; 2e-16 ***\ns(time):id5   1.116  1.222  45.068  &lt; 2e-16 ***\ns(time):id6   1.695  2.105  16.036 7.21e-07 ***\ns(time):id7   1.332  1.590   7.163  0.00726 ** \ns(time):id8   1.000  1.000  35.016  &lt; 2e-16 ***\ns(time):id9   1.000  1.000   5.536  0.02038 *  \ns(time):id10  1.000  1.000   1.253  0.26538    \ns(time):id11  5.716  6.487   6.269 7.72e-06 ***\ns(time):id12  6.322  6.842  26.315  &lt; 2e-16 ***\ns(time):id13  6.716  6.969   9.712  &lt; 2e-16 ***\ns(time):id14  1.000  1.000  21.437 1.02e-05 ***\ns(time):id15  6.376  6.865   9.226  &lt; 2e-16 ***\ns(time):id16  6.710  6.968   6.578 2.87e-06 ***\ns(time):id17  5.784  6.535   5.122 6.76e-05 ***\ns(time):id18  5.889  6.604  10.596  &lt; 2e-16 ***\ns(time):id19  6.619  6.948   6.408 5.96e-06 ***\ns(time):id20  6.178  6.773  13.040  &lt; 2e-16 ***\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nR-sq.(adj) =  0.943   Deviance explained = 96.8%\nGCV = 24.037  Scale est. = 13.395    n = 200"
+  },
+  {
+    "objectID": "gams-4a.html#is-it-wiggliness-or-is-it-noise",
+    "href": "gams-4a.html#is-it-wiggliness-or-is-it-noise",
+    "title": "gams",
+    "section": "Is it wiggliness or is it noise?",
+    "text": "Is it wiggliness or is it noise?\n\nThus far we have been working with gams which are different from multi-level or hierarchical gams. When would we need those? When we want to relax the assumption of zero correlation across time points.\nIf you ignore this assumption, your model will think it has more independent pieces of information than it actually does. The penalty (\\(\\lambda\\)) will be too loose, the curves will overfit the noise.\nTime-series data has “memory,” in that observations tend to be correleated such that if you overshoot your predicted trajectory at one timepoint, you are likely to be at the next timepoint."
   }
 ]

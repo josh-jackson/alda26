@@ -866,14 +866,116 @@ f %>%
 
 
 ```{r}
+#| code-fold: true
+personality <- read.csv("https://raw.githubusercontent.com/josh-jackson/longitudinal-2022/main/Subject_personality.csv")
+
+personality<- personality %>% 
+  group_by(mapid) %>%
+  arrange(neodate) %>% 
+  dplyr::mutate(wave = seq_len(n())) 
+
+personality$neodate <- as.Date(personality$neodate, origin = "1900-01-01")
+personality.wide <- personality %>% 
+  dplyr::select(mapid, wave, neodate) %>% 
+  spread(wave, neodate) 
+
+personality.wide$wave_1 <- personality.wide$'1'
+personality.wide$wave_2 <- personality.wide$'2'
+personality.wide$wave_3 <- personality.wide$'3'
+personality.wide$wave_4 <- personality.wide$'4'
+personality.wide$wave_5 <- personality.wide$'5'
+
+personality.wide <- personality.wide %>% 
+mutate (w_1 = (wave_1 - wave_1)/365,
+          w_2 = (wave_2 - wave_1)/365,
+          w_3 = (wave_3 - wave_1)/365,
+          w_4 = (wave_4 - wave_1)/365,
+        w_5 = (wave_5 - wave_1)/365)
+
+personality.long <- personality.wide %>% 
+  dplyr::select(mapid, w_1:w_5) %>% 
+  gather(wave, year, -mapid) %>% 
+  separate(wave, c('weeks', 'wave' ), sep="_") %>% 
+ dplyr::select(-weeks) 
+
+personality.long$wave <-  as.numeric(personality.long$wave)
+
+
+personality <- personality %>% 
+   left_join(personality.long, by = c('mapid', 'wave' )) 
+
+personality.s <- personality %>% 
+  group_by(mapid) %>% 
+  tally() %>% 
+   filter(n >=2) 
+
+ personality <- personality %>% 
+   filter(mapid %in% personality.s$mapid)
+
+ personality <- personality %>% 
+  mutate(year = as.numeric(year))
+
+personality <- personality %>% 
+  select(-neodate)
+ 
+
+
+```
+
+
+
+```{r}
+#| code-fold: true
 library(mgcv)
+gam1 <- gam(extraversion ~ s(year), data = personality)
+summary(gam1)
 ```
 
 
 
 
-## types of smoothing functions
+## EDF
 
+- Effective Degrees of Freedom (EDF) represents the complexity or wiggliness of a smooth term. 
+
+- An EDF of 1 indicates a linear relationship, edf of ~2 looks roughly like a quadratic shape. >3 gets more wiggly. 
+
+```{r}
+coef(gam1)
+```
+
+
+-------
+
+```{r}
+#| code-fold: true
+library(marginaleffects)
+plot_predictions(gam1, condition = "year")
+```
+
+
+
+
+
+-------
+
+```{r}
+#| code-fold: true
+library(lme4)
+lm.1<- lmer(extraversion ~ year + I(year^2) + (1 + year | mapid), data=personality)
+plot_predictions(lm.1, condition = "year")
+```
+
+
+------
+
+```{r}
+summary(lm.1)
+```
+
+
+
+## types of smoothing functions
 
 | Basis Type | R Code | Pro and con | Best Use Case |
 |:---|:---|:---|:---|:---|
@@ -883,6 +985,87 @@ library(mgcv)
 | Random Effect | `bs="re"` | Treats variable as random intercept/slope. | Hierarchical models |
 
 
+## thin plate
+
+- Cubic splines can be tricky when data do not exist between knots as they are "local" whereas tp looks at entire dataset at once.  
+- Is focused on distance between data points, $r$, with a basis fucntion of: $r^2 \log(r)$.
+- But this results in # basis functions = datapoints, which make it computationally expensive. 
+- Uses Singular Value Decomposition (SVD) to reduce to the most important functions ~ 10
+
+
+------------
+
+```{r}
+predict(gam1, type = "lpmatrix")
+```
+
+-----------------
+
+```{r}
+
+x_val <- seq(0, 10, length.out = 200)
+df <- data.frame(x = x_val, y = rnorm(200))
+sm_bs <- smoothCon(s(x, bs = "bs", k = 9), data = df, absorb.cons = FALSE)[[1]]
+df_bs <- as.data.frame(sm_bs$X) 
+colnames(df_bs) <- paste0("Basis_", 1:ncol(df_bs))
+df_bs$x <- x_val
+df_bs$Type <- "Cubic B-Spline"
+
+sm_tp <- smoothCon(s(x, bs = "tp", k = 9), data = df, absorb.cons = TRUE)[[1]]
+df_tp <- as.data.frame(sm_tp$X)
+colnames(df_tp) <- paste0("Basis_", 1:ncol(df_tp))
+df_tp$x <- x_val
+df_tp$Type <- "Thin Plate Spline"
+
+mod_tp <- gam(y ~ s(x, bs = "tp", k = 9), data = df)
+mat_tp <- predict(mod_tp, type = "lpmatrix")
+df_tp <- as.data.frame(mat_tp[, -1])
+colnames(df_tp) <- paste0("Basis_", 1:ncol(df_tp))
+df_tp$x <- x_val
+df_tp$Type <- "Thin Plate Spline (Global Waves)"
+
+plot_data <- bind_rows(df_bs, df_tp) %>%
+  pivot_longer(cols = starts_with("Basis_"), 
+               names_to = "Basis_Function", 
+               values_to = "Value")
+
+ggplot(plot_data, aes(x = x, y = Value, color = Basis_Function)) +
+  geom_line(linewidth = 1.2, alpha = 0.8) +
+  facet_wrap(~Type, scales = "free_y", ncol = 1) +
+  labs(title = "B-Splines are local. Thin Plate Splines are global.",
+       x = "X Variable", y = "Raw Basis Function Value") +
+  theme_bw() +
+  theme(legend.position = "none",
+        strip.text = element_text(size = 14, face = "bold"),
+        strip.background = element_rect(fill = "grey90"))
+```
+
+
+
+## Interactions 
+
+Thin Plate are "isotropic" meaning the independent variables are assumed to be on the same scale. So things get tricky with interactions. 
+
+```{r, eval = FALSE}
+
+s(x, z, bs = 'tp')
+
+#tensor product smooths (really just cubic)
+te(x, z) or t2(x, z) or s(x) + s(z) + ti(x, z)
+
+```
+
+
+
+## Random effects and factor smooths
+
+- Based on description, both are applicable for longitudinal models.
+
+- Differences are in the geometry. re penalizes the magnitude while fs penalizes the magnitude and geometry. 
+
+- re: differ in baseline/slope fs: differ in their entire trajectory
+
+- With 4 or less, need to use re. But with large data fitting unique curves with fs may cause computation problems
 
 
 ## Penalized estimation
@@ -891,14 +1074,543 @@ library(mgcv)
 
 $$\mathcal{L}_p = \log(\text{Likelihood})  - \lambda W$$
 
+- Lambda is a penalization parameter and W is our wiggliness parameter. It is the second derivative of our curve. The rate of change of the rate of change
+
+
+----- 
+
 -   In mgcv, a penalization parameter often called lambda uses cross validation to balance over vs under fitting. It modifies the loss function to approximate leave-one-out cross-validation selection.
 
 - As λ increases, the result is a linear fit because any wiggliness will add too much to the loss function. As λ decreases closer to zero, wiggliness is incorporated into the model. 
 
 
+## Longitudinal models
 
+- How unique? 
+
+- Need to think about what we want to vary. Prior we varied intercepts and slopes. But they were relatively low rank so it is easy to think in terms of how people differed in amount
+
+- We now have more options in terms of wiggliness. Can people's shapes be completely different? What about the wiggliness? People's shapes are governed by the fixed effect in our previous models, should that still hold true here? 
+
+
+## Random intercept
+
+```{r}
+gam2 <- gam(extraversion ~ s(year) + s(mapid, bs = "re"), data = personality)
+summary(gam2)
+```
+
+---------
+
+```{r}
+#| code-fold: true
+pred1 <- predictions(gam2, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred1, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .5) 
+```
+
+
+----------
+
+All curves share one global penalty, and partial pooling helps with learning.
+
+```{r}
+coef(gam2)
+```
+
+---------
+
+```{r}
+gam2a <- gam(extraversion ~ year + s(mapid, bs = "re"), data = personality)
+summary(gam2)
+```
+
+
+---------
+
+```{r}
+#| code-fold: true
+pred2a <- predictions(gam2a, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred2a, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .5) 
+```
+
+
+## Random intercept and slope
+
+```{r}
+gam3 <- gam(extraversion ~ s(year) + s(mapid, bs = "re") + s(mapid, year, bs="re"), data = personality)
+summary(gam3)
+```
+
+
+-------
+
+```{r}
+#| code-fold: true
+pred3 <- predictions(gam3, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred3, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .5) 
+```
+
+
+----------
+
+Every subject has a unique curve shape. Factor smooth rather than a random effect smooth. 
+
+```{r}
+## no global effect of year
+gam4 <- gam(extraversion ~  s(year, mapid, bs="fs"), data = personality)
+summary(gam4)
+```
+
+
+---------------------
+
+```{r}
+## global effect of year
+gam5 <-gam(extraversion ~  s(year) + s(year, mapid, bs="fs", m=1), data = personality)
+
+summary(gam5)
+```
+
+-----------
+
+```{r}
+#| code-fold: true
+pred4 <- predictions(gam4, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred4, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .2) 
+```
+
+----------
+
+```{r}
+#| code-fold: true
+pred5 <- predictions(gam5, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred5, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .2) 
+```
+
+
+---------
+
+GAMs penalize the second derivative, shrinking curves toward a straight, flat line. By setting m=1, we penalize the first derivative, which shrinks the individual subject curves toward the global curve. It essentially tells the model: "Make the subjects look like the global average, unless they have strong data proving otherwise."
+
+
+```{r}
+
+gam6 <-gam(extraversion ~  s(mapid, bs="re")+ s(year, by = mapid), data = personality)
+summary(gam6)
+```
+
+----------
+
+```{r}
+#| code-fold: true
+pred6 <- predictions(gam6, newdata = datagrid(mapid = unique, year = 0:12))
+ggplot(pred6, aes(year, estimate, group = mapid)) +
+      geom_line(alpha = .2) 
+```
+
+
+
+------
+
+A factor smooth (bs="fs") forces everyone to share the same penalty ($\lambda$). If you have a dataset where Subject A is highly volatile (needs high wiggliness) but Subject B is incredibly stable (needs high stiffness), the shared penalty will compromise and fit them both poorly.
+
+
+
+---------------
+
+Need more timepoints, and wiggliness
+
+```{r}
+#| code-fold: true
+set.seed(74) 
+n_subjects <- 20
+n_timepoints <- 10
+df <- expand.grid(
+  time = 1:n_timepoints,
+  id = factor(1:n_subjects)
+)
+
+subjects <- data.frame(
+  id = factor(1:n_subjects),
+  Profile = c(rep("Smooth", 10), rep("Volatile", 10)),
+  Base_Int = rnorm(n_subjects, mean = 50, sd = 10),
+  Base_Slope = rnorm(n_subjects, mean = 1, sd = 2),
+  Wiggle_Amp = c(rep(0, 10), runif(10, 8, 15)),   
+  Wiggle_Freq = c(rep(0, 10), runif(10, 1.2, 2.5)) 
+)
+
+data.sim <- df %>%
+  left_join(subjects, by = "id") %>%
+  mutate(
+    Y = Base_Int + (Base_Slope * time) + (Wiggle_Amp * sin(Wiggle_Freq * time)) + rnorm(n(), 0, 2)
+  )
+
+ggplot(data.sim, aes(x = time, y = Y, group = id, color = Profile)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~Profile) +
+  labs(x = "Wave", y = "DV") +
+  theme_bw() +
+  scale_x_continuous(breaks = 1:10) +
+  theme(legend.position = "none")
+```
+
+
+## Random intercept equivalent
+
+```{r}
+#| code-fold: true
+gam7 <- gam(Y ~ s(time) + s(id, bs = "re"), data = data.sim)
+summary(gam7)
+```
+
+
+----------------
+
+```{r}
+#| code-fold: true
+pred7_i <- predictions(gam7, newdata = datagrid(id = unique, time = 1:10))
+pred7_g <- predictions(gam7, newdata = datagrid(id = unique, time = 1:10), by = "time")
+
+ggplot() +
+  geom_line(data = pred7_i, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred7_g, aes(x = time, y = estimate), 
+            color = "blue", linewidth = 1.5) 
+
+```
+
+
+
+## Random slope equivalent
+
+```{r}
+#| code-fold: true
+gam8 <- gam(Y ~ s(time) + s(id, bs = "re") + s(time, id, bs="re"), data = data.sim)
+summary(gam8)
+```
+
+----------------
+
+Notice, similar to the latent basis, everyone shares a similar global trend shape. 
+
+```{r}
+#| code-fold: true
+pred8_i <- predictions(gam8, newdata = datagrid(id = unique, time = 1:10))
+pred8_g <- predictions(gam8, newdata = datagrid(id = unique, time = 1:10), by = "time")
+
+ggplot() +
+  geom_line(data = pred8_i, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred8_g, aes(x = time, y = estimate), 
+            color = "blue", linewidth = 1.5) 
+
+```
+
+
+## factor smooths
+
+- The basis function coefficients partially pooled toward the mean
+
+- If the group overall is fairly smooth, $\lambda$ goes up. This shared penalty acts like a gravitational pull, dragging everyone's wild individual wiggles back toward the global trajectory.
+
+
+## unique trajectories, but shared smooth
+
+```{r}
+#| code-fold: true
+gam9 <- gam(Y ~ s(time) + s(time, id, bs="fs", m=1, k=8), data = data.sim)
+summary(gam9)
+```
+
+----------
+
+
+```{r}
+#| code-fold: true
+pred9_i <- predictions(gam9, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
+pred9_g <- predictions(gam9, newdata = datagrid(id = unique, time = 1:10), by = "time")
+
+ggplot() +
+  geom_line(data = pred9_i, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred9_g, aes(x = time, y = estimate), 
+            color = "blue", linewidth = 1.5) 
+
+```
+
+
+## Pooling with FS
+
+
+```{r}
+#| code-fold: true
+set.seed(123)
+time_seq <- seq(0, 10, length.out = 50)
+df_normal <- expand.grid(Time = time_seq, ID = factor(1:18))
+df_normal$True_Y <- 2 * df_normal$Time 
+df_normal$Y <- df_normal$True_Y + rnorm(nrow(df_normal), 0, 2)
+
+wild_trajectory <- function(t) { 2 * t + 6 * sin(1.5 * t) }
+
+df_high <- data.frame(Time = time_seq, ID = factor("High_Data"))
+df_high$True_Y <- wild_trajectory(df_high$Time)
+df_high$Y <- df_high$True_Y + rnorm(50, 0, 1.5)
+
+df_low <- data.frame(Time = c(2, 5, 8), ID = factor("Low_Data"))
+df_low$True_Y <- wild_trajectory(df_low$Time)
+df_low$Y <- df_low$True_Y + rnorm(3, 0, 1.5)
+
+df_sim <- bind_rows(df_normal, df_high, df_low)
+df_sim$ID <- as.factor(df_sim$ID)
+
+mod_tug <- gam(Y ~ s(Time) + s(Time, ID, bs="fs", m=1), data = df_sim)
+
+global_grid <- data.frame(Time = time_seq, ID = factor("High_Data")) 
+global_grid$Pred_Global <- predict(mod_tug, newdata = global_grid, exclude = "s(Time,ID)")
+
+specials_grid <- expand.grid(Time = time_seq, ID = factor(c("High_Data", "Low_Data")))
+specials_grid$Pred_Individual <- predict(mod_tug, newdata = specials_grid)
+specials_grid$True_Trajectory <- wild_trajectory(specials_grid$Time)
+
+
+plot_data <- specials_grid %>% left_join(global_grid %>% select(Time, Pred_Global), by = "Time")
+raw_points <- df_sim %>% filter(ID %in% c("High_Data", "Low_Data"))
+
+
+summary(mod_tug)
+
+```
+
+
+
+----------
+
+
+```{r}
+#| code-fold: true
+predm_h <- predictions(mod_tug, newdata = datagrid(ID = "High_Data", Time = seq(1, 10, length.out = 100)))
+predm_l <- predictions(mod_tug, newdata = datagrid(ID = "Low_Data", Time = seq(1, 10, length.out = 100)))
+predm_g <- predictions(mod_tug, newdata = datagrid(ID = unique, Time = 1:10), by = "Time")
+
+ggplot() +
+  geom_line(data = predm_h, aes(x = Time, y = estimate, group = ID), 
+            alpha = 0.4) +
+   geom_line(data = predm_l, aes(x = Time, y = estimate, group = ID), 
+            alpha = 0.4) +
+  geom_line(data = predm_g, aes(x = Time, y = estimate), 
+            color = "blue", linewidth = 1.5) 
+
+```
 
 
 ------------
+
+```{r}
+#| code-fold: true
+ggplot(plot_data, aes(x = Time)) +
+  geom_line(aes(y = True_Trajectory), color = "blue", linetype = "dashed", linewidth = 1) +
+  geom_line(aes(y = Pred_Global), color = "black", linetype = "dotted", linewidth = 1.2) +
+  geom_line(aes(y = Pred_Individual), color = "firebrick", linewidth = 1.5) +
+  geom_point(data = raw_points, aes(y = Y), size = 3, color = "black") +
+  facet_wrap(~ID) +
+  labs(title = "The Shrinkage Tug-of-War: Likelihood vs. Penalty",
+       subtitle = "Blue Dashed = True Path | Black Dotted = Global Average | Solid Red = GAM Prediction",
+       x = "Time", y = "Outcome") +
+  theme_bw() +
+  theme(strip.text = element_text(size = 14, face = "bold"))
+```
+
+
+## Factor smooths vs random effects
+
+The model allows the timing and shape of the change to be completely unique to the individual. 
+
+We can also directly compare
+
+```{r}
+anova(gam8, gam9)
+```
+```{r}
+AIC(gam8, gam9)
+```
+
+
+
+## by interactions
+
+No partial pooling, no learning across people. 
+
+Each curve is still a penalized spline, so as to prevent some overfitting
+
+--------------
+
+```{r}
+#| code-fold: true
+gam10 <- gam(Y ~ s(id, bs = "re") + s(time, by = id, k=5), data = data.sim)
+summary(gam10)
+```
+
+
+------------
+
+```{r}
+#| code-fold: true
+pred10_i <- predictions(gam10, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
+pred10_g <- predictions(gam10, newdata = datagrid(id = unique, time = 1:10), by = "time")
+
+ggplot() +
+  geom_line(data = pred10_i, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred10_g, aes(x = time, y = estimate), 
+            color = "blue", linewidth = 1.5) 
+
+```
+
+
+-------------
+
+
+```{r}
+#| code-fold: true
+pred10_s <- predictions(gam10, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
+pred10_w <- predictions(gam10, newdata = datagrid(id = c(11:20), time = 1:10))
+
+
+ggplot() +
+  geom_line(data = pred10_s, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred10_w, aes(x = time, y = estimate, group = id), 
+            color = "blue") 
+
+```
+
+
+
+## increase knots
+
+```{r}
+#| code-fold: true
+gam11 <- gam(Y ~ s(id, bs = "re") + s(time, by = id, k=8), data = data.sim)
+summary(gam11)
+```
+
+
+
+-------------
+
+
+```{r}
+#| code-fold: true
+pred11_s <- predictions(gam11, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
+pred11_w <- predictions(gam11, newdata = datagrid(id = c(11:20), time = seq(1, 10, length.out = 100)))
+
+
+ggplot() +
+  geom_line(data = pred11_s, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred11_w, aes(x = time, y = estimate, group = id), 
+            color = "blue") 
+
+```
+
+---------
+
+default number of knots is 10. Because we are using by, effectively fitting separate models for each trajectory, they are very susceptible to number of knots and overfitting. 
+
+```{r}
+
+#| code-fold: true
+gam12 <- gam(Y ~ s(id, bs = "re") + s(time, by = id), data = data.sim)
+summary(gam12)
+```
+
+
+---------------
+
+```{r}
+#| code-fold: true
+pred12_s <- predictions(gam12, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
+pred12_w <- predictions(gam12, newdata = datagrid(id = c(11:20), time = seq(1, 10, length.out = 100)))
+
+
+ggplot() +
+  geom_line(data = pred12_s, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred12_w, aes(x = time, y = estimate, group = id), 
+            color = "blue") 
+
+```
+
+
+## Is it wiggliness or is it noise? 
+
+- Thus far we have been working with gams which are different from multi-level or hierarchical gams. When would we need those? When we want to relax the assumption of zero correlation across time points. 
+
+- If you ignore this assumption, your model will think it has more independent pieces of information than it actually does. The penalty ($\lambda$) will be too loose, the curves will overfit the noise. 
+
+- Time-series data has "memory," in that observations tend to be correleated such that if you overshoot your predicted trajectory at one timepoint, you are likely to be at the next timepoint. 
+
+-------
+
+```{r}
+data.sim <- data.sim %>%
+  arrange(id, time) %>%
+  mutate(start_point = time == min(time))
+
+mod_ar1 <- bam(Y ~ s(time) + s(time, id, bs="fs", m=1, k=7),
+               data = data.sim, 
+               rho = 0.4,                 # The AR1 correlation parameter
+               AR.start = start_point,    # Resets the AR1 process for each new subject
+               method = "fREML")
+summary(mod_ar1)
+```
+
+
+
+--------------
+
+$$V = \sigma^2 \begin{bmatrix} 1 & \rho & \rho^2 & \rho^3 \\ \rho & 1 & \rho & \rho^2 \\ \rho^2 & \rho & 1 & \rho \\ \rho^3 & \rho^2 & \rho & 1 \end{bmatrix}$$
+
+
+--------------
+
+
+
+```{r}
+#| code-fold: true
+pred13_s <- predictions(mod_ar1, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
+pred13_w <- predictions(mod_ar1, newdata = datagrid(id = c(11:20), time = seq(1, 10, length.out = 100)))
+
+
+ggplot() +
+  geom_line(data = pred13_s, aes(x = time, y = estimate, group = id), 
+            alpha = 0.4) +
+  geom_line(data = pred13_w, aes(x = time, y = estimate, group = id), 
+            color = "blue") 
+
+```
+
+
+
+--------
+
+
+```{r}
+AIC(gam9,mod_ar1)
+```
+
+```{r}
+anova(gam9,mod_ar1)
+```
+
+
+
+
 
 
