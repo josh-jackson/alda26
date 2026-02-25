@@ -1075,7 +1075,12 @@ te(x, z) or t2(x, z) or s(x) + s(z) + ti(x, z)
 
 -   One concern is that we overfit our data and make our lines too wiggly. We can overcome this via penalized estimation, basically balancing minimizing residuals with out of sample prediction.
 
+
 $$\mathcal{L}_p = \log(\text{Likelihood})  - \lambda W$$
+
+$$\text{Penalized Likelihood} = \text{Data Fit} - (\lambda \times \text{Wiggliness})$$
+
+
 
 - Lambda is a penalization parameter and W is our wiggliness parameter. It is the second derivative of our curve. The rate of change of the rate of change
 
@@ -1345,6 +1350,7 @@ ggplot() +
 
 ## Pooling with FS
 
+Dataset with 18 people, 16 with a linear effect, 2 people with wiggly but 1 person has 50 obs while another has 3 obs. 
 
 ```{r}
 #| code-fold: true
@@ -1417,12 +1423,100 @@ ggplot(plot_data, aes(x = Time)) +
   geom_line(aes(y = Pred_Individual), color = "firebrick", linewidth = 1.5) +
   geom_point(data = raw_points, aes(y = Y), size = 3, color = "black") +
   facet_wrap(~ID) +
-  labs(title = "The Shrinkage Tug-of-War: Likelihood vs. Penalty",
+  labs(title = "The Shrinkage Tug-of-War",
        subtitle = "Blue Dashed = True Path | Black Dotted = Global Average | Solid Red = GAM Prediction",
        x = "Time", y = "Outcome") +
   theme_bw() +
   theme(strip.text = element_text(size = 14, face = "bold"))
 ```
+
+
+
+
+
+## EDF measures the capacity to wiggle, not the realized shape
+
+```{r}
+#| code-fold: true
+all_edfs <- mod_tug$edf
+fs_edfs <- all_edfs[grep("s\\(Time,ID\\)", names(all_edfs))]
+subject_edfs <- colSums(matrix(fs_edfs, nrow = 9)) 
+edf_table <- data.frame(
+  id = factor(1:20),
+  Profile = c(rep("normal", 18), rep("wiggly", 2)),
+  EDF = subject_edfs
+)
+
+
+ggplot(edf_table, aes(x = id, y = EDF, fill = Profile)) +
+  geom_col(color = "black") +
+  geom_hline(yintercept = 1, linetype = "dashed", linewidth = 1) +
+  annotate("text", x = 5, y = 1.5, label = "EDF = 1") +
+  scale_y_continuous(breaks = 1:8, limits = c(0, 8)) +
+  theme_bw() +
+  labs(title = "How Much 'Wiggliness Budget' Did Each Subject Cost?",
+       x = "Subject ID", y = "Effective Degrees of Freedom (EDF)")
+
+
+```
+
+
+## coefficients in factor smooth models
+
+Like random effect, we have coefs per person per time. 
+
+```{r}
+#| code-fold: true
+all_coefs <- coef(mod_tug)
+all_coefs
+```
+
+
+
+## large basis functions -> wigglier
+
+```{r}
+#| code-fold: true
+fs_coefs <- all_coefs[grep("s\\(Time,ID\\)", names(all_coefs))]
+coef_df <- data.frame(
+  Subject = rep(factor(1:20), each = 9),
+  Basis_Function = rep(1:9, times = 20),
+  Coefficient = fs_coefs
+)
+
+cat("Subject 1 (Linear Line):\n")
+print(round(coef_df$Coefficient[coef_df$Subject == "2"], 3))
+
+cat("Subject 19 (Wiggly Line):\n")
+print(round(coef_df$Coefficient[coef_df$Subject == "19"], 3))
+
+cat("\nSubject 20 (Wiggly line, little N):\n")
+print(round(coef_df$Coefficient[coef_df$Subject == "20"], 3))
+```
+
+
+```{r}
+ggplot(coef_df, aes(x = Subject, y = Coefficient, color = Subject)) +
+  geom_hline(yintercept = 0, color = "black", linewidth = 1.2) +
+  geom_jitter(width = 0.2, size = 3, alpha = 0.7) +
+  theme_bw() +
+  labs(x = "Subject", 
+       y = "Coefficients") +
+  theme(legend.position = "none",
+        text = element_text(size = 14))
+```
+
+
+
+## shared penalization
+
+The final shape is a balance between the shared $\lambda$ and the Individual Likelihood. 
+
+$$\hat{\text{Subject Scores}} = \text{Individual Likelihood} - (\lambda_{shared} \times \text{Deviation from Mean})$$
+
+- If individual likelihood is very weak when the model tries to move their coefficients away from zero to follow their data, the shared $\lambda$ tax is immediately too expensive. Their coefficients are heavily penalized (shrunk) to zero.
+
+- If individual likelihood is large, the likelihood is high, and the gain in fit easily pays the shared $\lambda$ tax. Their coefficients are allowed to stay large.
 
 
 ## Factor smooths vs random effects
@@ -1442,9 +1536,9 @@ AIC(gam8, gam9)
 
 ## by interactions
 
-No partial pooling, no learning across people. 
+No partial pooling, no learning across people, no shared penalization. 
 
-Each curve is still a penalized spline, so as to prevent some overfitting
+Each curve is still a penalized spline, so as still to prevent some overfitting, but it is entirely person specific
 
 --------------
 
