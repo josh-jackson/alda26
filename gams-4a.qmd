@@ -1460,7 +1460,7 @@ summary(gam10)
 ```{r}
 #| code-fold: true
 pred10_i <- predictions(gam10, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)))
-pred10_g <- predictions(gam10, newdata = datagrid(id = unique, time = 1:10), by = "time")
+pred10_g <- predictions(gam10, newdata = datagrid(id = unique, time = seq(1, 10, length.out = 100)), by = "time")
 
 ggplot() +
   geom_line(data = pred10_i, aes(x = time, y = estimate, group = id), 
@@ -1476,12 +1476,12 @@ ggplot() +
 
 ```{r}
 #| code-fold: true
-pred10_s <- predictions(gam10, newdata = datagrid(id = c(1:10), time = seq(1, 10, length.out = 100)))
-pred10_w <- predictions(gam10, newdata = datagrid(id = c(11:20), time = 1:10))
+pred10_s <- predictions(gam10, newdata = datagrid(id = factor(1:10), time = seq(1, 10, length.out = 100)))
+pred10_w <- predictions(gam10, newdata = datagrid(id = factor(11:20), time = seq(1, 10, length.out = 100)))
 
 
 ggplot() +
-  geom_line(data = pred10_s, aes(x = time, y = estimate, group = id), 
+  geom_line(data = pred10_s, aes(time, estimate, group = id), 
             alpha = 0.4) +
   geom_line(data = pred10_w, aes(x = time, y = estimate, group = id), 
             color = "blue") 
