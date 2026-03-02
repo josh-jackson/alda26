@@ -1824,7 +1824,7 @@
     "href": "conditional-5.html#interpretation-of-random-effects",
     "title": "conditional",
     "section": "Interpretation of random effects",
-    "text": "Interpretation of random effects\n\nOne thing to keep in mind is that we are now changing the meaning of the random effect. Now that we have a predictor in the model, the \\(U_{0j}\\) is the person specific deviation from the group predicted intercept, not the grand mean intercept.\n\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\]\nLevel 2:\n\\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\]"
+    "text": "Interpretation of random effects\n\nOne thing to keep in mind is that we are now changing the meaning of the random effect. \\(U_{0j}\\) is the person specific deviation from the group predicted intercept.\n\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\]\nLevel 2:\n\\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\]"
   },
   {
     "objectID": "conditional-5.html#does-your-covariance-structure-change",
@@ -1845,35 +1845,35 @@
     "href": "conditional-5.html#slope-and-intercept-group-predictors",
     "title": "conditional",
     "section": "Slope and Intercept Group Predictors",
-    "text": "Slope and Intercept Group Predictors\nPredicting the intercept only can only answer static questions, not about change.\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\]\nLevel 2:\n\\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  \\gamma_{11}G_{i} +U_{1i}\\]\nSimilar to before, the interpretation of \\(U_{1i}\\) changes. The term is now what is left over after accounting for group differences in the mean slope."
+    "text": "Slope and Intercept Group Predictors\nPredicting the intercept only can only answer static questions, not about change.\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\]\nLevel 2:\n\\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  \\gamma_{11}G_{i} +U_{1i}\\]\nSimilar to before, the interpretation of \\(U_{1i}\\) changes."
   },
   {
     "objectID": "conditional-5.html#cross-level-interactions",
     "href": "conditional-5.html#cross-level-interactions",
     "title": "conditional",
     "section": "cross level interactions",
-    "text": "cross level interactions\nLevel 1:\n\\[{Y}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\varepsilon_{ti}\\]\nLevel 2:\n\\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}G_{i} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  \\gamma_{11}G_{i} +U_{1i}\\]\nCombined: \\[{Y}_{ti} = \\gamma_{00} + \\gamma_{01}G_{i}+  \\gamma_{10} (Time_{ti}) + \\gamma_{11}(G_{i}*Time_{ti}) + \\] \\[ U_{0i} + U_{1i}(Time_{ti}) + \\varepsilon_{ti}\\]"
+    "text": "cross level interactions\nCombined: \\[{Y}_{ti} = \\gamma_{00} + \\gamma_{01}G_{i}+  \\gamma_{10} (Time_{ti}) + \\gamma_{11}(G_{i}*Time_{ti}) + \\] \\[ U_{0i} + U_{1i}(Time_{ti}) + \\varepsilon_{ti}\\]"
   },
   {
     "objectID": "conditional-5.html#interpretation-of-lower-order-terms",
     "href": "conditional-5.html#interpretation-of-lower-order-terms",
     "title": "conditional",
     "section": "interpretation of lower order terms",
-    "text": "interpretation of lower order terms\nCombined: \\[{Y}_{ti} = \\gamma_{00} + \\gamma_{01}G_{i}+  \\gamma_{10} (Time_{ti}) + \\gamma_{11}(G_{i}*Time_{ti}) + \\] \\[ U_{0i} + U_{1i}(Time_{ti}) + \\varepsilon_{ti}\\]\nAs with regression, the lower order terms are now conditional on the higher order interaction.\n\\(\\gamma_{10}\\), the fixed effect representing our slope is now the simple slope for group = 0\n\\(\\gamma_{01}\\), the fixed effect for group is the difference between groups when time = 0, e.g. the intercept\n\\(\\gamma_{00}\\) is the intercept, it is the value for when our predictors are zero."
+    "text": "interpretation of lower order terms\nCombined: \\[{Y}_{ti} = \\gamma_{00} + \\gamma_{01}G_{i}+  \\gamma_{10} (Time_{ti}) + \\gamma_{11}(G_{i}*Time_{ti}) + \\] \\[ U_{0i} + U_{1i}(Time_{ti}) + \\varepsilon_{ti}\\]\n\\(\\gamma_{10}\\), the fixed effect representing our slope is now the simple slope for group = 0\n\\(\\gamma_{01}\\), the fixed effect for group is the difference between groups when time = 0, e.g. the intercept\n\\(\\gamma_{00}\\) is the intercept, it is the value for when our predictors are zero."
   },
   {
     "objectID": "conditional-5.html#residual-structure",
     "href": "conditional-5.html#residual-structure",
     "title": "conditional",
     "section": "residual structure",
-    "text": "residual structure\nLevel 2 covariance matrix\n\\[\\begin{pmatrix} {U}_{0j} \\\\ {U}_{1j} \\end{pmatrix} \\sim\\mathcal{N} \\begin{pmatrix} 0, \\tau_{00}^{2} & \\tau_{01}\\\\  0,  \\tau_{01} & \\tau_{10}^{2} \\end{pmatrix}\\]\nHow does your variance-covariance matrix change?\nLevel 1 residual variance \\[{R}_{ij} \\sim \\mathcal{N}(0, \\sigma^{2})\\]\nHow does your residual change relative to a model without group effects? Can you graph conceptually what this now captures?"
+    "text": "residual structure\nLevel 2 covariance matrix\n\\[\\begin{pmatrix} {U}_{0i} \\\\ {U}_{1i} \\end{pmatrix} \\sim\\mathcal{N} \\begin{pmatrix} 0, \\tau_{00}^{2} & \\tau_{01}\\\\  0,  \\tau_{01} & \\tau_{10}^{2} \\end{pmatrix}\\]\nHow does your variance-covariance matrix change?\nLevel 1 residual variance \\[{R}_{ti} \\sim \\mathcal{N}(0, \\sigma^{2})\\]\nHow does your residual change relative to a model without group effects?"
   },
   {
     "objectID": "conditional-5.html#predictive-equation",
     "href": "conditional-5.html#predictive-equation",
     "title": "conditional",
     "section": "predictive equation",
-    "text": "predictive equation\nThinking about the equation as a predictive engine will help us later with graphing\nAlternative combined \\[{Y}_{ti} = [\\gamma_{00} + U_{0i} +\\gamma_{01}G_{i}] + [(\\gamma_{10}  + \\gamma_{11}G_{i}+  U_{1i})(Time_{ti})] + \\varepsilon_{ti}\\]\nThis is just rearranged so you can see that different groups have different intercepts and slopes\n\\[\\hat{Y}_{ti} = [\\gamma_{00} +\\gamma_{01}G_{i}] + [(\\gamma_{10}  + \\gamma_{11}G_{i})(Time_{ti})]\\]\nNotice how when G = 0, the equation simplifies:\n\\[\\hat{Y}_{ti} = \\gamma_{00} + \\gamma_{10} (Time_{ti})\\]"
+    "text": "predictive equation\nAlternative combined \\[{Y}_{ti} = [\\gamma_{00} + U_{0i} +\\gamma_{01}G_{i}] + [(\\gamma_{10}  + \\gamma_{11}G_{i}+  U_{1i})(Time_{ti})] + \\varepsilon_{ti}\\]\nThis is just rearranged so you can see that different groups have different intercepts and slopes\n\\[\\hat{Y}_{ti} = [\\gamma_{00} +\\gamma_{01}G_{i}] + [(\\gamma_{10}  + \\gamma_{11}G_{i})(Time_{ti})]\\]\nNotice how when G = 0, the equation simplifies:\n\\[\\hat{Y}_{ti} = \\gamma_{00} + \\gamma_{10} (Time_{ti})\\]"
   },
   {
     "objectID": "conditional-5.html#plotting",
@@ -1901,7 +1901,7 @@
     "href": "conditional-5.html#equations-for-plotting",
     "title": "conditional",
     "section": "Equations for plotting",
-    "text": "Equations for plotting\nThe same logic for plotting continuous variables except this time we have to choose the values for simple slopes\n\\[\\hat{Y}_{ti} = [\\gamma_{00} + \\gamma_{01}C_{i}]+  [\\gamma_{10} + \\gamma_{11}C_{i}]*Time_{ti}\\]\nAssuming C is standardized: -1sd \\[\\hat{Y}_{ti} = [\\gamma_{00} +(\\gamma_{01}*-1)] + [\\gamma_{10}  + (\\gamma_{11}*-1)]*Time_{ti}\\]\nMean \\[\\hat{Y}_{ti} = \\gamma_{00} + \\gamma_{10} * (Time_{ti})\\]\n+1sd \\[\\hat{Y}_{ti} = [\\gamma_{00} +\\gamma_{01}] + [\\gamma_{10}  + \\gamma_{11}]*Time_{ti}\\]"
+    "text": "Equations for plotting\n\\[\\hat{Y}_{ti} = [\\gamma_{00} + \\gamma_{01}C_{i}]+  [\\gamma_{10} + \\gamma_{11}C_{i}]*Time_{ti}\\]\nAssuming C is standardized: -1sd \\[\\hat{Y}_{ti} = [\\gamma_{00} +(\\gamma_{01}*-1)] + [\\gamma_{10}  + (\\gamma_{11}*-1)]*Time_{ti}\\]\nMean \\[\\hat{Y}_{ti} = \\gamma_{00} + \\gamma_{10} * (Time_{ti})\\]\n+1sd \\[\\hat{Y}_{ti} = [\\gamma_{00} +\\gamma_{01}] + [\\gamma_{10}  + \\gamma_{11}]*Time_{ti}\\]"
   },
   {
     "objectID": "conditional-5.html#individual-level-trajectories",
@@ -1999,35 +1999,35 @@
     "href": "conditional-5.html#introducing-a-random-slope-for-a-tvc",
     "title": "conditional",
     "section": "Introducing a random slope for a TVC",
-    "text": "Introducing a random slope for a TVC\nPerson specific residuals make the interpretation of parameters a little more difficult as the model says that the gap between exercise and not exercise is the same for everyone. Should we allow it to be this way?\nlevel 1: \\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\beta_{2i}Exercise_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]\n\\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\]"
+    "text": "Introducing a random slope for a TVC\nRandom effect says that the gap between exercise and not exercise differs across people.\nlevel 1: \\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\beta_{2i}Exercise_{ti} + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} +   U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]\n\\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\]"
   },
   {
     "objectID": "conditional-5.html#where-does-the-variance-go",
     "href": "conditional-5.html#where-does-the-variance-go",
     "title": "conditional",
     "section": "Where does the variance go?",
-    "text": "Where does the variance go?\nCompared to time invariant (level 2) predictors, tvc/level 1 predictors are likely to explain variance level 1 and level 2 variance terms. This is because level 1 predictors can include both level 1 and level 2 information.\nTypically level 2 predictors tend to only reduce level 2 variance. It is possible, however, that including a level 1 predictor will increase the variance in level 2 variance components."
+    "text": "Where does the variance go?\nCompared to time invariant (level 2) predictors, tvc/level 1 predictors are likely to explain variance level 1 and level 2 variance terms. This is because level 1 predictors can include both level 1 and level 2 information.\nTypically level 2 predictors tend to only reduce level 2 variance. It is possible, however, that including a level 1 predictor will increase the variance in level 2 variance components.\n“Controlling for a level 1 makes the slope individual differences clearer”"
   },
   {
     "objectID": "conditional-5.html#interactions-among-level-1-variables",
     "href": "conditional-5.html#interactions-among-level-1-variables",
     "title": "conditional",
     "section": "Interactions among level 1 variables",
-    "text": "Interactions among level 1 variables\nCouldn’t exercise levels influence the slope of health? The previous models constrained the slopes to be the same, saying that people differ on level when exercising vs not but not on rate of change.\n\\[{Health}_{ti} =  [\\gamma_{00} +   \\gamma_{10}Time_{ti}   + \\gamma_{20}Exercise_{ti} + \\gamma_{30}TimeXExercise_{ti}]\\] \\[+ [ U_{0i}  + U_{1i}Time_{ti}+ \\varepsilon_{ti}]\\]\n\nHow could you visualize this model?\nHow do you interpret each of the terms (knowing what you know about interactions)?\nHow would all of this change if our level 1 variable was continuous?"
+    "text": "Interactions among level 1 variables\nCouldn’t exercise levels influence the slope of health?\n\\[{Health}_{ti} =  [\\gamma_{00} +   \\gamma_{10}Time_{ti}   + \\gamma_{20}Exercise_{ti} + \\gamma_{30}TimeXExercise_{ti}]\\] \\[+ [ U_{0i}  + U_{1i}Time_{ti}+ \\varepsilon_{ti}]\\]\n\nHow could you visualize this model?\nHow do you interpret each of the terms?\nHow would all of this change if our level 1 variable was continuous?"
   },
   {
     "objectID": "conditional-5.html#centering-redux",
     "href": "conditional-5.html#centering-redux",
     "title": "conditional",
     "section": "Centering redux",
-    "text": "Centering redux\n\nIf we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.\nI could exercise more than the average person (between person) but my research question is about what happens when I exercise a lot, does that correspond to health. Because my excercise level varies there is within person information.\nIt is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier (a between person question that could be addressed with cross sectional data) or is it because when someone exercises they feel healthier.\nHow is \\(\\gamma_{20}Exercise_{ti}\\) interpreted?"
+    "text": "Centering redux\n\nIf we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.\nI could exercise more than the average person (between person) but my research question is about what happens when I exercise a lot. Because my level varies there is within person information.\nIt is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.\nHow is \\(\\gamma_{20}Exercise_{ti}\\) interpreted?"
   },
   {
     "objectID": "conditional-5.html#person-mean-centering",
     "href": "conditional-5.html#person-mean-centering",
     "title": "conditional",
     "section": "person mean centering",
-    "text": "person mean centering\n\nTypically for level 1 we will want to within person-mean center to help with the issue of “smushed” variance. Especially when you are working with level 1 interactions, centering is important to interpret your lower order terms.\nHowever, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels, what happens when you exercise more or less.\nIf you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed."
+    "text": "person mean centering\n\nTypically for level 1 we will want to within person-mean center to help with the issue of “smushed” variance.\nHowever, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels.\nIf you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed."
   },
   {
     "objectID": "conditional-5.html#level-1-intensive-vs-long-term",
@@ -2126,5 +2126,12 @@
     "title": "conditional",
     "section": "time as a predictor of sigma",
     "text": "time as a predictor of sigma\n\nmelsm.3 &lt;-\n  brm(family = gaussian,\n      bf(N_A.std ~ 1 + day01 + (1 + day01 |i| record_id),\n         sigma ~ 1 + day01 + (1 + day01 |i| record_id)),\n      prior = c(prior(normal(0, 0.2), class = Intercept),\n                prior(normal(0, 1), class = b),\n                prior(exponential(1), class = sd),\n                prior(normal(0, 1), class = Intercept, dpar = sigma),\n                prior(normal(0, 1), class = b, dpar = sigma),\n                prior(exponential(1), class = sd, dpar = sigma),\n                prior(lkj(2), class = cor)),\n      iter = 3000, warmup = 1000, chains = 4, cores = 4,\n      data = melsm,\n      backend = \"cmdstanr\",\n      file = \"melsm.3\")"
+  },
+  {
+    "objectID": "conditional-5.html#seperating-between-and-within",
+    "href": "conditional-5.html#seperating-between-and-within",
+    "title": "conditional",
+    "section": "Seperating between and within",
+    "text": "Seperating between and within\nWe will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level\n\\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\beta_{2i}(Exercise_{ti}-\\overline{Exercise_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Exercise_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]\n\\[{\\beta}_{2i} = \\gamma_{20}\\]"
   }
 ]

@@ -425,7 +425,7 @@
 <section id="interpretation-of-random-effects" class="slide level2">
 <h2>Interpretation of random effects</h2>
 <ul>
-<li>One thing to keep in mind is that we are now changing the meaning of the random effect. Now that we have a predictor in the model, the <span class="math inline">\(U_{0j}\)</span> is the person specific deviation from the group predicted intercept, not the grand mean intercept.</li>
+<li>One thing to keep in mind is that we are now changing the meaning of the random effect. <span class="math inline">\(U_{0j}\)</span> is the person specific deviation from the group predicted intercept.</li>
 </ul>
 <p>Level 1:<br>
 <span class="math display">\[{Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \varepsilon_{ti}\]</span></p>
@@ -465,15 +465,10 @@
 <p>Level 2:</p>
 <p><span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}\]</span></p>
 <p><span class="math display">\[{\beta}_{1i} = \gamma_{10} +  \gamma_{11}G_{i} +U_{1i}\]</span></p>
-<p>Similar to before, the interpretation of <span class="math inline">\(U_{1i}\)</span> changes. The term is now what is left over after accounting for group differences in the mean slope.</p>
+<p>Similar to before, the interpretation of <span class="math inline">\(U_{1i}\)</span> changes.</p>
 </section>
 <section id="cross-level-interactions" class="slide level2">
 <h2>cross level interactions</h2>
-<p>Level 1:<br>
-<span class="math display">\[{Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \varepsilon_{ti}\]</span></p>
-<p>Level 2:</p>
-<p><span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}\]</span></p>
-<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} +  \gamma_{11}G_{i} +U_{1i}\]</span></p>
 <p>Combined: <span class="math display">\[{Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (Time_{ti}) + \gamma_{11}(G_{i}*Time_{ti}) + \]</span> <span class="math display">\[ U_{0i} + U_{1i}(Time_{ti}) + \varepsilon_{ti}\]</span></p>
 </section>
 <section class="slide level2">
@@ -483,7 +478,6 @@
 <section id="interpretation-of-lower-order-terms" class="slide level2">
 <h2>interpretation of lower order terms</h2>
 <p>Combined: <span class="math display">\[{Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (Time_{ti}) + \gamma_{11}(G_{i}*Time_{ti}) + \]</span> <span class="math display">\[ U_{0i} + U_{1i}(Time_{ti}) + \varepsilon_{ti}\]</span></p>
-<p>As with regression, the lower order terms are now conditional on the higher order interaction.</p>
 <p><span class="math inline">\(\gamma_{10}\)</span>, the fixed effect representing our slope is now the simple slope for group = 0</p>
 <p><span class="math inline">\(\gamma_{01}\)</span>, the fixed effect for group is the difference between groups when time = 0, e.g.&nbsp;the intercept</p>
 <p><span class="math inline">\(\gamma_{00}\)</span> is the intercept, it is the value for when our predictors are zero.</p>
@@ -491,14 +485,13 @@
 <section id="residual-structure" class="slide level2">
 <h2>residual structure</h2>
 <p>Level 2 covariance matrix</p>
-<p><span class="math display">\[\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix} \sim\mathcal{N} \begin{pmatrix} 0, \tau_{00}^{2} &amp; \tau_{01}\\  0,  \tau_{01} &amp; \tau_{10}^{2} \end{pmatrix}\]</span></p>
+<p><span class="math display">\[\begin{pmatrix} {U}_{0i} \\ {U}_{1i} \end{pmatrix} \sim\mathcal{N} \begin{pmatrix} 0, \tau_{00}^{2} &amp; \tau_{01}\\  0,  \tau_{01} &amp; \tau_{10}^{2} \end{pmatrix}\]</span></p>
 <p>How does your variance-covariance matrix change?</p>
-<p>Level 1 residual variance <span class="math display">\[{R}_{ij} \sim \mathcal{N}(0, \sigma^{2})\]</span></p>
-<p>How does your residual change relative to a model without group effects? Can you graph conceptually what this now captures?</p>
+<p>Level 1 residual variance <span class="math display">\[{R}_{ti} \sim \mathcal{N}(0, \sigma^{2})\]</span></p>
+<p>How does your residual change relative to a model without group effects?</p>
 </section>
 <section id="predictive-equation" class="slide level2">
 <h2>predictive equation</h2>
-<p>Thinking about the equation as a predictive engine will help us later with graphing</p>
 <p>Alternative combined <span class="math display">\[{Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(Time_{ti})] + \varepsilon_{ti}\]</span></p>
 <p>This is just rearranged so you can see that different groups have different intercepts and slopes</p>
 <p><span class="math display">\[\hat{Y}_{ti} = [\gamma_{00} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i})(Time_{ti})]\]</span></p>
@@ -760,7 +753,6 @@ SD (Residual)              |        0.58</code></pre>
 </section>
 <section id="equations-for-plotting" class="slide level2">
 <h2>Equations for plotting</h2>
-<p>The same logic for plotting continuous variables except this time we have to choose the values for simple slopes</p>
 <p><span class="math display">\[\hat{Y}_{ti} = [\gamma_{00} + \gamma_{01}C_{i}]+  [\gamma_{10} + \gamma_{11}C_{i}]*Time_{ti}\]</span></p>
 <p>Assuming C is standardized: -1sd <span class="math display">\[\hat{Y}_{ti} = [\gamma_{00} +(\gamma_{01}*-1)] + [\gamma_{10}  + (\gamma_{11}*-1)]*Time_{ti}\]</span></p>
 <p>Mean <span class="math display">\[\hat{Y}_{ti} = \gamma_{00} + \gamma_{10} * (Time_{ti})\]</span></p>
@@ -1394,7 +1386,7 @@ Variances:
 </section>
 <section id="introducing-a-random-slope-for-a-tvc" class="slide level2">
 <h2>Introducing a random slope for a TVC</h2>
-<p>Person specific residuals make the interpretation of parameters a little more difficult as the model says that the gap between exercise and not exercise is the same for everyone. Should we allow it to be this way?</p>
+<p>Random effect says that the gap between exercise and not exercise differs across people.</p>
 <p>level 1: <span class="math display">\[{Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}Exercise_{ti} + \varepsilon_{ti}\]</span></p>
 <p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} +   U_{0i}\]</span></p>
 <p><span class="math display">\[{\beta}_{1i} = \gamma_{10} +  U_{1i}\]</span></p>
@@ -1411,31 +1403,32 @@ Variances:
 <h2>Where does the variance go?</h2>
 <p>Compared to time invariant (level 2) predictors, tvc/level 1 predictors are likely to explain variance level 1 and level 2 variance terms. This is because level 1 predictors can include both level 1 and level 2 information.</p>
 <p>Typically level 2 predictors tend to only reduce level 2 variance. It is possible, however, that including a level 1 predictor will increase the variance in level 2 variance components.</p>
+<p>“Controlling for a level 1 makes the slope individual differences clearer”</p>
 </section>
 <section id="interactions-among-level-1-variables" class="slide level2">
 <h2>Interactions among level 1 variables</h2>
-<p>Couldn’t exercise levels influence the slope of health? The previous models constrained the slopes to be the same, saying that people differ on level when exercising vs not but not on rate of change.</p>
+<p>Couldn’t exercise levels influence the slope of health?</p>
 <p><span class="math display">\[{Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}Exercise_{ti} + \gamma_{30}TimeXExercise_{ti}]\]</span> <span class="math display">\[+ [ U_{0i}  + U_{1i}Time_{ti}+ \varepsilon_{ti}]\]</span></p>
 <ul>
-<li><p>How could you visualize this model?</p></li>
-<li><p>How do you interpret each of the terms (knowing what you know about interactions)?</p></li>
-<li><p>How would all of this change if our level 1 variable was continuous?</p></li>
+<li>How could you visualize this model?</li>
+<li>How do you interpret each of the terms?</li>
+<li>How would all of this change if our level 1 variable was continuous?</li>
 </ul>
 </section>
 <section id="centering-redux" class="slide level2">
 <h2>Centering redux</h2>
 <ul>
 <li><p>If we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.</p></li>
-<li><p>I could exercise more than the average person (between person) but my research question is about what happens when <em>I</em> exercise a lot, does that correspond to health. Because my excercise level varies there is within person information.</p></li>
-<li><p>It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier (a between person question that could be addressed with cross sectional data) or is it because when someone exercises they feel healthier.</p></li>
+<li><p>I could exercise more than the average person (between person) but my research question is about what happens when <em>I</em> exercise a lot. Because my level varies there is within person information.</p></li>
+<li><p>It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.</p></li>
 <li><p>How is <span class="math inline">\(\gamma_{20}Exercise_{ti}\)</span> interpreted?</p></li>
 </ul>
 </section>
 <section id="person-mean-centering" class="slide level2">
 <h2>person mean centering</h2>
 <ul>
-<li><p>Typically for level 1 we will want to within person-mean center to help with the issue of “smushed” variance. Especially when you are working with level 1 interactions, centering is important to interpret your lower order terms.</p></li>
-<li><p>However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels, what happens when you exercise more or less.</p></li>
+<li><p>Typically for level 1 we will want to within person-mean center to help with the issue of “smushed” variance.</p></li>
+<li><p>However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels.</p></li>
 <li><p>If you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed.</p></li>
 </ul>
 </section>
@@ -1447,8 +1440,8 @@ Variances:
 <li><p>For longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important.</p></li>
 </ul>
 </section>
-<section id="seperating-between-and-within-person-effects" class="slide level2">
-<h2>Seperating between and within person effects</h2>
+<section id="seperating-between-and-within" class="slide level2">
+<h2>Seperating between and within</h2>
 <p>We will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level</p>
 <p><span class="math display">\[{Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}\]</span></p>
 <p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}\]</span></p>
@@ -1684,7 +1677,7 @@ For PMC, the effect is relative association compared to typical person centered 
 <span id="cb39-18"><a href="#cb39-18"></a><span class="fu">summary</span>(fit<span class="fl">.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>lavaan 0.6-19 ended normally after 31 iterations
+<pre><code>lavaan 0.6-19 ended normally after 29 iterations
 
   Estimator                                         ML
   Optimization method                           NLMINB
@@ -1694,9 +1687,9 @@ For PMC, the effect is relative association compared to typical person centered 
 
 Model Test User Model:
                                                       
-  Test statistic                                10.733
+  Test statistic                                11.423
   Degrees of freedom                                 9
-  P-value (Chi-square)                           0.294
+  P-value (Chi-square)                           0.248
 
 Parameter Estimates:
 
@@ -1718,35 +1711,35 @@ Latent Variables:
 Regressions:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
   i ~                                                 
-    male              0.107    0.174    0.616    0.538
-    cpeer             0.751    0.120    6.273    0.000
+    male              0.092    0.174    0.529    0.597
+    cpeer             0.746    0.120    6.207    0.000
   s ~                                                 
-    male              0.485    0.245    1.979    0.048
-    cpeer            -0.216    0.171   -1.263    0.207
+    male              0.505    0.242    2.087    0.037
+    cpeer            -0.190    0.168   -1.131    0.258
   alcuse_14 ~                                         
-    tvc1             -0.010    0.075   -0.133    0.894
+    tvc1             -0.023    0.075   -0.309    0.757
   alcuse_15 ~                                         
-    tvc2              0.065    0.084    0.765    0.444
+    tvc2             -0.006    0.077   -0.084    0.933
   alcuse_16 ~                                         
-    tvc3              0.009    0.105    0.087    0.931
+    tvc3             -0.139    0.089   -1.556    0.120
 
 Covariances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
  .i ~~                                                
-   .s                -0.180    0.159   -1.131    0.258
+   .s                -0.129    0.155   -0.832    0.406
 
 Intercepts:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
-   .i                 0.588    0.123    4.783    0.000
-   .s                 0.299    0.173    1.729    0.084
+   .i                 0.596    0.122    4.873    0.000
+   .s                 0.274    0.171    1.603    0.109
 
 Variances:
                    Estimate  Std.Err  z-value  P(&gt;|z|)
-   .alcuse_14         0.164    0.123    1.337    0.181
-   .alcuse_15         0.391    0.083    4.693    0.000
-   .alcuse_16         0.277    0.166    1.671    0.095
-   .i                 0.437    0.138    3.169    0.002
-   .s                 0.732    0.295    2.479    0.013</code></pre>
+   .alcuse_14         0.188    0.122    1.541    0.123
+   .alcuse_15         0.382    0.083    4.623    0.000
+   .alcuse_16         0.264    0.166    1.591    0.112
+   .i                 0.412    0.135    3.054    0.002
+   .s                 0.685    0.295    2.323    0.020</code></pre>
 </div>
 </div>
 <p>Can we fix the TVCs to be the same?</p>

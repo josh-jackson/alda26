@@ -11,7 +11,6 @@ html:
   scrollable: true
 ---
 
-
 ## Conditional models
 
 -   We are now going to introduce predictors to our growth models beyond time. These predictors are similar to predictors in standard regression -- dummy for nominal, interactions change lower order terms, etcetera.
@@ -30,6 +29,7 @@ $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
 
 $${\beta}_{1i} = \gamma_{10} + U_{1i}$$
 
+
 ## Interpretation of conditional fixed effects
 
 Notice we have a new gamma term, $\gamma_{01}$. How do we interpret this new fixed effect, especially in the presence of other fixed effects?
@@ -42,9 +42,10 @@ The value for group = 1? $\gamma_{00} + \gamma_{01}$
 
 Combined: $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i} + \gamma_{10} (Time_{ti})+ U_{0i}  + U_{1i}(Time_{ti}) + \varepsilon_{ti}$$ $${Y}_{ti} = (\gamma_{00} + \gamma_{01}G_{i} + U_{0i} ) + [(\gamma_{10}+ U_{1i})(Time_{ti})] + \varepsilon_{ti}$$
 
+
 ## Interpretation of random effects
 
--   One thing to keep in mind is that we are now changing the meaning of the random effect. Now that we have a predictor in the model, the $U_{0j}$ is the person specific deviation from the group predicted intercept, not the grand mean intercept.
+-   One thing to keep in mind is that we are now changing the meaning of the random effect. $U_{0j}$ is the person specific deviation from the group predicted intercept.
 
 Level 1:\
 $${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \varepsilon_{ti}$$
@@ -54,6 +55,7 @@ Level 2:
 $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
 
 $${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+
 
 ## Does your covariance structure change?
 
@@ -99,20 +101,14 @@ $${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
 
 $${\beta}_{1i} = \gamma_{10} +  \gamma_{11}G_{i} +U_{1i}$$
 
-Similar to before, the interpretation of $U_{1i}$ changes. The term is now what is left over after accounting for group differences in the mean slope.
+Similar to before, the interpretation of $U_{1i}$ changes. 
 
 ## cross level interactions
 
-Level 1:\
-$${Y}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \varepsilon_{ti}$$
 
-Level 2:
 
-$${\beta}_{0i} = \gamma_{00} + \gamma_{01}G_{i} +   U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} +  \gamma_{11}G_{i} +U_{1i}$$
-
-Combined: $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (Time_{ti}) + \gamma_{11}(G_{i}*Time_{ti}) + $$ $$ U_{0i} + U_{1i}(Time_{ti}) + \varepsilon_{ti}$$
+Combined: $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (Time_{ti}) + \gamma_{11}(G_{i}*Time_{ti}) + $$ 
+$$ U_{0i} + U_{1i}(Time_{ti}) + \varepsilon_{ti}$$
 
 ------------------------------------------------------------------------
 
@@ -121,8 +117,6 @@ Notice that when we combine Level 1 and Level 2, the slope effect predictor beco
 ## interpretation of lower order terms
 
 Combined: $${Y}_{ti} = \gamma_{00} + \gamma_{01}G_{i}+  \gamma_{10} (Time_{ti}) + \gamma_{11}(G_{i}*Time_{ti}) + $$ $$ U_{0i} + U_{1i}(Time_{ti}) + \varepsilon_{ti}$$
-
-As with regression, the lower order terms are now conditional on the higher order interaction.
 
 $\gamma_{10}$, the fixed effect representing our slope is now the simple slope for group = 0
 
@@ -134,17 +128,15 @@ $\gamma_{00}$ is the intercept, it is the value for when our predictors are zero
 
 Level 2 covariance matrix
 
-$$\begin{pmatrix} {U}_{0j} \\ {U}_{1j} \end{pmatrix} \sim\mathcal{N} \begin{pmatrix} 0, \tau_{00}^{2} & \tau_{01}\\  0,  \tau_{01} & \tau_{10}^{2} \end{pmatrix}$$
+$$\begin{pmatrix} {U}_{0i} \\ {U}_{1i} \end{pmatrix} \sim\mathcal{N} \begin{pmatrix} 0, \tau_{00}^{2} & \tau_{01}\\  0,  \tau_{01} & \tau_{10}^{2} \end{pmatrix}$$
 
 How does your variance-covariance matrix change?
 
-Level 1 residual variance $${R}_{ij} \sim \mathcal{N}(0, \sigma^{2})$$
+Level 1 residual variance $${R}_{ti} \sim \mathcal{N}(0, \sigma^{2})$$
 
-How does your residual change relative to a model without group effects? Can you graph conceptually what this now captures?
+How does your residual change relative to a model without group effects? 
 
 ## predictive equation
-
-Thinking about the equation as a predictive engine will help us later with graphing
 
 Alternative combined $${Y}_{ti} = [\gamma_{00} + U_{0i} +\gamma_{01}G_{i}] + [(\gamma_{10}  + \gamma_{11}G_{i}+  U_{1i})(Time_{ti})] + \varepsilon_{ti}$$
 
@@ -259,8 +251,6 @@ $U_{0i}$ Is the random effect for intercept after accounting for C.
 $U_{1i}$ Is the random effect for the slope after accounting for C.
 
 ## Equations for plotting
-
-The same logic for plotting continuous variables except this time we have to choose the values for simple slopes
 
 $$\hat{Y}_{ti} = [\gamma_{00} + \gamma_{01}C_{i}]+  [\gamma_{10} + \gamma_{11}C_{i}]*Time_{ti}$$
 
@@ -526,7 +516,7 @@ Usually time is not an important factor for studies that last for weeks or less.
 
 ## Introducing a random slope for a TVC
 
-Person specific residuals make the interpretation of parameters a little more difficult as the model says that the gap between exercise and not exercise is the same for everyone. Should we allow it to be this way?
+Random effect says that the gap between exercise and not exercise differs across people. 
 
 level 1: $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}Exercise_{ti} + \varepsilon_{ti}$$
 
@@ -552,33 +542,33 @@ Compared to time invariant (level 2) predictors, tvc/level 1 predictors are like
 
 Typically level 2 predictors tend to only reduce level 2 variance. It is possible, however, that including a level 1 predictor will increase the variance in level 2 variance components.
 
+"Controlling for a level 1 makes the slope individual differences clearer"
+
 ## Interactions among level 1 variables
 
-Couldn't exercise levels influence the slope of health? The previous models constrained the slopes to be the same, saying that people differ on level when exercising vs not but not on rate of change.
+Couldn't exercise levels influence the slope of health? 
 
 $${Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}Exercise_{ti} + \gamma_{30}TimeXExercise_{ti}]$$ $$+ [ U_{0i}  + U_{1i}Time_{ti}+ \varepsilon_{ti}]$$
 
 -   How could you visualize this model?
-
--   How do you interpret each of the terms (knowing what you know about interactions)?
-
+-   How do you interpret each of the terms?
 -   How would all of this change if our level 1 variable was continuous?
 
 ## Centering redux
 
 -   If we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are "smushed" together.
 
--   I could exercise more than the average person (between person) but my research question is about what happens when *I* exercise a lot, does that correspond to health. Because my excercise level varies there is within person information.
+-   I could exercise more than the average person (between person) but my research question is about what happens when *I* exercise a lot. Because my level varies there is within person information.
 
--   It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier (a between person question that could be addressed with cross sectional data) or is it because when someone exercises they feel healthier.
+-   It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.
 
 -   How is $\gamma_{20}Exercise_{ti}$ interpreted?
 
 ## person mean centering
 
--   Typically for level 1 we will want to within person-mean center to help with the issue of "smushed" variance. Especially when you are working with level 1 interactions, centering is important to interpret your lower order terms.
+-   Typically for level 1 we will want to within person-mean center to help with the issue of "smushed" variance. 
 
--   However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels, what happens when you exercise more or less.
+-   However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels.
 
 -   If you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed.
 
@@ -590,7 +580,7 @@ $${Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}Exercise
 
 -   For longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important.
 
-## Seperating between and within person effects
+## Seperating between and within
 
 We will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level
 
