@@ -11,6 +11,7 @@ html:
   scrollable: true
 ---
 
+
 ## Conditional models
 
 -   We are now going to introduce predictors to our growth models beyond time. These predictors are similar to predictors in standard regression -- dummy for nominal, interactions change lower order terms, etcetera.
@@ -346,8 +347,6 @@ Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}Exercise_{i} +  \gamma_{02}In
 
 $${\beta}_{1i} = \gamma_{10} + \gamma_{11}Intervention_{i} + U_{1i}$$
 
-
-
 ## SEM
 
 ```{r}
@@ -523,7 +522,7 @@ Usually time is not an important factor for studies that last for weeks or less.
 
 2.  Use it to control to increases in your DV across time, but mostly disregard. Time could serve to control for the messiness of daily life, even if it is not a focal variable.
 
-3. Not focus on linear time. E.g. a dummy for week vs weekend or working vs not
+3.  Not focus on linear time. E.g. a dummy for week vs weekend or working vs not
 
 ## Introducing a random slope for a TVC
 
@@ -697,7 +696,7 @@ When $\gamma_{01}\overline{Exercise_{i}}$ is included at level 2 when we have pe
 
 How to interpret $\gamma_{01}\overline{Exercise_{i}}$ ?
 
-The extent that daily exercise is higher for a given person than for the rest of the sample, we can expect that person's mean exercise to be higher than the rest of the sample as well. 
+The extent that daily exercise is higher for a given person than for the rest of the sample, we can expect that person's mean exercise to be higher than the rest of the sample as well.
 
 As a result, $\gamma_{01}\overline{Exercise_{i}}$ represents the difference needed to get from the part of the between person effect carried by just level 1 to the total between-person effect that belongs in the level-2 model
 
@@ -705,23 +704,21 @@ After controlling for the person mean amount of timevarying exercise, the increm
 
 The contextual effect = between effect minus within person effect
 
+## centering and random effects Level 1
 
-## centering and random effects                                                                                                                                                                                                                   Level 1 
-$${Health}_{ti} = \beta_{0i}  + \beta_{1i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$ $${Health}_{ti} = \beta_{0i} +  \beta_{1i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$                                                                                              
+$${Health}_{ti} = \beta_{0i}  + \beta_{1i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$ $${Health}_{ti} = \beta_{0i} +  \beta_{1i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$\
 Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}}) + U_{0i}$$ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
 
----------
+------------------------------------------------------------------------
 
-Interpretation: $$U_{1i}$$                                                                                                                                
-For PMC, the effect is relative association compared to typical person centered effect -- maybe some people have an effect where deviations of exercise influences health but others these deviations do not. For GMC, the effect contains both within and between person effects, so the interpretation is messier 
-------
+Interpretation: $$U_{1i}$$\
+For PMC, the effect is relative association compared to typical person centered effect -- maybe some people have an effect where deviations of exercise influences health but others these deviations do not. For GMC, the effect contains both within and between person effects, so the interpretation is messier ------
 
 Level 1 $${Health}_{ti} = \beta_{0i}  + \beta_{1i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$ $${Health}_{ti} = \beta_{0i} +  \beta_{1i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}}) + U_{0i}$$ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$ 
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}}) + U_{0i}$$ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
 
-
---------------
+------------------------------------------------------------------------
 
 Interpretation:
 
@@ -733,7 +730,7 @@ Depending on your goal it might be confusing/difficult to person mean center. Th
 
 Suggested to keep raw tvc at level 1 but GMC at level 2.
 
-----------------
+------------------------------------------------------------------------
 
 For a recent paper we coded a life event as a tvc, which effectively switched on and of when the person encountered a life event.
 
@@ -745,8 +742,7 @@ For a recent paper we coded a life event as a tvc, which effectively switched on
 | 2   |  0   |     0 |
 | 2   |  1   |     1 |
 
-
----------
+------------------------------------------------------------------------
 
 ```{r}
 #| code-fold: true
@@ -807,8 +803,6 @@ p1
 
 
 ```
-
-
 
 ## SEM TVCs
 

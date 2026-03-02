@@ -1495,6 +1495,9 @@ print(round(coef_df$Coefficient[coef_df$Subject == "20"], 3))
 ```
 
 
+----------------
+
+
 ```{r}
 ggplot(coef_df, aes(x = Subject, y = Coefficient, color = Subject)) +
   geom_hline(yintercept = 0, color = "black", linewidth = 1.2) +
@@ -1528,6 +1531,7 @@ We can also directly compare
 ```{r}
 anova(gam8, gam9)
 ```
+
 ```{r}
 AIC(gam8, gam9)
 ```
