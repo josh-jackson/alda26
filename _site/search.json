@@ -1957,14 +1957,14 @@
     "href": "conditional-5.html#multiple-predictors-1",
     "title": "conditional",
     "section": "Multiple predictors",
-    "text": "Multiple predictors\n\n\nCode\nsem.4 &lt;- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 \n            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16\n               \n# regressions\n    \n    i ~ cpeer + male\n    s ~ cpeer + male\n'\nfit.4 &lt;- growth(sem.4, data = alcohol.wide)\nsummary(fit.4)\n\n\nlavaan 0.6-19 ended normally after 26 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        12\n\n  Number of observations                            82\n\nModel Test User Model:\n                                                      \n  Test statistic                                 5.134\n  Degrees of freedom                                 3\n  P-value (Chi-square)                           0.162\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Expected\n  Information saturated (h1) model          Structured\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i =~                                                \n    alcuse_14         1.000                           \n    alcuse_15         1.000                           \n    alcuse_16         1.000                           \n  s =~                                                \n    alcuse_14         0.000                           \n    alcuse_15         1.000                           \n    alcuse_16         2.000                           \n\nRegressions:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i ~                                                 \n    cpeer             0.750    0.120    6.265    0.000\n    male              0.105    0.174    0.603    0.546\n  s ~                                                 \n    cpeer            -0.107    0.084   -1.271    0.204\n    male              0.241    0.122    1.977    0.048\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n .i ~~                                                \n   .s                -0.090    0.080   -1.132    0.257\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .i                 0.587    0.123    4.783    0.000\n   .s                 0.150    0.086    1.742    0.081\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .alcuse_14         0.162    0.123    1.316    0.188\n   .alcuse_15         0.397    0.084    4.712    0.000\n   .alcuse_16         0.274    0.166    1.649    0.099\n   .i                 0.439    0.139    3.166    0.002\n   .s                 0.183    0.074    2.480    0.013"
+    "text": "Multiple predictors\n\n\nCode\nsem.4 &lt;- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 \n            s =~ 0*alcuse_14 + 1*alcuse_15 + 2*alcuse_16\n               \n# regressions\n    \n    i ~ cpeer + male\n    s ~ cpeer + male\n'\nfit.4 &lt;- growth(sem.4, data = alcohol.wide, missing = \"ML\")\nsummary(fit.4)\n\n\nlavaan 0.6-19 ended normally after 26 iterations\n\n  Estimator                                         ML\n  Optimization method                           NLMINB\n  Number of model parameters                        12\n\n  Number of observations                            82\n  Number of missing patterns                         1\n\nModel Test User Model:\n                                                      \n  Test statistic                                 5.134\n  Degrees of freedom                                 3\n  P-value (Chi-square)                           0.162\n\nParameter Estimates:\n\n  Standard errors                             Standard\n  Information                                 Observed\n  Observed information based on                Hessian\n\nLatent Variables:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i =~                                                \n    alcuse_14         1.000                           \n    alcuse_15         1.000                           \n    alcuse_16         1.000                           \n  s =~                                                \n    alcuse_14         0.000                           \n    alcuse_15         1.000                           \n    alcuse_16         2.000                           \n\nRegressions:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n  i ~                                                 \n    cpeer             0.750    0.120    6.230    0.000\n    male              0.105    0.176    0.594    0.553\n  s ~                                                 \n    cpeer            -0.107    0.085   -1.264    0.206\n    male              0.241    0.124    1.944    0.052\n\nCovariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n .i ~~                                                \n   .s                -0.090    0.081   -1.112    0.266\n\nIntercepts:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .i                 0.587    0.125    4.694    0.000\n   .s                 0.150    0.088    1.710    0.087\n\nVariances:\n                   Estimate  Std.Err  z-value  P(&gt;|z|)\n   .alcuse_14         0.162    0.127    1.277    0.202\n   .alcuse_15         0.397    0.085    4.644    0.000\n   .alcuse_16         0.274    0.171    1.601    0.109\n   .i                 0.439    0.141    3.113    0.002\n   .s                 0.183    0.075    2.435    0.015"
   },
   {
     "objectID": "conditional-5.html#centering-mlm-redux",
     "href": "conditional-5.html#centering-mlm-redux",
     "title": "conditional",
     "section": "Centering mlm redux",
-    "text": "Centering mlm redux\nChanging the scale of your predictors changes the interpretation of your model.\n\nOriginal metric (no centering)\nGroup-mean centering (our group/nesting is person so this is also called person centering). This will be more appropriate when we talk about level 1 predictors.\nGroup grand-mean centering (centering around average person mean)\nGrand-mean centering (this is taking the average across every obs)\nCentering on a value of theoretical or applied interest (we often do this for growth models)"
+    "text": "Centering mlm redux\nChanging the scale of your predictors changes the interpretation of your model.\n\nOriginal metric (no centering)\nGroup-mean centering (our group/nesting is person so this is also called person centering).\nGroup grand-mean centering (centering around average person mean)\nGrand-mean centering (this is taking the average across every obs)\nCentering on a value of theoretical or applied interest (we often do this for growth models)"
   },
   {
     "objectID": "conditional-5.html#time-considerations",
@@ -1978,7 +1978,7 @@
     "href": "conditional-5.html#level-2-centering",
     "title": "conditional",
     "section": "Level 2 centering",
-    "text": "Level 2 centering\n\nBecause level 2 is involved with cross-level interactions, it is always helpful to at least consider centering. For level 2, the centering options are much easier, as one can generally go with grand mean centering.\nAs everyone has only 1 value to contribute to, the calculation and the interpretation is more straightforward. It is thus also equivalent to group grand-mean centering."
+    "text": "Level 2 centering\n\nBecause level 2 is involved with cross-level interactions, it is helpful to consider centering. For level 2, the centering options are much easier, as one can generally go with grand mean centering.\nAs everyone has only 1 value to contribute to, the calculation and the interpretation is more straightforward. It is thus also equivalent to group grand-mean centering."
   },
   {
     "objectID": "conditional-5.html#level-1-predictors",
@@ -2020,7 +2020,7 @@
     "href": "conditional-5.html#centering-redux",
     "title": "conditional",
     "section": "Centering redux",
-    "text": "Centering redux\n\nIf we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.\nI could exercise more than the average person (between person) but my research question is about what happens when I exercise a lot. Because my level varies there is within person information.\nIt is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.\nHow is \\(\\gamma_{20}Exercise_{ti}\\) interpreted?"
+    "text": "Centering redux\n\nIf we just leave the level 1 TVC variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.\nI could exercise more than the average person (between person) but my research question is about what happens when I exercise a lot. Because my level varies there is within person information.\nIt is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier."
   },
   {
     "objectID": "conditional-5.html#person-mean-centering",
@@ -2034,7 +2034,7 @@
     "href": "conditional-5.html#level-1-intensive-vs-long-term",
     "title": "conditional",
     "section": "Level 1 intensive vs long term",
-    "text": "Level 1 intensive vs long term\n\nThe question of whether to center or not at level 1 partially depends on the type of data we are analyzing.\nFor intensive data, we will want to center for two related reasons: 1. makes the coefficient about within person deviations and 2. helps us separate within and between person effects\nFor longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important."
+    "text": "Level 1 intensive vs long term\n\nThe question of whether to center or not at level 1 partially depends on the type of data we are analyzing.\nFor intensive data, we will want to center for two related reasons: 1. makes the coefficient about within person deviations and 2. helps us separate within and between person effects\nFor longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important bc you are controlling for both sources of variance."
   },
   {
     "objectID": "conditional-5.html#seperating-between-and-within-person-effects",
@@ -2048,21 +2048,21 @@
     "href": "conditional-5.html#multiple-level-1-predictors",
     "title": "conditional",
     "section": "Multiple level 1 predictors",
-    "text": "Multiple level 1 predictors\n\\[{Health}_{ti} =  [\\gamma_{00} +   \\gamma_{10}Time_{ti}   + \\gamma_{20}(Exercise_{ti}-\\overline{Exercise_{i}}) + \\gamma_{30}Mood_{ti}\\] \\[+\\gamma_{40}(Mood*(Exercise_{ti}-\\overline{Exercise_{i}}))_{ti} ] + [ U_{0i}  + U_{1i}Time_{ti}+ \\varepsilon_{ti}]\\]\nHow would \\(\\gamma_{20}\\) and \\(\\gamma_{40}\\) change in interpretation if exercise was not person centered?"
+    "text": "Multiple level 1 predictors\n\\[{affect}_{ti} = \\beta_{0i} + \\beta_{1i}Exercise_{i} +  \\beta_{2i}(Stress_{ti}-\\overline{Stress_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Stress_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} +  U_{2i}\\]"
   },
   {
     "objectID": "conditional-5.html#what-happens-if-we-want-to-add-a-level-2-predictor",
     "href": "conditional-5.html#what-happens-if-we-want-to-add-a-level-2-predictor",
     "title": "conditional",
     "section": "What happens if we want to add a level 2 predictor?",
-    "text": "What happens if we want to add a level 2 predictor?\n\\[{Health}_{ti} =  [\\gamma_{00} + \\gamma_{10}Time_{ti} + \\gamma_{20}(Exercise_{ti}-\\overline{Exercise_{i}}) +\\gamma_{30}Mood_{ti}+\\gamma_{31}(Mood*\\overline{Exercise_{i}})_{ti}\\]\n\\[+\\gamma_{40}(Mood*(Exercise_{ti}-\\overline{Exercise_{i}}))_{ti} ] + [ U_{0i}  + U_{1i}Time_{ti}+ \\varepsilon_{ti}]\\]"
+    "text": "What happens if we want to add a level 2 predictor?\n\\[{affect}_{ti} = \\beta_{0i} + \\beta_{1i}Exercise_{i} +  \\beta_{2i}(Stress_{ti}-\\overline{Stress_{i}}) + \\varepsilon_{ti}\\] Can you interpret each of these \\(\\gamma_{02}\\), \\(\\gamma_{12}\\) , \\(\\gamma_{22}\\) terms at L2?"
   },
   {
     "objectID": "conditional-5.html#lagged-models",
     "href": "conditional-5.html#lagged-models",
     "title": "conditional",
     "section": "Lagged models",
-    "text": "Lagged models\nWhat if I want to predict something in the future?\nLevel 1 \\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\beta_{2i}(Exercise_{(t-1)i}-\\overline{Exercise_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Exercise_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + \\gamma_{11}\\overline{Exercise_{i}} + U_{1i}\\]\n\\[{\\beta}_{2i} = \\gamma_{20}\\]"
+    "text": "Lagged models\nWhat if I want to predict something in the future?\n\\[{affect}_{ti} = \\beta_{0i} + \\beta_{1i}(Stress_{(t-1)i}-\\overline{Stress_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Stress_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + U_{1i}\\]"
   },
   {
     "objectID": "conditional-5.html#contextual-models",
@@ -2076,21 +2076,21 @@
     "href": "conditional-5.html#centering-and-random-effects-level-1",
     "title": "conditional",
     "section": "centering and random effects Level 1",
-    "text": "centering and random effects Level 1\n\\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}(Exercise_{ti}-\\overline{Exercise_{i}}) + \\varepsilon_{ti}\\] \\[{Health}_{ti} = \\beta_{0i} +  \\beta_{1i}(Exercise_{ti}-\\overline{Exercise_{..}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}(\\overline{Exercise_{i}}-\\overline{Exercise_{..}}) + U_{0i}\\] \\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]"
+    "text": "centering and random effects Level 1\n\nFor PMC, the effect is relative association compared to typical person centered effect – maybe some people have an effect where deviations of stress influences affect but others these deviations do not.\nFor GMC, the effect contains both within and between person effects, so the interpretation is messier. The fixed effect assumes people are at the grand mean. Are they happier than the at the average level of stress?"
   },
   {
     "objectID": "conditional-5.html#categorical-tvc",
     "href": "conditional-5.html#categorical-tvc",
     "title": "conditional",
-    "section": "categorical TVC",
-    "text": "categorical TVC\nDepending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.\nSuggested to keep raw tvc at level 1 but GMC at level 2."
+    "section": "Categorical TVC",
+    "text": "Categorical TVC\nFor a recent paper we coded a life event as a tvc, which effectively switched on (and maybe off) when the person encountered a life event.\n\n\n\nID\nwave\nevent\n\n\n\n\n1\n0\n0\n\n\n1\n1\n1\n\n\n1\n2\n1\n\n\n2\n0\n0\n\n\n2\n1\n1"
   },
   {
     "objectID": "conditional-5.html#sem-tvcs",
     "href": "conditional-5.html#sem-tvcs",
     "title": "conditional",
     "section": "SEM TVCs",
-    "text": "SEM TVCs\nLevel 1 variables (tvs) are flexibly handled in SEM. Whereas previously a level 1 variable had a constant effect (ie you just had a single parameter) here you can model separate effects for different times. Or you can have a tvc for one timepoint but not another. Doing this in an MLM framework is awkward at best."
+    "text": "SEM TVCs\nLevel 1 variables (tvs) are flexibly handled in SEM. Whereas previously a level 1 variable had a constant effect (ie you just had a single parameter) here you can model separate effects for different times. Or you can have a tvc for one timepoint but not another."
   },
   {
     "objectID": "conditional-5.html#melsm",
@@ -2132,6 +2132,55 @@
     "href": "conditional-5.html#seperating-between-and-within",
     "title": "conditional",
     "section": "Seperating between and within",
-    "text": "Seperating between and within\nWe will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level\n\\[{Health}_{ti} = \\beta_{0i}  + \\beta_{1i}Time_{ti} + \\beta_{2i}(Exercise_{ti}-\\overline{Exercise_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Exercise_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]\n\\[{\\beta}_{2i} = \\gamma_{20}\\]"
+    "text": "Seperating between and within\nWe will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level\n\\[{affect}_{ti} = \\beta_{0i} + \\beta_{1i}(Stress_{ti}-\\overline{Stress_{i}}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Stress_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]"
+  },
+  {
+    "objectID": "conditional-5.html#intensive-longitudinal-data",
+    "href": "conditional-5.html#intensive-longitudinal-data",
+    "title": "conditional",
+    "section": "Intensive longitudinal data",
+    "text": "Intensive longitudinal data\n\nData collected by EMA/ESM/daily diary etc. Typically over short periods of time.\nQuestions are often about variations and predictors of those variations rather than explicit change processes. Fluctuations vs prolonged, lasting change. Often focuses on “mechanisms” rather than charting development\nThe ideas we’ve been developing are no different for ILD data. These are just observations nested within individual. We can think of our typical two level model."
+  },
+  {
+    "objectID": "conditional-5.html#time-does-not-need-to-be-focal",
+    "href": "conditional-5.html#time-does-not-need-to-be-focal",
+    "title": "conditional",
+    "section": "Time does not need to be focal",
+    "text": "Time does not need to be focal\nUsually time is not an important factor for studies that last for weeks or less. Instead we often we want to look at repeated associations or correlations across time. What happens to the time variable? Two options:\n\nIgnore it. A time variable is asking whether the variable we care about is “associated” with time. Maybe that isn’t important to us, theoretically.\nUse it to control to increases in your DV across time, but mostly disregard. Time could serve to control for the messiness of daily life, even if it is not a focal variable.\nNot focus on linear time. E.g. a dummy for week vs weekend or working vs not"
+  },
+  {
+    "objectID": "conditional-5.html#what-happens-if-we-want-to-add-a-level-2-predictor-1",
+    "href": "conditional-5.html#what-happens-if-we-want-to-add-a-level-2-predictor-1",
+    "title": "conditional",
+    "section": "What happens if we want to add a level 2 predictor?",
+    "text": "What happens if we want to add a level 2 predictor?\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Stress_{i}} + \\gamma_{02}Age_i + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} + \\gamma_{11}\\overline{Stress_{i}} + \\gamma_{12}Age_i +  U_{1i}\\] \\[{\\beta}_{2i} = \\gamma_{20} + \\gamma_{22}Age_i + U_{2i}\\]"
+  },
+  {
+    "objectID": "conditional-5.html#contextual-effect",
+    "href": "conditional-5.html#contextual-effect",
+    "title": "conditional",
+    "section": "Contextual effect",
+    "text": "Contextual effect\n\nPerson (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.\nWhat would happen if we just left the level 1 raw? Highly correlated coefficients but you are controlling for the mean, so the within person effect \\(\\gamma_{10}\\) is interpreted as the same.\nWhat does “_{01}” test in this case?"
+  },
+  {
+    "objectID": "conditional-5.html#contextual-effect-1",
+    "href": "conditional-5.html#contextual-effect-1",
+    "title": "conditional",
+    "section": "Contextual effect",
+    "text": "Contextual effect\n\nWe might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?\n“_{01}” tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.\nBeing a stressed person is worse for you than just having a stressful day."
+  },
+  {
+    "objectID": "conditional-5.html#contextual-effect-2",
+    "href": "conditional-5.html#contextual-effect-2",
+    "title": "conditional",
+    "section": "Contextual effect",
+    "text": "Contextual effect\n\nTypical we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.\nGrand mean centering does not change the interpretation of the contextual effect and helps with interpretation."
+  },
+  {
+    "objectID": "conditional-5.html#categorical-tvc-1",
+    "href": "conditional-5.html#categorical-tvc-1",
+    "title": "conditional",
+    "section": "categorical TVC",
+    "text": "categorical TVC\nDepending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.\nSuggested to keep raw tvc at level 1 but GMC at level 2."
   }
 ]

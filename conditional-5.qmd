@@ -413,7 +413,7 @@ sem.4 <- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16
     i ~ cpeer + male
     s ~ cpeer + male
 '
-fit.4 <- growth(sem.4, data = alcohol.wide)
+fit.4 <- growth(sem.4, data = alcohol.wide, missing = "ML")
 summary(fit.4)
 ```
 
@@ -423,7 +423,7 @@ Changing the scale of your predictors changes the interpretation of your model.
 
 1.  Original metric (no centering)
 
-2.  Group-mean centering (our group/nesting is person so this is also called person centering). This will be more appropriate when we talk about level 1 predictors.
+2.  Group-mean centering (our group/nesting is person so this is also called person centering). 
 
 3.  Group grand-mean centering (centering around average person mean)
 
@@ -449,7 +449,7 @@ Changing the scale of your predictors changes the interpretation of your model.
 
 ## Level 2 centering
 
--   Because level 2 is involved with cross-level interactions, it is always helpful to at least consider centering. For level 2, the centering options are much easier, as one can generally go with grand mean centering.
+-   Because level 2 is involved with cross-level interactions, it is  helpful to consider centering. For level 2, the centering options are much easier, as one can generally go with grand mean centering.
 
 -   As everyone has only 1 value to contribute to, the calculation and the interpretation is more straightforward. It is thus also equivalent to group grand-mean centering.
 
@@ -485,6 +485,8 @@ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
 
 $${\beta}_{2i} = \gamma_{20}$$
 
+-----------
+
 Combined:
 
 $${Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}Exercise_{ti}] + $$\
@@ -504,15 +506,7 @@ $\gamma_{00}$ is the average health at Time = 0 for those that are not exercisin
 
 How would you visualize the fixed effects for varying combinations of exercise?
 
-## What if time is not focal?
 
-Usually time is not an important factor for studies that last for weeks or less. Instead we often we want to look at repeated associations or correlations across time. What happens to the time variable? Two options:
-
-1.  Ignore it. A time variable is asking whether the variable we care about is "associated" with time. Maybe that isn't important to us, theoretically.
-
-2.  Use it to control to increases in your DV across time, but mostly disregard. Time could serve to control for the messiness of daily life, even if it is not a focal variable.
-
-3.  Not focus on linear time. E.g. a dummy for week vs weekend or working vs not
 
 ## Introducing a random slope for a TVC
 
@@ -554,175 +548,102 @@ $${Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}Exercise
 -   How do you interpret each of the terms?
 -   How would all of this change if our level 1 variable was continuous?
 
-## Centering redux
+-------------
 
--   If we just leave the exercise variable by itself there is often a combination of within and between person information. The two sources are "smushed" together.
+```{r}
+#| code-fold: true
+# Create TVC
 
--   I could exercise more than the average person (between person) but my research question is about what happens when *I* exercise a lot. Because my level varies there is within person information.
+set.seed(123)
 
--   It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.
 
--   How is $\gamma_{20}Exercise_{ti}$ interpreted?
+alcohol <- alcohol |>
+  group_by(id) |>
+  mutate(happy = (.5 * cpeer) + rnorm(n(), mean = 0, sd = 1)) |>
+  mutate(id = as.integer(id)) |> 
+  ungroup()
 
-## person mean centering
+alcohol
+```
 
--   Typically for level 1 we will want to within person-mean center to help with the issue of "smushed" variance. 
 
--   However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels.
+--------
 
--   If you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed.
+```{r}
+#| code-fold: true
 
-## Level 1 intensive vs long term
+fit7 <- lmer(alcuse ~  age_14 + happy + coa + (age_14 | id), data = alcohol)
+summary(fit7)
+```
 
--   The question of whether to center or not at level 1 partially depends on the type of data we are analyzing.
 
--   For intensive data, we will want to center for two related reasons: 1. makes the coefficient about within person deviations and 2. helps us separate within and between person effects
 
--   For longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important.
+--------
 
-## Seperating between and within
+```{r}
+#| code-fold: true
 
-We will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level
+fit8 <- lmer(alcuse ~  age_14 * coa +  age_14 * happy + (age_14 | id), data = alcohol)
+summary(fit8)
+```
 
-$${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
+----------
 
-$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+ Why does this not run and/or make sense? 
 
-$${\beta}_{2i} = \gamma_{20}$$
 
-------------------------------------------------------------------------
+```{r, eval = FALSE}
+fit8 <- lmer(alcuse ~  age_14 * coa +  age_14 * happy + (age_14 + age_14 * happy | id), data = alcohol)
+```
 
-What would we be testing if we included included person mean exercise to the person level effect?
+## SEM TVCs
 
-$${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$
+Level 1 variables (tvs) are flexibly handled in SEM. Whereas previously a level 1 variable had a constant effect (ie you just had a single parameter) here you can model separate effects for different times. Or you can have a tvc for one timepoint but not another. 
 
-$${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
-
-$${\beta}_{2i} = \gamma_{20}+ \gamma_{21}\overline{Exercise_{i}}$$
-
-## Multiple level 1 predictors
-
-$${Health}_{ti} =  [\gamma_{00} +   \gamma_{10}Time_{ti}   + \gamma_{20}(Exercise_{ti}-\overline{Exercise_{i}}) + \gamma_{30}Mood_{ti}$$ $$+\gamma_{40}(Mood*(Exercise_{ti}-\overline{Exercise_{i}}))_{ti} ] + [ U_{0i}  + U_{1i}Time_{ti}+ \varepsilon_{ti}]$$
-
-How would $\gamma_{20}$ and $\gamma_{40}$ change in interpretation if exercise was not person centered?
-
-------------------------------------------------------------------------
-
-Level 1: $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{i}}) +$$ $$\beta_{3i}Mood_{ti}+\beta_{4i}Mood_{ti}*(Exercise_{ti}-\overline{Exercise_{i}})  +\varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
-
-$${\beta}_{2i} = \gamma_{20}$$ $${\beta}_{3i} = \gamma_{30}$$ $${\beta}_{4i} = \gamma_{40}$$
+```{r, echo = FALSE}
+#| code-fold: true
+  tvc1 <- rnorm(n = 82, 0,1)
+  tvc2 <- rnorm(n = 82, 0,1)
+  tvc3 <- rnorm(n = 82, 0,1)
+  
+temp1 <- cbind(alcohol.wide,tvc1 )  
+temp2 <- cbind(temp1,tvc2 )
+alcohol.wide <- cbind(temp2,tvc3 )
+```
 
 ------------------------------------------------------------------------
 
--   For longer term data, where the focus is on a trajectory, and the factors that impact it, controlling for TVC like exercise often is done level 1 and not also at level 2.
+```{r}
+#| code-fold: true
 
--   The level 1 has both between and within person variance, and given you are not trying to separate the influence, you end up controlling for both when putting in level 1 TVC.
+model.5 <- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 
+            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16
+               
+# regressions
+    
+    i ~ male + cpeer
+    s ~ male + cpeer
+    
+# time-varying covariates
 
-## What happens if we want to add a level 2 predictor?
+    alcuse_14 ~ tvc1
+    alcuse_15 ~ tvc2
+    alcuse_16 ~ tvc3
 
-$${Health}_{ti} =  [\gamma_{00} + \gamma_{10}Time_{ti} + \gamma_{20}(Exercise_{ti}-\overline{Exercise_{i}}) +\gamma_{30}Mood_{ti}+\gamma_{31}(Mood*\overline{Exercise_{i}})_{ti}$$
+'
+fit.5 <- growth(model.5, data = alcohol.wide)
 
-$$+\gamma_{40}(Mood*(Exercise_{ti}-\overline{Exercise_{i}}))_{ti} ] + [ U_{0i}  + U_{1i}Time_{ti}+ \varepsilon_{ti}]$$
+summary(fit.5)
+```
 
-------------------------------------------------------------------------
+Can we fix the TVCs to be the same?
 
-Level 1: $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{i}}) + \beta_{3i}Mood_{ti} +\varepsilon_{ti}$$
 
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
 
-$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+## Categorical TVC
 
-$${\beta}_{2i} = \gamma_{20}$$ $${\beta}_{3i} = \gamma_{30} + \gamma_{31}  (\overline{Exercise_{i}})$$
-
-## Lagged models
-
-What if I want to predict something in the future?
-
-Level 1 $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{(t-1)i}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} + \gamma_{11}\overline{Exercise_{i}} + U_{1i}$$
-
-$${\beta}_{2i} = \gamma_{20}$$
-
-------------------------------------------------------------------------
-
-How does this model differ from the prior model? What does the $\gamma_{21}$ test? Would you want to include this term or not?
-
-Level 1 $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{(t-1)i}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Exercise_{i}} + U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} + \gamma_{11}\overline{Exercise_{i}} + U_{1i}$$
-
-$${\beta}_{2i} = \gamma_{20} + \gamma_{21}\overline{Exercise_{i}}$$
-
-## Contextual models
-
-Grand mean centering our level 1 variables is another option. We have already seen that when we use time as level 1 predictor. The between and within person variance is now "smushed" together when we do not person center.
-
-Level 1: $${Health}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}})+ U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
-
-$${\beta}_{2i} = \gamma_{20}$$
-
-------------------------------------------------------------------------
-
-When $\gamma_{01}\overline{Exercise_{i}}$ is included at level 2 when we have person-centered level 1 the effects separate the between and within. But level 2 controls for between meaning that $\beta_{2i}(Exercise_{ti}-\overline{Exercise_{..}})$ is now the within person effect, same as if we within person centered!
-
-------------------------------------------------------------------------
-
-How to interpret $\gamma_{01}\overline{Exercise_{i}}$ ?
-
-The extent that daily exercise is higher for a given person than for the rest of the sample, we can expect that person's mean exercise to be higher than the rest of the sample as well.
-
-As a result, $\gamma_{01}\overline{Exercise_{i}}$ represents the difference needed to get from the part of the between person effect carried by just level 1 to the total between-person effect that belongs in the level-2 model
-
-After controlling for the person mean amount of timevarying exercise, the incremental (unique) effect of average exercise is given by its level-2 contextual effect. For every unit higher person mean exercise, mean daily exercise are expected to be higher by the level-2 contextual effect.
-
-The contextual effect = between effect minus within person effect
-
-## centering and random effects Level 1
-
-$${Health}_{ti} = \beta_{0i}  + \beta_{1i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$ $${Health}_{ti} = \beta_{0i} +  \beta_{1i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$\
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}}) + U_{0i}$$ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
-
-------------------------------------------------------------------------
-
-Interpretation: $$U_{1i}$$\
-For PMC, the effect is relative association compared to typical person centered effect -- maybe some people have an effect where deviations of exercise influences health but others these deviations do not. For GMC, the effect contains both within and between person effects, so the interpretation is messier ------
-
-Level 1 $${Health}_{ti} = \beta_{0i}  + \beta_{1i}(Exercise_{ti}-\overline{Exercise_{i}}) + \varepsilon_{ti}$$ $${Health}_{ti} = \beta_{0i} +  \beta_{1i}(Exercise_{ti}-\overline{Exercise_{..}}) + \varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}(\overline{Exercise_{i}}-\overline{Exercise_{..}}) + U_{0i}$$ $${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
-
-------------------------------------------------------------------------
-
-Interpretation:
-
-$$U_{0i}$$ For PMC, the effect represents intercept differences when people are at their person mean. Are they healthier than the avg person, at their avg level of exercise? For GMC, the effect when people are at the grand mean. Are they healthier than the at the average level of exercise?
-
-## categorical TVC
-
-Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.
-
-Suggested to keep raw tvc at level 1 but GMC at level 2.
-
-------------------------------------------------------------------------
-
-For a recent paper we coded a life event as a tvc, which effectively switched on and of when the person encountered a life event.
+For a recent paper we coded a life event as a tvc, which effectively switched on (and maybe off) when the person encountered a life event.
 
 | ID  | wave | event |
 |-----|:----:|------:|
@@ -794,47 +715,470 @@ p1
 
 ```
 
-## SEM TVCs
 
-Level 1 variables (tvs) are flexibly handled in SEM. Whereas previously a level 1 variable had a constant effect (ie you just had a single parameter) here you can model separate effects for different times. Or you can have a tvc for one timepoint but not another. Doing this in an MLM framework is awkward at best.
+-------
 
-```{r, echo = FALSE}
-#| code-fold: true
-  tvc1 <- rnorm(n = 82, 0,1)
-  tvc2 <- rnorm(n = 82, 0,1)
-  tvc3 <- rnorm(n = 82, 0,1)
-  
-temp1 <- cbind(alcohol.wide,tvc1 )  
-temp2 <- cbind(temp1,tvc2 )
-alcohol.wide <- cbind(temp2,tvc3 )
-```
+| Variable | Definition | Value for Control Group | Value for Divorce Group |
+|:---|:---|:---|:---|
+| **Time** | General time clock (centered at event year). | -2, -1, 0, 1, 2 | -2, -1, 0, 1, 2 |
+| **Divorced** | Static Group Dummy. | 0 | 1 |
+| **Acute_Event** | Time-varying dummy | Always 0 | 0 before, 1 after |
+| **Time_Since** | Time-varying slope | Always 0 | 0 before, 1, 2, 3... after |
 
-------------------------------------------------------------------------
+
+---------
+
+$$\begin{aligned}
+Happiness_{ti} = &\gamma_{00} \text{ (Intercept: Controls at Time 0)} \\
+&+ \gamma_{01} (\text{DivorceGroup}_i) \text{ (Baseline difference for future divorcées)} \\
+&+ \gamma_{10} (\text{Time}_{ti}) \text{ (Slope for Controls)} \\
+&+ \gamma_{11} (\text{DivorceGroup}_i \times \text{Time}_{ti}) \text{ (Slope difference for Pre-Divorce group)} \\
+&+ \gamma_{20} (\text{AcuteEvent}_{ti}) \text{ (Immediate drop at moment of divorce)} \\
+&+ \gamma_{30} (\text{TimeSince}_{ti}) \text{ (Change in slope (recovery) after divorce)} \\
+&+ e_{ti}
+\end{aligned}$$
+
+
+
+----------
 
 ```{r}
 #| code-fold: true
+set.seed(123)
 
-model.5 <- '  i =~ 1*alcuse_14 + 1*alcuse_15 + 1*alcuse_16 
-            s =~ 0*alcuse_14 + .5*alcuse_15 + 1*alcuse_16
-               
-# regressions
-    
-    i ~ male + cpeer
-    s ~ male + cpeer
-    
-# time-varying covariates
+n_per_group <- 50
+ids <- factor(1:(2 * n_per_group))
+groups <- c(rep("Control", n_per_group), rep("Divorced", n_per_group))
+base_happiness <- rnorm(2 * n_per_group, mean = 7, sd = 1) 
 
-    alcuse_14 ~ tvc1
-    alcuse_15 ~ tvc2
-    alcuse_16 ~ tvc3
+subjects <- data.frame(ID = ids, Group = groups, Base_Y = base_happiness)
 
-'
-fit.5 <- growth(model.5, data = alcohol.wide)
+data_long <- expand.grid(ID = ids, Time = -5:5) %>%
+  left_join(subjects, by = "ID")
 
-summary(fit.5)
+
+data_sim <- data_long %>%
+  mutate(
+    Is_Divorced = ifelse(Group == "Divorced", 1, 0),
+    Acute_Event = ifelse(Is_Divorced == 1 & Time >= 0, 1, 0),
+    Time_Since = ifelse(Is_Divorced == 1 & Time > 0, Time, 0),
+    Happiness = Base_Y + 
+                (-0.09 * Time) +                      
+                (-0.17 * Is_Divorced * Time) +        
+                (-1.50 * Acute_Event) +              
+                (0.40 * Time_Since) +                 
+                rnorm(n(), 0, 0.5)                    
+  )
+
+model_divorce <- lmer(Happiness ~ Time * Is_Divorced + 
+                      Acute_Event + Time_Since + (1 | ID), 
+                      data = data_sim)
+
+
+data_sim$Predicted <- predict(model_divorce)
+
+ggplot(data_sim, aes(x = Time, y = Predicted, color = Group)) +
+  geom_line(aes(group = ID), alpha = 0.1) +
+  stat_summary(fun = mean, geom = "line", size = 2) +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  annotate("text", x = 0.5, y = 8, label = "Event Occurs", hjust = 0) +
+  labs(y = "Happiness Score", x = "Years (Centered on Event)") +
+  theme_minimal()
 ```
 
-Can we fix the TVCs to be the same?
+
+--------
+
+```{r}
+summary(model_divorce)
+```
+
+------------
+
+Intercept: Control group at Time 0
+Is_Divorced: Selection effect, pre existing differences
+Time: Rate of change in control
+Time:Is_Divorced: Pre-event slope difference
+Acute_Event: "Switch" effect of divorce
+Time_Since: Change in slope after divorce event 
+
+---------
+
+All of our information of the trajectory is there, but the hypotheses we have may not be encoded in the parameters. 
+
+
+Control Slope = Time
+Divorce Pre-Slope = Time + Time:Is_Divorced
+Divorce Post-Slope = Time + Time:Is_Divorced + Time_Since
+?? = Time:Is_Divorced + Time_Since
+
+-------------
+
+What is the trajectory of the Divorced Group after the divorce?
+
+```{r}
+#| code-fold: true
+library(marginaleffects)
+hypotheses(model_divorce, "Time + Time:Is_Divorced + Time_Since = 0")
+
+```
+
+
+---------
+
+Is the trajectory of the Divorced Group after the divorce significantly different from the trajectory of the Control Group?
+
+```{r}
+#| code-fold: true
+hypotheses(model_divorce, "Time:Is_Divorced + Time_Since = 0")
+```
+
+
+
+---------
+
+Notice how the difference in the post divorce trajectory plus the control trajectory = the divorce groups trajectory. 
+
+```{r}
+-0.078584 + 0.341
+```
+
+--------------
+
+What if we had the switch turn on and then off? 
+
+$$\begin{aligned}
+Happiness_{ti} = &\gamma_{00} \text{ (Intercept)} \\
+&+ \gamma_{01} (\text{DivorceGroup}_i) \text{ (Baseline difference)} \\
+&+ \gamma_{10} (\text{Time}_{ti}) \text{ (Control Slope)} \\
+&+ \gamma_{11} (\text{DivorceGroup}_i \times \text{Time}_{ti}) \text{ (Difference in Slope)} \\
+&+ \gamma_{20} (\text{Switch}_{ti}) \text{ (Temporary at Time 0 ONLY)} \\
+&+ e_{ti}
+\end{aligned}$$
+
+-------
+
+```{r}
+#| code-fold: true
+set.seed(123)
+data_full <- expand.grid(ID = factor(1:100), Time = -3:3) %>%
+  mutate(
+    Is_Divorced = ifelse(as.numeric(ID) > 50, 1, 0),
+    Acute_Pulse = ifelse(Is_Divorced == 1 & Time == 0, 1, 0),
+    Time_Since = ifelse(Is_Divorced == 1 & Time > 0, Time, 0),
+    Happiness = 7 + 
+                (-0.5 * Is_Divorced) +         
+                (-0.1 * Time) +                
+                (-0.2 * Is_Divorced * Time) +   
+                (-2.0 * Acute_Pulse) +          
+                (0.6 * Time_Since) +           
+                rnorm(n(), 0, 0.5)
+  )
+
+model_full <- lmer(Happiness ~ Time * Is_Divorced + Acute_Pulse + Time_Since + (1 | ID), data = data_full)
+
+
+grid <- expand.grid(Time = seq(-3, 3, by = 0.5), Is_Divorced = c(0, 1)) %>%
+  mutate(
+    Acute_Pulse = ifelse(Is_Divorced == 1 & abs(Time) < 0.1, 1, 0), 
+    Time_Since = ifelse(Is_Divorced == 1 & Time > 0, Time, 0),
+    Group_Label = ifelse(Is_Divorced == 1, "Divorce Group", "Control Group")
+  )
+
+preds <- predictions(model_full, newdata = grid, re.form = NA)
+
+ggplot(preds, aes(x = Time, y = estimate, color = Group_Label)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 0, linetype = "dashed", alpha = 0.5) +
+  labs(title = "Short term shock",subtitle = "The new slope starts from where you were before",
+       y = "Happiness", x = "Years (Centered on Event)") +
+  theme_classic() 
+```
+
+
+-----
+
+Same number of parameters. Just different conceptualization of where post event slope occurs. 
+
+```{r}
+summary(model_full)
+```
+
+
+## Centering redux
+
+-   If we just leave the level 1 TVC variable by itself there is often a combination of within and between person information. The two sources are "smushed" together.
+
+-   I could exercise more than the average person (between person) but my research question is about what happens when *I* exercise a lot. Because my level varies there is within person information.
+
+-   It is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier.
+
+
+## person mean centering
+
+-   Typically for level 1 we will want to within person-mean center to help with the issue of "smushed" variance. 
+
+-   However, this gets rid of all mean level information for a person. The question at hand is not whether you exercise more or less it is compared to your typical levels.
+
+-   If you are including a level 1 person centered variable in the model, note that 1) the average level of exercise is not controlled for and 2) the variation around the level will likely be related to the persons mean score. In other words, the within and between person variance of exercise is not neatly decomposed.
+
+## Level 1 intensive vs long term
+
+-   The question of whether to center or not at level 1 partially depends on the type of data we are analyzing.
+
+-   For intensive data, we will want to center for two related reasons: 1. makes the coefficient about within person deviations and 2. helps us separate within and between person effects
+
+-   For longer term data, level 1 is often used as a covariate rather than a focal coefficient. As a result, centering becomes less important bc you are controlling for both sources of variance.
+
+
+
+## Intensive longitudinal data
+
+- Data collected by EMA/ESM/daily diary etc. Typically over short periods of time. 
+
+- Questions are often about variations and predictors of those variations rather than explicit change processes. Fluctuations vs prolonged, lasting change. Often focuses on "mechanisms" rather than charting development
+
+- The ideas we've been developing are no different for ILD data. These are just observations nested within individual. We can think of our typical two level model. 
+
+-------------------
+
+
+level 1: $${affect}_{ti} = \beta_{0i}  + \beta_{1i}Time_{ti} + \beta_{2i}Stress_{ti} + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} +   U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+
+$${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
+
+
+
+## Time does not need to be focal
+
+Usually time is not an important factor for studies that last for weeks or less. Instead we often we want to look at repeated associations or correlations across time. What happens to the time variable? Two options:
+
+1.  Ignore it. A time variable is asking whether the variable we care about is "associated" with time. Maybe that isn't important to us, theoretically.
+
+2.  Use it to control to increases in your DV across time, but mostly disregard. Time could serve to control for the messiness of daily life, even if it is not a focal variable.
+
+3.  Not focus on linear time. E.g. a dummy for week vs weekend or working vs not
+
+
+-------------------
+
+
+level 1: $${affect}_{ti} = \beta_{0i}  + \beta_{1i}Stress_{ti} + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} +   U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+
+
+
+
+## Seperating between and within
+
+We will create a new variable out of the existing level 1 variable, a person mean. This makes the effects of the person level uncorrelated with the effects of the between person level
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+
+
+------------------------------------------------------------------------
+
+What would we be testing if we included included person mean exercise to the person level effect?
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + \gamma_{11}\overline{Stress_{i}} + U_{1i}$$
+
+
+## Multiple level 1 predictors
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}Exercise_{i} +  \beta_{2i}(Stress_{ti}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+$${\beta}_{2i} = \gamma_{20} +  U_{2i}$$
+
+------------------------------------------------------------------------
+
+What would change if we did or did not center exercise? 
+
+------------------------------------------------------------------------
+
+-   For longer term data, where the focus is on a trajectory, and the factors that impact it, controlling for TVC like exercise often is done level 1 but not  at level 2.
+
+-   The level 1 has both between and within person variance, and given you are not trying to separate the influence, you end up controlling for both when putting in level 1 TVC.
+
+- So if you want to interpret the within person effect of exercise, then you need to person center and put the mean effect back intothe model. 
+
+## What happens if we want to add a level 2 predictor?
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}Exercise_{i} +  \beta_{2i}(Stress_{ti}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+Can you interpret each of these $\gamma_{02}$, $\gamma_{12}$ , $\gamma_{22}$ terms at L2? 
+
+
+## What happens if we want to add a level 2 predictor?
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + \gamma_{02}Age_i + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + \gamma_{11}\overline{Stress_{i}} + \gamma_{12}Age_i +  U_{1i}$$
+$${\beta}_{2i} = \gamma_{20} + \gamma_{22}Age_i + U_{2i}$$
+
+## Lagged models
+
+What if I want to predict something in the future?
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{(t-1)i}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+
+------------------------------------------------------------------------
+
+Should I control for current time? 
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{(t-1)i}-\overline{Stress_{i}}) +\beta_{2i}(Stress_{ti}-\overline{Stress_{i}}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+$${\beta}_{2i} = \gamma_{10} + U_{2i}$$
+
+## Contextual effect
+
+- Person (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.
+
+- What would happen if we just left the level 1 raw? Highly correlated coefficients but you are controlling for the mean, so the within person effect $\gamma_{10}$ is interpreted as the same. 
+
+- What does "\gamma_{01}" test in this case? 
+
+## Contextual effect
+
+- We might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time? 
+
+- "\gamma_{01}" tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect. 
+
+- Being a stressed person is worse for you than just having a stressful day.
+
+## Contextual effect
+
+- Typical we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable. 
+
+- Grand mean centering does not change the interpretation of the contextual effect and helps with interpretation. 
+
+
+--------------
+
+L1 centered at grand mean. 
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{..}})  + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} -\overline{Stress_{..}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+
+-----------
+
+```{r}
+#| code-fold: true
+set.seed(123)
+subjects <- data.frame(ID = factor(1:10), 
+                       True_Mean_X = seq(2, 8, length.out = 10),
+                       Slope_Deviation = rnorm(10, mean = 0, sd = 0.8))
+
+
+df_viz <- expand.grid(ID = factor(1:10), Time = 1:15) %>%
+  left_join(subjects, by = "ID") %>%
+  group_by(ID) %>%
+  mutate(
+    X_val = True_Mean_X + rnorm(10, 0, 1),
+    Y_val = 10 + 
+            ((0.7 + Slope_Deviation) * (X_val - True_Mean_X)) + 
+            (1 * True_Mean_X) +                               
+            rnorm(10, 0, 0.5)                                   
+  ) %>%
+  ungroup()
+
+df_means <- df_viz %>%
+  group_by(ID) %>%
+  summarize(Mean_X = mean(X_val), Mean_Y = mean(Y_val))
+
+
+grand_mean_x <- mean(df_viz$X_val)
+grand_mean_y <- mean(df_viz$Y_val)
+fixed_slope <- 0.5
+fixed_intercept <- grand_mean_y - (fixed_slope * grand_mean_x)
+
+ggplot() +
+  geom_smooth(data = df_viz, aes(x = X_val, y = Y_val, group = ID, color = ID), 
+              method = "lm", se = FALSE, size = 0.5, alpha = 0.5) +
+  geom_point(data = df_means, aes(x = Mean_X, y = Mean_Y, color = ID), size = 3) +
+  geom_smooth(data = df_means, aes(x = Mean_X, y = Mean_Y), 
+              method = "lm", color = "black", se = FALSE, size = 1.5, linetype = "dashed") +
+
+  
+  labs(title = " Dashed = Between Slope | Colored = Random Slopes",
+       x = "Stress", y = " Affect") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+
+---------
+
+```{r}
+#| code-fold: true
+ggplot() +
+  geom_smooth(data = df_viz, aes(x = X_val, y = Y_val, group = ID, color = ID), 
+              method = "lm", se = FALSE, size = 0.5, alpha = 0.5) +
+  geom_point(data = df_means, aes(x = Mean_X, y = Mean_Y, color = ID), size = 3) +
+  geom_smooth(data = df_means, aes(x = Mean_X, y = Mean_Y), 
+              method = "lm", color = "black", se = FALSE, size = 1.5, linetype = "dashed") +
+  geom_abline(intercept = fixed_intercept, slope = fixed_slope, 
+              color = "blue", size = 2) +
+  
+  labs(title = "Blue = Average Within Slope | Dashed = Between Slope | Colored = Random Slopes",
+       x = "Stress", y = " Affect") +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+## centering and random effects Level 1
+
+
+- For PMC, the effect is relative association compared to typical person centered effect -- maybe some people have an effect where deviations of stress influences affect but others these deviations do not. 
+
+- For GMC, the effect contains both within and between person effects, so the interpretation is messier. The fixed effect assumes people are at the grand mean. Are they happier than the at the average level of stress?
+
+
+
+------------------------------------------------------------------------
+
+Interpretation:
+
+$$U_{0i}$$ For PMC, the effect represents intercept differences when people are at their person mean. Are they healthier than the avg person, at their avg level of exercise? For GMC, the effect when people are at the grand mean. Are they healthier than the at the average level of exercise?
+
+## categorical TVC
+
+Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.
+
+Suggested to keep raw tvc at level 1 but GMC at level 2.
+
+
 
 ## MELSM
 
