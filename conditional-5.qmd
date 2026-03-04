@@ -806,10 +806,12 @@ Time_Since: Change in slope after divorce event
 
 All of our information of the trajectory is there, but the hypotheses we have may not be encoded in the parameters. 
 
-
 Control Slope = Time
+
 Divorce Pre-Slope = Time + Time:Is_Divorced
+
 Divorce Post-Slope = Time + Time:Is_Divorced + Time_Since
+
 ?? = Time:Is_Divorced + Time_Since
 
 -------------
