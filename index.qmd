@@ -2,6 +2,16 @@
 title: "Applied Longitudinal Data Analyses"
 ---
 
+No class the week of the 16th! We do however have a lecture (unfortunately zoom decided to quit midway so we have two files but just one lecture to listen to):
+
+Part 1:
+
+<https://wustl.zoom.us/rec/share/SDWRE2mUTgBzPVcwQC2GPvDDLJq9tFpuvVpQc36DqbF-28qSlE5T5nbe0xjdfGk.R9BbY0Pj7a2mPokq>
+
+Part 2:
+
+<https://wustl.zoom.us/rec/share/1X7Mbyn9txAiP7zO1N3cR8V4l8QQQsJZQGySJo7QxZ2PnsLOWinUhLqe5_gElePD.EXGPr8gtJBX8-ysE>
+
 Welcome to the first day of class! If you want to follow along with examples, head over to github for all of the code and data. https://github.com/josh-jackson/alda26
 
 Please check the homepage regularly for class updates and announcements.
