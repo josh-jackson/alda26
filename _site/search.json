@@ -2182,5 +2182,12 @@
     "title": "conditional",
     "section": "categorical TVC",
     "text": "categorical TVC\nDepending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.\nSuggested to keep raw tvc at level 1 but GMC at level 2."
+  },
+  {
+    "objectID": "conditional-5.html#centering-level-1-not-time",
+    "href": "conditional-5.html#centering-level-1-not-time",
+    "title": "conditional",
+    "section": "Centering level 1 not time",
+    "text": "Centering level 1 not time\n\nIf we just leave the level 1 TVC variable by itself there is often a combination of within and between person information. The two sources are “smushed” together.\nI could exercise more than the average person (between person) but my research question is about what happens when I exercise a lot. Because my level varies there is within person information.\nIt is not clear whether exercise is associated with health BECAUSE people who exercise tend to be healthier or is it because when someone exercises they feel healthier."
   }
 ]
