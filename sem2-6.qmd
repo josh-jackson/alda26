@@ -1,7 +1,7 @@
 ---
 title: "multivariate"
 format: revealjs
-slide-number: true
+8.75*4slide-number: true
 editor: visual
 execute:
   echo: true
@@ -11,13 +11,39 @@ html:
   scrollable: true
 ---
 
+
+## Multiple lines
+
+- We have previously been fitting multiple lines via "groups" that are predicted to differ on their development. 
+
+- What this overlooks though is that the "group" variable itself is a developmental construct. 
+
+- Can we simultanously model 2+ growth trajectories at once? 
+
 ## Multiple DVs
 
--   Normally we are only interested in 1 DV at a time. However, many theories incorprate multiple DVs. With longitudinal models it is easy to incorporate multivariate questions.
-
--   SEM is well suited for multiple DVs as there is less of an emphasis on a single traidtional equation. "If you can draw it you can model it"
+-   Normally our models are constrained to 1 DV at a time. However, SEM is well suited for multiple DVs as there is less of an emphasis on a single traditional equation. "If you can draw it you can model it"
 
 -   Some \~basic multivariate models can be run with MLM
+
+--------------
+
+1.  Growth models (can be MV)
+
+2.  Longitudinal CFA (can be MV)
+
+3.  Cross lag panel model (MV)
+
+4.  Longitudinal mediation (MV)
+
+5.  Growth models + cross lags (MV)
+
+6.  Latent change/difference score models (often MV)
+
+7.  Dynamic factor and dSEM models. (MV)
+
+8.  Mixture or class based longitudinal models (often MV)
+
 
 ## Growth models x2
 
@@ -261,6 +287,14 @@ fit.bv.c <- growth(bv.c, data = mlm.wide, missing = "ML")
 summary(fit.bv.c,standardized=TRUE)
 ```
 
+
+## A broader MV framework
+
+- Back to two conceptualizations of change. We want to integrate 1. differential and 2. absolute change conceptions. 
+
+- What type of change have we been working with? 
+
+
 ## More complex SEM multivariate models
 
 Suggested readings:
@@ -269,35 +303,56 @@ https://www.annualreviews.org/doi/abs/10.1146/annurev.psych.60.110707.163612
 
 https://www.sciencedirect.com/science/article/pii/S187892931730021X#sec0125
 
+
 ## Two wave assessments
 
-How to measure change, or should we? https://www.gwern.net/docs/dnb/1970-cronbach.pdf This paper lays out some of the problems that occur with standard treatments of two wave assessments.
+- How to measure change, or should we? https://www.gwern.net/docs/dnb/1970-cronbach.pdf This paper lays out some of the problems that occur with standard treatments of two wave assessments. 
 
-The most basic two wave form of change is a difference score. However, many have said these are problematic. The issues are: 1. hard to separate measurement error from true change\
-2. unreliable estimate of change\
-3. initial level (or last level) may be driving change. How to account for?
+- Depends on if people start at similar places (who changed the most vs who ended up higher than expected, given where they started)
 
-------------------------------------------------------------------------
+  
 
--   The alternative is a standard residual gain/change score where you regress time 2 onto time 1. This overcomes some of the issues raised about because we are being conservative about the error by "regressing to the mean" such that people with larger changes than average will have their change scores "shrunken" to the average, must like we do with MLMs.
+## difference/change scores
 
--   This also helps with accounting for starting values that may be responsible for the changes, as this is literally controlling for the initial level.
+lm((post - pre) ~ 1
 
-------------------------------------------------------------------------
+-   PROs:
 
-The issues with residualized change models, however, are:
+    Gives average change directly.
 
-1.  it isn't true change, as you are implying people change similarly
+-   CONS:
 
-2.  it does not account for unreliability of change in a principled way
+    Separate computation outside model.
+
+    Doesn't scale well.
+
+    Assumes perfectly reliable change.
+
+    Initial (or last) assessment often highly correlated with change
+    
+
+## residualized (autoregressive) model
+
+lm(post ~ 1 + pre)
+
+-   PROs:
+
+    Accounts for error by regressing to the mean, almost "pooling" towards the average as in MLMs.
+    
+    Controls for initial level.
+
+-   CONs:
+
+    Assumes people change via the same process.
+
+    Not a principled way to account for measurement error.
+
+    Assumes same reliability for all.
+
 
 ## Lords Paradox
 
-This has lead to what is known as Lord's paradox. Take the two approaches above, simplified to:
-
-`lm(t2-t1 ~ group)`
-
-`lm(t2 ~ t1 + group)`
+This has lead to what is known as Lord's paradox. 
 
 ```{r, echo = FALSE}
 set.seed(1234)
