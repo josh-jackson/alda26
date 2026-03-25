@@ -775,15 +775,15 @@ summary(model_divorce)
 
 ------------------------------------------------------------------------
 
-Intercept: Control group at Time 0 
+Intercept: Control group at Time 0
 
-Is_Divorced: Selection effect, pre existing differences 
+Is_Divorced: Selection effect, pre existing differences
 
-Time: Rate of change in control 
+Time: Rate of change in control
 
-Time:Is_Divorced: Pre-event slope difference 
+Time:Is_Divorced: Pre-event slope difference
 
-Acute_Event: "Switch" effect of divorce 
+Acute_Event: "Switch" effect of divorce
 
 Time_Since: Change in slope after divorce event
 
@@ -1022,33 +1022,32 @@ $${\beta}_{1i} = \gamma_{10} + U_{1i}$$ $${\beta}_{2i} = \gamma_{10} + U_{2i}$$
 
 -   Person (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.
 
--   What would happen if we just left the level 1 raw? Highly correlated coefficients but you are controlling for the mean, so the within person effect $\gamma_{10}$ is interpreted as the same.
+-   What would happen if we just left the level 1 raw but controlled for average levels? 
 
--   What does "\gamma\_{01}" test in this case?
+## Contextual effect
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}) + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} +  U_{1i}$$
+
+-------
+
+- Highly correlated coefficients but you are controlling for the mean, so the within person effect $\gamma_{10}$ is interpreted as the same.
+
+- Said differently: if you only care about the within person effect, then you do not need to necessarily person mean center. 
+
+- But... What does  $\gamma_{01}$ test in this case? What did it test previously? 
 
 ## Contextual effect
 
 -   We might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?
 
--   "\gamma\_{01}" tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.
+-   $\gamma_{01}$ tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.
 
 -   Being a stressed person is worse for you than just having a stressful day.
 
-## Contextual effect
-
--   Typical we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.
-
--   Grand mean centering does not change the interpretation of the contextual effect and helps with interpretation.
-
-------------------------------------------------------------------------
-
-L1 centered at grand mean.
-
-$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{..}})  + \varepsilon_{ti}$$
-
-Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} -\overline{Stress_{..}} + U_{0i}$$
-
-$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
 
 ------------------------------------------------------------------------
 
@@ -1115,29 +1114,53 @@ ggplot() +
   theme(legend.position = "none")
 ```
 
+
+
+## Contextual effect
+
+-   Typical, for contextual effects, we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.
+
+-   Grand mean centering does not change the interpretation of the contextual effect but helps with interpretation.
+
+------------------------------------------------------------------------
+
+L1 centered at grand mean.
+
+$${affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{..}})  + \varepsilon_{ti}$$
+
+Level 2: $${\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} -\overline{Stress_{..}} + U_{0i}$$
+
+$${\beta}_{1i} = \gamma_{10} + U_{1i}$$
+
+
 ## centering and random effects Level 1
 
 -   For PMC, the effect is relative association compared to typical person centered effect -- maybe some people have an effect where deviations of stress influences affect but others these deviations do not.
 
 -   For GMC, the effect contains both within and between person effects, so the interpretation is messier. The fixed effect assumes people are at the grand mean. Are they happier than the at the average level of stress?
 
+
 ------------------------------------------------------------------------
 
 Interpretation:
 
-$$U_{0i}$$ For PMC, the effect represents intercept differences when people are at their person mean. Are they healthier than the avg person, at their avg level of exercise? For GMC, the effect when people are at the grand mean. Are they healthier than the at the average level of exercise?
+- $$U_{0i}$$ For PMC, the effect represents intercept differences when people are at their person mean. Are they happier than the avg person, at their avg level of stress? For GMC, the effect when people are at the grand mean. Are they happier than the average person at the average person's level of stress?
+
+- Just be careful in interpretation if these values (person mean vs grand mean) can differ a lot.  
+
 
 ## categorical TVC
 
-Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.
+- Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.
 
-Suggested to keep raw tvc at level 1 but GMC at level 2.
+- You can keep raw tvc at level 1 but I'd  include the person mean at level 2 so as to get the unconfounded within-person effect. Just be clear that the interpretation of level 2 is now the contextual effect.   
+
 
 ## MELSM
 
-Mixed effects location scale model location = mean scale = variance (usually)
+- We make a huge assumption in standard ILD models. That people's variability is the same. 
 
-Basically it means modeling multiple distributional parameters simultaneously.
+- Mixed effects location (mean) scale (variance) model. Basically it means modeling multiple distributional parameters simultaneously. Anticipating our multivariate models in the next slide deck. 
 
 ```{r}
 #| echo: FALSE

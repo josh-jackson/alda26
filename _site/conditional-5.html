@@ -2161,31 +2161,30 @@ boundary (singular) fit: see help('isSingular')</code></pre>
 <h2>Contextual effect</h2>
 <ul>
 <li><p>Person (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.</p></li>
-<li><p>What would happen if we just left the level 1 raw? Highly correlated coefficients but you are controlling for the mean, so the within person effect <span class="math inline">\(\gamma_{10}\)</span> is interpreted as the same.</p></li>
-<li><p>What does “_{01}” test in this case?</p></li>
+<li><p>What would happen if we just left the level 1 raw but controlled for average levels?</p></li>
 </ul>
 </section>
 <section id="contextual-effect-1" class="slide level2">
 <h2>Contextual effect</h2>
+<p><span class="math display">\[{affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}) + \varepsilon_{ti}\]</span></p>
+<p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} + U_{0i}\]</span></p>
+<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} +  U_{1i}\]</span></p>
+</section>
+<section class="slide level2">
+
 <ul>
-<li><p>We might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?</p></li>
-<li><p>“_{01}” tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.</p></li>
-<li><p>Being a stressed person is worse for you than just having a stressful day.</p></li>
+<li><p>Highly correlated coefficients but you are controlling for the mean, so the within person effect <span class="math inline">\(\gamma_{10}\)</span> is interpreted as the same.</p></li>
+<li><p>Said differently: if you only care about the within person effect, then you do not need to necessarily person mean center.</p></li>
+<li><p>But… What does <span class="math inline">\(\gamma_{01}\)</span> test in this case? What did it test previously?</p></li>
 </ul>
 </section>
 <section id="contextual-effect-2" class="slide level2">
 <h2>Contextual effect</h2>
 <ul>
-<li><p>Typical we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.</p></li>
-<li><p>Grand mean centering does not change the interpretation of the contextual effect and helps with interpretation.</p></li>
+<li><p>We might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?</p></li>
+<li><p><span class="math inline">\(\gamma_{01}\)</span> tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.</p></li>
+<li><p>Being a stressed person is worse for you than just having a stressful day.</p></li>
 </ul>
-</section>
-<section class="slide level2">
-
-<p>L1 centered at grand mean.</p>
-<p><span class="math display">\[{affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{..}})  + \varepsilon_{ti}\]</span></p>
-<p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} -\overline{Stress_{..}} + U_{0i}\]</span></p>
-<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} + U_{1i}\]</span></p>
 </section>
 <section class="slide level2">
 
@@ -2258,6 +2257,20 @@ boundary (singular) fit: see help('isSingular')</code></pre>
 
 </div>
 <img data-src="conditional-5_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch"></section>
+<section id="contextual-effect-3" class="slide level2">
+<h2>Contextual effect</h2>
+<ul>
+<li><p>Typical, for contextual effects, we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.</p></li>
+<li><p>Grand mean centering does not change the interpretation of the contextual effect but helps with interpretation.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>L1 centered at grand mean.</p>
+<p><span class="math display">\[{affect}_{ti} = \beta_{0i} + \beta_{1i}(Stress_{ti}-\overline{Stress_{..}})  + \varepsilon_{ti}\]</span></p>
+<p>Level 2: <span class="math display">\[{\beta}_{0i} = \gamma_{00} + \gamma_{01}\overline{Stress_{i}} -\overline{Stress_{..}} + U_{0i}\]</span></p>
+<p><span class="math display">\[{\beta}_{1i} = \gamma_{10} + U_{1i}\]</span></p>
+</section>
 <section id="centering-and-random-effects-level-1" class="slide level2">
 <h2>centering and random effects Level 1</h2>
 <ul>
@@ -2268,17 +2281,24 @@ boundary (singular) fit: see help('isSingular')</code></pre>
 <section class="slide level2">
 
 <p>Interpretation:</p>
-<p><span class="math display">\[U_{0i}\]</span> For PMC, the effect represents intercept differences when people are at their person mean. Are they healthier than the avg person, at their avg level of exercise? For GMC, the effect when people are at the grand mean. Are they healthier than the at the average level of exercise?</p>
+<ul>
+<li><p><span class="math display">\[U_{0i}\]</span> For PMC, the effect represents intercept differences when people are at their person mean. Are they happier than the avg person, at their avg level of stress? For GMC, the effect when people are at the grand mean. Are they happier than the average person at the average person’s level of stress?</p></li>
+<li><p>Just be careful in interpretation if these values (person mean vs grand mean) can differ a lot.</p></li>
+</ul>
 </section>
 <section id="categorical-tvc-1" class="slide level2">
 <h2>categorical TVC</h2>
-<p>Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g.&nbsp;-.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.</p>
-<p>Suggested to keep raw tvc at level 1 but GMC at level 2.</p>
+<ul>
+<li><p>Depending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g.&nbsp;-.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.</p></li>
+<li><p>You can keep raw tvc at level 1 but I’d include the person mean at level 2 so as to get the unconfounded within-person effect. Just be clear that the interpretation of level 2 is now the contextual effect.</p></li>
+</ul>
 </section>
 <section id="melsm" class="slide level2">
 <h2>MELSM</h2>
-<p>Mixed effects location scale model location = mean scale = variance (usually)</p>
-<p>Basically it means modeling multiple distributional parameters simultaneously.</p>
+<ul>
+<li><p>We make a huge assumption in standard ILD models. That people’s variability is the same.</p></li>
+<li><p>Mixed effects location (mean) scale (variance) model. Basically it means modeling multiple distributional parameters simultaneously. Anticipating our multivariate models in the next slide deck.</p></li>
+</ul>
 <div class="cell">
 <details>
 <summary>Code</summary>

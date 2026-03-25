@@ -2097,7 +2097,7 @@
     "href": "conditional-5.html#melsm",
     "title": "conditional",
     "section": "MELSM",
-    "text": "MELSM\nMixed effects location scale model location = mean scale = variance (usually)\nBasically it means modeling multiple distributional parameters simultaneously.\n\n\nCode\nmelsm %&gt;% \ndistinct(record_id) %&gt;% \n  count()\n\n\n    n\n1 193"
+    "text": "MELSM\n\nWe make a huge assumption in standard ILD models. That people’s variability is the same.\nMixed effects location (mean) scale (variance) model. Basically it means modeling multiple distributional parameters simultaneously. Anticipating our multivariate models in the next slide deck.\n\n\n\nCode\nmelsm %&gt;% \ndistinct(record_id) %&gt;% \n  count()\n\n\n    n\n1 193"
   },
   {
     "objectID": "conditional-5.html#participant-level",
@@ -2160,28 +2160,28 @@
     "href": "conditional-5.html#contextual-effect",
     "title": "conditional",
     "section": "Contextual effect",
-    "text": "Contextual effect\n\nPerson (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.\nWhat would happen if we just left the level 1 raw? Highly correlated coefficients but you are controlling for the mean, so the within person effect \\(\\gamma_{10}\\) is interpreted as the same.\nWhat does “_{01}” test in this case?"
+    "text": "Contextual effect\n\nPerson (Group) mean centering provides us with coefficients for within and between person effect that are not correlated.\nWhat would happen if we just left the level 1 raw but controlled for average levels?"
   },
   {
     "objectID": "conditional-5.html#contextual-effect-1",
     "href": "conditional-5.html#contextual-effect-1",
     "title": "conditional",
     "section": "Contextual effect",
-    "text": "Contextual effect\n\nWe might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?\n“_{01}” tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.\nBeing a stressed person is worse for you than just having a stressful day."
+    "text": "Contextual effect\n\\[{affect}_{ti} = \\beta_{0i} + \\beta_{1i}(Stress_{ti}) + \\varepsilon_{ti}\\]\nLevel 2: \\[{\\beta}_{0i} = \\gamma_{00} + \\gamma_{01}\\overline{Stress_{i}} + U_{0i}\\]\n\\[{\\beta}_{1i} = \\gamma_{10} +  U_{1i}\\]"
   },
   {
     "objectID": "conditional-5.html#contextual-effect-2",
     "href": "conditional-5.html#contextual-effect-2",
     "title": "conditional",
     "section": "Contextual effect",
-    "text": "Contextual effect\n\nTypical we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.\nGrand mean centering does not change the interpretation of the contextual effect and helps with interpretation."
+    "text": "Contextual effect\n\nWe might want to ask is the within person effect similar in magnitude to the between person effect. Is it more important to not be a stressful person or is it more important to not be stressed during a particular time?\n\\(\\gamma_{01}\\) tests the difference between the between and the within effect. Positive means the between person trait effect is stronger than the within person state effect.\nBeing a stressed person is worse for you than just having a stressful day."
   },
   {
     "objectID": "conditional-5.html#categorical-tvc-1",
     "href": "conditional-5.html#categorical-tvc-1",
     "title": "conditional",
     "section": "categorical TVC",
-    "text": "categorical TVC\nDepending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.\nSuggested to keep raw tvc at level 1 but GMC at level 2."
+    "text": "categorical TVC\n\nDepending on your goal it might be confusing/difficult to person mean center. The issue is that centering in this manner leads to values that do not exist e.g. -.5 when your TVC = 0, for example. This also leads to potentially strange/uninterpretable intercepts or other lower order terms.\nYou can keep raw tvc at level 1 but I’d include the person mean at level 2 so as to get the unconfounded within-person effect. Just be clear that the interpretation of level 2 is now the contextual effect."
   },
   {
     "objectID": "conditional-5.html#centering-level-1-not-time",
@@ -2602,5 +2602,12 @@
     "title": "multivariate",
     "section": "residualized (autoregressive) model",
     "text": "residualized (autoregressive) model\nlm(post ~ 1 + pre)\n\nPROs:\nAccounts for error by regressing to the mean, almost “pooling” towards the average as in MLMs.\nControls for initial level.\nCONs:\nAssumes people change via the same process.\nNot a principled way to account for measurement error.\nAssumes same reliability for all."
+  },
+  {
+    "objectID": "conditional-5.html#contextual-effect-3",
+    "href": "conditional-5.html#contextual-effect-3",
+    "title": "conditional",
+    "section": "Contextual effect",
+    "text": "Contextual effect\n\nTypical, for contextual effects, we grand mean center the level 1 rather than leave it raw. The interpretation of the state and trait coefficients do not change, but the intercept may be uninterpretable.\nGrand mean centering does not change the interpretation of the contextual effect but helps with interpretation."
   }
 ]

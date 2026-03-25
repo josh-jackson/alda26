@@ -1,7 +1,7 @@
 ---
 title: "multivariate"
 format: revealjs
-8.75*4slide-number: true
+slide-number: true
 editor: visual
 execute:
   echo: true
