@@ -349,7 +349,6 @@ lm(post ~ 1 + pre)
 
     Assumes same reliability for all.
 
-
 ## Lords Paradox
 
 This has lead to what is known as Lord's paradox. 
@@ -473,14 +472,14 @@ Is equal to the SEM t2 variance. SEM is just regression.
 
 ------------------------------------------------------------------------
 
-Note that this model isn't telling us anything about the difference score or even the means of the numbers per se. .845 and .097 arent 28/4means or differences.
+Note that this model isn't telling us anything about the difference score or even the means of the numbers per se. 
 
 ```{r}
 library(psych)
 describe(df)
 ```
 
-This is why I am not a fan of the residualzed change score. It doesn't get at change the way we typically think of it. Previously our MLMs provide a way to think about what change means, and SEMs will do the same.
+This is why I am not a fan of the residualzed change score. It doesn't get at change the way we typically think of it. Previously our MLMs provide a way to document systamatic change, and SEMs will do the same.
 
 ## Latent change score
 
@@ -791,15 +790,43 @@ Takes our two wave change model and expands it
 
 ![](latent.latent.png)
 
+
+------------------------
+
+
+3.  Longitudinal mediation (MV) 
+
+4.  Cross lag panel model (MV)
+
+5.  Growth models + cross lags (MV)
+
+6.  Latent change/difference score models (often MV)
+
+7.  Dynamic factor and dSEM models. (MV)
+
+8.  Mixture or class based longitudinal models (often MV)
+
+
+
 ## Alternative ways to handle time
 
--   A slight detour before we get back to latent change models
+-   A slight detour before we get back to latent change models. Auto-regressive change is popular in many fields and theories.
+
+- Previous behavior is best predictor of future behavior
 
 ![](autoregress.png)
 
+
 ## Longitudinal Mediation model
 
-See Selig & Preacher, 2009 ![](med1.png)
+- What causal problems 
+
+
+## Longitudinal Mediation model
+
+See Selig & Preacher, 2009 
+
+![](med1.png)
 
 ## Longitudinal Mediation model
 

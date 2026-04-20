@@ -16,3 +16,5 @@ editor: visual
 6.  [Conditional](conditional-5.qmd)
 
 7.  [Multivariate](sem2-6.qmd)
+
+8.  [Mixtures](gmm.qmd)

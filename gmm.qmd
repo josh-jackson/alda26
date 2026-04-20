@@ -1,0 +1,241 @@
+---
+title: "GMM"
+format: revealjs
+slide-number: true
+editor: visual
+execute:
+  echo: true
+html:
+  code-fold: true
+  code-summary: Show the code
+  scrollable: true
+---
+
+## Different trajectories
+
+-   We've been differentiating lines via our covariates: time varying, time-invariant, or multiple processes
+
+-   Moffitt's theory on the development of antisocial and criminal behavior posited a developmental taxonomy consisting of two etiologically distinct groups. Onsets in adolescence and then desists in early adulthood, vs childhood onset but persists throughout adulthood.
+
+-   Can we differentiate groups using just antisocial behavior?
+
+## Person vs variable centered
+
+-   Most psych work is variable centered. The focus is on describing the relationships among variables.
+
+-   Person-centered approaches, include methods such as cluster analysis, latent class analysis, and finite mixture modeling. The focus is on relationships among individuals, and the goal is to classify individuals into distinct groups or categories.
+
+## Data reduction
+
+-   There is a parallel to this in how we reduce large amounts of data to more manageable numbers.
+
+-   Low-d representations help us in terms of fewer parameters, better story telling, less computational problems.
+
+-   many variables --\> small number of variables.
+
+-   Continuous approaches: FA, PCA, CFA, t-SNE, UMAP, ICA, MDS,
+
+## Categorial data reduction approaches
+
+-   Identify groups of individuals. Many variables --\> small number of groups that explain the covariation
+
+-   Clustering, Latent Class Analysis (LCA), Latent Profile Analysis (LPA)
+
+-   Latent variable is discrete rather than continuous.
+
+## Both categorical and continuous
+
+-   Factor Mixture Models: Assumes there are $K$ populations, AND within each population, people vary on continuous factors.
+
+-   Can use both categorical and continuous measures.
+
+-   It captures differences in kind (two or more classes) AND degree (within a class, people have different levels of some covariate)
+
+## K means
+
+-   The algorithm to find $K$ number of clusters (e.g., $K=3$). It drops 3 random "centroids" (center points) into your data. It measures the Euclidean distance from every person to those centroids, assigns the person to the closest one, and then moves the centroid to the middle of its new group. It repeats this until the groups stop shifting.
+
+-   K-means assumes every cluster is a perfect, equally-sized circle. It cannot handle clusters that are long and skinny (highly correlated variables) or clusters that have massive variance (people spread far apart)
+
+## Mixture models
+
+Class Mixture Models as they are a "mixture" of several distinct, unobserved sub-populations (classes) mixed together. Differ from clustering as these are probabilistic vs distance based from k-means.
+
+Latent Class Analysis (LCA): A mixture model where the observed variables are categorical/binary at a single point in time.
+
+Latent Profile Analysis (LPA): A mixture model where the observed variables are continuous at a single point in time.
+
+## LPA
+
+-   Every hidden subgroup (profile) in your data is a Multivariate Normal Distribution.
+
+-   In K-Means, the "mountains" must be perfect circles of the exact same size. In LPA, you have parameters for Variance (how wide the mountain is) and Covariance (whether the mountain is tilted diagonally)
+
+## EM algorithm
+
+-   Expectation-Maximization (EM). Expectation, an educated guess, then maximization (MLE) based on the educated guess, iterate until fit is maximized. Use EM when data is incomplete or has hidden (latent) variables.
+
+-   We don't know the size and shape of our classes, and we don't the probability of anyone belonging to these classes. If we knew one, we could estimate the other, however.
+
+## Typical procedure
+
+1.  Fit multiple models, with different number of classes.
+
+2.  Look at Entropy and class proportions. Entropy ranges from 0 to 1 and informs you on the distinctiveness of each profile from each other profile. .70 and up indicates distinctive profiles. You want to have \> 5% sample in a class.
+
+3.  Model comparison via LRT or AIC/BIC
+
+## Difficulties with skew
+
+-   Assumes data are generated from Gaussian normal distribution. With deviations coming from multiple populations (a mixture of pops).
+
+-   But normality is a high bar to clear. How can one tell the difference between skewed or mixture of populations?
+
+-   If asked a model will invent a classes to cover the skewed tail.
+
+## Understanding development
+
+-   Take a typical growth model. Individual differences in change describe how people differ in their trajectories.
+
+-   What if these differences could be described in a more simple manner?
+
+## Latent Class Growth Analysis (LCGA)
+
+-   Homogeneity of variance across trajectories
+
+-   Model assumes that every single person assigned to a class and everyone within that class follows the exact same trajectory
+
+## Growth Mixture Model (GMM)
+
+-   It's just Latent Profile Analysis applied to growth curves.
+
+-   Or, it's an extension of multiple group growth curve, but with unobserved groups.
+
+-   Inside a class member's are allowed to vary around it. The variance for the Intercept and the Slope within the class are freely estimated
+
+------------------------------------------------------------------------
+
+```{r}
+#| code-fold: true
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lcmm) 
+
+set.seed(2026)
+
+# 1. Simulate the Data
+N <- 300
+time_points <- 0:4
+
+# Create the latent classes
+class_assignment <- sample(1:2, N, replace = TRUE, prob = c(0.3, 0.7))
+
+# Initialize an empty data frame
+df <- data.frame()
+
+for(i in 1:N) {
+  # Assign Intercept and Slope based on hidden class
+  if(class_assignment[i] == 1) {
+    true_int <- rnorm(1, mean = 25, sd = 2)   # Class 1: Starts high
+    true_slope <- rnorm(1, mean = -3, sd = 0.5) # Class 1: Declines rapidly
+  } else {
+    true_int <- rnorm(1, mean = 15, sd = 2)   # Class 2: Starts lower
+    true_slope <- rnorm(1, mean = 0.2, sd = 0.5) # Class 2: Stays flat
+  }
+  
+
+  scores <- true_int + (true_slope * time_points) + rnorm(5, 0, 1.5)
+  
+  temp_df <- data.frame(
+    ID = i,
+    True_Class = factor(class_assignment[i]),
+    Time = time_points,
+    Score = scores
+  )
+  df <- rbind(df, temp_df)
+}
+
+
+p1 <- ggplot(df, aes(x = Time, y = Score, group = ID)) +
+  geom_line(alpha = 0.2, color = "gray30") +
+  geom_smooth(aes(group = 1), method = "lm", color = "black", size = 2, se = FALSE) +
+  theme_minimal(base_size = 15) +
+  labs(title = "Standard Growth Model (Assuming 1 Population)",
+       subtitle = "The black line is the 'average' trajectory.",
+       y = "Psychological Construct") +
+  theme(plot.title = element_text(face = "bold"))
+
+print(p1) 
+
+```
+
+------------------------------------------------------------------------
+
+
+```{r}
+#| code-fold: true
+p2 <- ggplot(df, aes(x = Time, y = Score, group = ID, color = True_Class)) +
+  geom_line(alpha = 0.4) +
+  geom_smooth(aes(group = True_Class), method = "lm", size = 2, se = FALSE) +
+  scale_color_manual(values = c("#D55E00", "#0072B2"), labels = c("Responders", "Non-Responders")) +
+  theme_minimal(base_size = 15) +
+  labs(title = "Growth Mixture Model (Uncovering 2 Classes)",
+       subtitle = "The algorithm finds the hidden subgroups and fits separate trajectories.",
+       y = "Psychological Construct",
+       color = "Latent Class") +
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "bottom")
+
+print(p2)
+
+
+```
+
+## Visualization
+
+-   Can be thought of a latent growth model with a latent class variable predicting intercept and slope.
+
+## How many classes?
+
+## Issues
+
+-   Trying to estimate the mean, the variance, and the covariance for the intercept and slope for every single class can lead to computation problems.
+
+-   May need to simplify. Like LCGA. OR a simple growth model.
+
+## Multivariate guassian
+
+-   GMMs assume that every hidden class is a perfectly symmetrical, normal distribution. But that is likely a high bar to clear, especially with psychological data.
+
+-   But the model doesn't know that, so it will invent a second, fake class (or more) to cover the skewed tail.
+
+## Salsa models
+
+-   Always comes in mild medium and spicy. Patterns of high, medium, and low are not qualitatively distinct
+
+-   If you take a continuous variable (like a trajectory slope) and chop it into categorical buckets (classes), you are mathematically destroying information
+
+-   If that logic applies to dichotomized data, why not for GMMs? \## Theory testing
+
+-   Given that you will likely find classes, as it is a data reduction technique, you have to ask yourself if you think classes are real
+
+-   Normal growth model is simply a 1-Class GMM. So we can directly compare model fit.
+
+## Reification of classes
+
+-   Are groups heuristic or real?
+
+-   The odds of being in group Y relative to group Z increase twofold if you have characteristic W,” have little apparent meaning if the groups are mere figments of the analysis and unstable from one study to the next.
+
+## When could a GMM win?
+
+-   Kind vs degree.
+
+-   If you are dealing with a fundamentally non-linear, interactive, or qualitative shift.
+
+## Related models
+
+-   Longitudinal Latent Class Analysis (LLCA). Ignores the longitudinal nature of the data and just runs an LCA(or LPA)
+
+-   Latent transition models (LTA)
