@@ -2629,7 +2629,7 @@
     "href": "gmm.html#data-reduction",
     "title": "GMM",
     "section": "Data reduction",
-    "text": "Data reduction\n\nThere is a parallel to this in how we reduce large amounts of data to more manageable numbers.\nLow-d representations help us in terms of fewer parameters, better story telling, less computational problems.\nmany variables –&gt; small number of variables.\nContinuous approaches: FA, PCA, CFA, t-SNE, UMAP, ICA, MDS,"
+    "text": "Data reduction\n\nThere is a parallel to this in how we reduce large amounts of data to more manageable numbers.\nLow-d representations help us in terms of fewer parameters, better story telling, less computational problems.\nmany variables –&gt; small number of variables via unsupervised learning.\nContinuous approaches: FA, PCA, CFA, t-SNE, UMAP, ICA, MDS,"
   },
   {
     "objectID": "gmm.html#categorial-data-reduction-approaches",
@@ -2777,5 +2777,19 @@
     "title": "multivariate",
     "section": "Longitudinal Mediation model",
     "text": "Longitudinal Mediation model\nExample where data are not ideal Harris et al. 2017 EJP"
+  },
+  {
+    "objectID": "gmm.html#mixtures",
+    "href": "gmm.html#mixtures",
+    "title": "GMM",
+    "section": "Mixtures",
+    "text": "Mixtures\n\nOften the DGP of our data are complex in that there could be multiple reasons someone responds the way they do. Mixture models allows us to fit more than one DGP at a time\n\n\\[Y \\sim \\textrm{NB}(\\mu,\\phi)\\] \\[y_i  \\sim \\operatorname{ZIPoisson} (p_i, \\lambda_i)\\]"
+  },
+  {
+    "objectID": "gmm.html#mixture-equation",
+    "href": "gmm.html#mixture-equation",
+    "title": "GMM",
+    "section": "Mixture equation",
+    "text": "Mixture equation\n\\[y_i \\sim \\operatorname{GMM}(\\boldsymbol{\\pi}_i, \\boldsymbol{\\mu}_, \\boldsymbol{\\sigma}^2)\\]\n\\[y_i \\sim \\sum_{k=1}^K \\pi_{ik} \\mathcal{N}(\\mu_{k}, \\sigma_{k}^2)\\]\n\n\\(K\\): The total number of latent classes, \\(\\pi_{ik}\\): The probability that individual \\(i\\) belongs to class \\(k\\). \\(\\mathcal{N}\\): The Normal (Gaussian) distribution."
   }
 ]

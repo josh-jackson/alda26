@@ -31,7 +31,7 @@ html:
 
 -   Low-d representations help us in terms of fewer parameters, better story telling, less computational problems.
 
--   many variables --\> small number of variables.
+-   many variables --\> small number of variables via unsupervised learning.
 
 -   Continuous approaches: FA, PCA, CFA, t-SNE, UMAP, ICA, MDS,
 
@@ -64,6 +64,63 @@ Class Mixture Models as they are a "mixture" of several distinct, unobserved sub
 Latent Class Analysis (LCA): A mixture model where the observed variables are categorical/binary at a single point in time.
 
 Latent Profile Analysis (LPA): A mixture model where the observed variables are continuous at a single point in time.
+
+## Mixtures
+
+- Often the DGP of our data are complex in that there could be multiple reasons someone responds the way they do. Mixture models allows us to fit more than one DGP at a time
+
+
+$$Y \sim \textrm{NB}(\mu,\phi)$$
+$$y_i  \sim \operatorname{ZIPoisson} (p_i, \lambda_i)$$
+
+
+## Mixture equation
+
+$$y_i \sim \operatorname{GMM}(\boldsymbol{\pi}_i, \boldsymbol{\mu}_, \boldsymbol{\sigma}^2)$$
+
+$$y_i \sim \sum_{k=1}^K \pi_{ik} \mathcal{N}(\mu_{k}, \sigma_{k}^2)$$ 
+
+- $K$: The total number of latent classes, $\pi_{ik}$: The probability that individual $i$ belongs to class $k$. $\mathcal{N}$: The Normal (Gaussian) distribution.
+
+-----------
+
+```{r}
+#| code-fold: true
+library(ggplot2)
+library(patchwork) 
+
+set.seed(74) 
+n_pop_A <- 500
+n_pop_B <- 500
+scores_A <- rnorm(n_pop_A, mean = 40, sd = 5)
+scores_B <- rnorm(n_pop_B, mean = 55, sd = 10)
+
+df <- data.frame(
+  Variable = c(scores_A, scores_B),
+  Population = factor(rep(c("Population A", "Population B"), c(n_pop_A, n_pop_B)))
+)
+
+plot_combined <- ggplot(df, aes(x = Variable)) +
+  geom_density(fill = "gray60", alpha = 0.6, color = "gray30") +
+  theme_minimal(base_size = 14) +
+  labs(title = "Combined",
+       x = "X",
+       y = "Density")
+
+plot_sep <- ggplot(df, aes(x = Variable, fill = Population)) +
+  geom_density(alpha = 0.6, color = "black") +
+  scale_fill_manual(values = c("#0072B2", "#D55E00")) + 
+  theme_minimal(base_size = 14) +
+  labs(title = "2 Population Mixture",
+       x = "X",
+       y = "Density") +
+  theme(legend.position = c(0.85, 0.85), 
+        legend.background = element_rect(fill = "white", color = NA))
+
+plot_combined / plot_sep
+```
+
+
 
 ## LPA
 
@@ -171,7 +228,6 @@ print(p1)
 ```
 
 ------------------------------------------------------------------------
-
 
 ```{r}
 #| code-fold: true
