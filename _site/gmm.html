@@ -448,6 +448,13 @@
 <p>Latent Class Analysis (LCA): A mixture model where the observed variables are categorical/binary at a single point in time.</p>
 <p>Latent Profile Analysis (LPA): A mixture model where the observed variables are continuous at a single point in time.</p>
 </section>
+<section id="lpa" class="slide level2">
+<h2>LPA</h2>
+<ul>
+<li><p>Every hidden subgroup (profile) in your data is a Multivariate Normal Distribution.</p></li>
+<li><p>In K-Means, the “mountains” must be perfect circles of the exact same size. In LPA, you have parameters for Variance (how wide the mountain is) and Covariance (whether the mountain is tilted diagonally)</p></li>
+</ul>
+</section>
 <section id="mixtures" class="slide level2">
 <h2>Mixtures</h2>
 <ul>
@@ -504,13 +511,6 @@
 
 </div>
 <img data-src="gmm_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"></section>
-<section id="lpa" class="slide level2">
-<h2>LPA</h2>
-<ul>
-<li><p>Every hidden subgroup (profile) in your data is a Multivariate Normal Distribution.</p></li>
-<li><p>In K-Means, the “mountains” must be perfect circles of the exact same size. In LPA, you have parameters for Variance (how wide the mountain is) and Covariance (whether the mountain is tilted diagonally)</p></li>
-</ul>
-</section>
 <section id="em-algorithm" class="slide level2">
 <h2>EM algorithm</h2>
 <ul>
@@ -568,49 +568,43 @@
 <span id="cb2-5"><a href="#cb2-5"></a></span>
 <span id="cb2-6"><a href="#cb2-6"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
 <span id="cb2-7"><a href="#cb2-7"></a></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="co"># 1. Simulate the Data</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>N <span class="ot">&lt;-</span> <span class="dv">300</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="co"># Create the latent classes</span></span>
-<span id="cb2-13"><a href="#cb2-13"></a>class_assignment <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>))</span>
+<span id="cb2-8"><a href="#cb2-8"></a>N <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>class_assignment <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>))</span>
+<span id="cb2-12"><a href="#cb2-12"></a></span>
+<span id="cb2-13"><a href="#cb2-13"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
 <span id="cb2-14"><a href="#cb2-14"></a></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co"># Initialize an empty data frame</span></span>
-<span id="cb2-16"><a href="#cb2-16"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb2-19"><a href="#cb2-19"></a>  <span class="co"># Assign Intercept and Slope based on hidden class</span></span>
-<span id="cb2-20"><a href="#cb2-20"></a>  <span class="cf">if</span>(class_assignment[i] <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb2-21"><a href="#cb2-21"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">25</span>, <span class="at">sd =</span> <span class="dv">2</span>)   <span class="co"># Class 1: Starts high</span></span>
-<span id="cb2-22"><a href="#cb2-22"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">sd =</span> <span class="fl">0.5</span>) <span class="co"># Class 1: Declines rapidly</span></span>
-<span id="cb2-23"><a href="#cb2-23"></a>  } <span class="cf">else</span> {</span>
-<span id="cb2-24"><a href="#cb2-24"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">2</span>)   <span class="co"># Class 2: Starts lower</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="fl">0.2</span>, <span class="at">sd =</span> <span class="fl">0.5</span>) <span class="co"># Class 2: Stays flat</span></span>
-<span id="cb2-26"><a href="#cb2-26"></a>  }</span>
-<span id="cb2-27"><a href="#cb2-27"></a>  </span>
-<span id="cb2-28"><a href="#cb2-28"></a></span>
-<span id="cb2-29"><a href="#cb2-29"></a>  scores <span class="ot">&lt;-</span> true_int <span class="sc">+</span> (true_slope <span class="sc">*</span> time_points) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
-<span id="cb2-30"><a href="#cb2-30"></a>  </span>
-<span id="cb2-31"><a href="#cb2-31"></a>  temp_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb2-32"><a href="#cb2-32"></a>    <span class="at">ID =</span> i,</span>
-<span id="cb2-33"><a href="#cb2-33"></a>    <span class="at">True_Class =</span> <span class="fu">factor</span>(class_assignment[i]),</span>
-<span id="cb2-34"><a href="#cb2-34"></a>    <span class="at">Time =</span> time_points,</span>
-<span id="cb2-35"><a href="#cb2-35"></a>    <span class="at">Score =</span> scores</span>
-<span id="cb2-36"><a href="#cb2-36"></a>  )</span>
-<span id="cb2-37"><a href="#cb2-37"></a>  df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, temp_df)</span>
-<span id="cb2-38"><a href="#cb2-38"></a>}</span>
-<span id="cb2-39"><a href="#cb2-39"></a></span>
-<span id="cb2-40"><a href="#cb2-40"></a></span>
-<span id="cb2-41"><a href="#cb2-41"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">group =</span> ID)) <span class="sc">+</span></span>
-<span id="cb2-42"><a href="#cb2-42"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="st">"gray30"</span>) <span class="sc">+</span></span>
-<span id="cb2-43"><a href="#cb2-43"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb2-44"><a href="#cb2-44"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
-<span id="cb2-45"><a href="#cb2-45"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Standard Growth Model (Assuming 1 Population)"</span>,</span>
-<span id="cb2-46"><a href="#cb2-46"></a>       <span class="at">subtitle =</span> <span class="st">"The black line is the 'average' trajectory."</span>,</span>
-<span id="cb2-47"><a href="#cb2-47"></a>       <span class="at">y =</span> <span class="st">"Psychological Construct"</span>) <span class="sc">+</span></span>
-<span id="cb2-48"><a href="#cb2-48"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>))</span>
-<span id="cb2-49"><a href="#cb2-49"></a></span>
-<span id="cb2-50"><a href="#cb2-50"></a><span class="fu">print</span>(p1) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb2-16"><a href="#cb2-16"></a>  <span class="cf">if</span>(class_assignment[i] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-17"><a href="#cb2-17"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">25</span>, <span class="at">sd =</span> <span class="dv">2</span>)   <span class="co"># Class 1: Starts high</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">3</span>, <span class="at">sd =</span> <span class="fl">0.5</span>) <span class="co"># Class 1: Declines rapidly</span></span>
+<span id="cb2-19"><a href="#cb2-19"></a>  } <span class="cf">else</span> {</span>
+<span id="cb2-20"><a href="#cb2-20"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">2</span>)   <span class="co"># Class 2: Starts lower</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="fl">0.2</span>, <span class="at">sd =</span> <span class="fl">0.5</span>) <span class="co"># Class 2: Stays flat</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  }</span>
+<span id="cb2-23"><a href="#cb2-23"></a></span>
+<span id="cb2-24"><a href="#cb2-24"></a>  scores <span class="ot">&lt;-</span> true_int <span class="sc">+</span> (true_slope <span class="sc">*</span> time_points) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
+<span id="cb2-25"><a href="#cb2-25"></a>  </span>
+<span id="cb2-26"><a href="#cb2-26"></a>  temp_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-27"><a href="#cb2-27"></a>    <span class="at">ID =</span> i,</span>
+<span id="cb2-28"><a href="#cb2-28"></a>    <span class="at">True_Class =</span> <span class="fu">factor</span>(class_assignment[i]),</span>
+<span id="cb2-29"><a href="#cb2-29"></a>    <span class="at">Time =</span> time_points,</span>
+<span id="cb2-30"><a href="#cb2-30"></a>    <span class="at">Score =</span> scores</span>
+<span id="cb2-31"><a href="#cb2-31"></a>  )</span>
+<span id="cb2-32"><a href="#cb2-32"></a>  df <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, temp_df)</span>
+<span id="cb2-33"><a href="#cb2-33"></a>}</span>
+<span id="cb2-34"><a href="#cb2-34"></a></span>
+<span id="cb2-35"><a href="#cb2-35"></a></span>
+<span id="cb2-36"><a href="#cb2-36"></a>p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">group =</span> ID)) <span class="sc">+</span></span>
+<span id="cb2-37"><a href="#cb2-37"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="st">"gray30"</span>) <span class="sc">+</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb2-39"><a href="#cb2-39"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb2-40"><a href="#cb2-40"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"1 trajectory"</span>,</span>
+<span id="cb2-41"><a href="#cb2-41"></a>       <span class="at">y =</span> <span class="st">"DV"</span>) <span class="sc">+</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb2-43"><a href="#cb2-43"></a></span>
+<span id="cb2-44"><a href="#cb2-44"></a>p1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -621,18 +615,17 @@
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">group =</span> ID, <span class="at">color =</span> True_Class)) <span class="sc">+</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
 <span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> True_Class), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#D55E00"</span>, <span class="st">"#0072B2"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Responders"</span>, <span class="st">"Non-Responders"</span>)) <span class="sc">+</span></span>
 <span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Growth Mixture Model (Uncovering 2 Classes)"</span>,</span>
-<span id="cb3-7"><a href="#cb3-7"></a>       <span class="at">subtitle =</span> <span class="st">"The algorithm finds the hidden subgroups and fits separate trajectories."</span>,</span>
-<span id="cb3-8"><a href="#cb3-8"></a>       <span class="at">y =</span> <span class="st">"Psychological Construct"</span>,</span>
-<span id="cb3-9"><a href="#cb3-9"></a>       <span class="at">color =</span> <span class="st">"Latent Class"</span>) <span class="sc">+</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb3-11"><a href="#cb3-11"></a>        <span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="fu">print</span>(p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Growth Mixture Model"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>       <span class="at">y =</span> <span class="st">"DV"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>       <span class="at">color =</span> <span class="st">"Latent Class"</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb3-10"><a href="#cb3-10"></a>        <span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="fu">print</span>(p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 </div>
@@ -643,9 +636,583 @@
 <li>Can be thought of a latent growth model with a latent class variable predicting intercept and slope.</li>
 </ul>
 </section>
+<section id="start-with-simple-growth-model" class="slide level2">
+<h2>start with simple growth model</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>fit_model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Score <span class="sc">~</span> Time <span class="sc">+</span> (Time <span class="sc">|</span> ID), <span class="at">data =</span> df)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">summary</span>(fit_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Score ~ Time + (Time | ID)
+   Data: df
+
+REML criterion at convergence: 6943.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.5846 -0.5422  0.0072  0.5463  2.7217 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ ID       (Intercept) 23.344   4.832         
+          Time         2.327   1.525    -0.87
+ Residual              2.155   1.468         
+Number of obs: 1500, groups:  ID, 300
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 17.82834    0.28657  62.213
+Time        -0.67627    0.09205  -7.347
+
+Correlation of Fixed Effects:
+     (Intr)
+Time -0.869</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">library</span>(marginaleffects)</span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>ind_predictions <span class="ot">&lt;-</span> <span class="fu">predictions</span>(fit_model, <span class="at">newdata =</span> df)</span>
+<span id="cb6-4"><a href="#cb6-4"></a></span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>pop_predictions <span class="ot">&lt;-</span> <span class="fu">predictions</span>(fit_model, </span>
+<span id="cb6-7"><a href="#cb6-7"></a>                               <span class="at">newdata =</span> <span class="fu">datagrid</span>(<span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>), </span>
+<span id="cb6-8"><a href="#cb6-8"></a>                               <span class="at">re.form =</span> <span class="cn">NA</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score), </span>
+<span id="cb6-12"><a href="#cb6-12"></a>             <span class="at">color =</span> <span class="st">"gray60"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> ind_predictions, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate, <span class="at">group =</span> ID), </span>
+<span id="cb6-14"><a href="#cb6-14"></a>            <span class="at">color =</span> <span class="st">"gray50"</span>, <span class="at">alpha =</span> <span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> pop_predictions, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">ymin =</span> conf.low, <span class="at">ymax =</span> conf.high), </span>
+<span id="cb6-16"><a href="#cb6-16"></a>              <span class="at">fill =</span> <span class="st">"#E53935"</span>, <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pop_predictions, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> estimate), </span>
+<span id="cb6-18"><a href="#cb6-18"></a>            <span class="at">color =</span> <span class="st">"#E53935"</span>, <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Model-Implied Trajectories"</span>,</span>
+<span id="cb6-22"><a href="#cb6-22"></a>       <span class="at">x =</span> <span class="st">"Time Point"</span>,</span>
+<span id="cb6-23"><a href="#cb6-23"></a>       <span class="at">y =</span> <span class="st">"Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>estimated_params <span class="ot">&lt;-</span> <span class="fu">coef</span>(fit_model)<span class="sc">$</span>ID</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="fu">colnames</span>(estimated_params) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Est_Intercept"</span>, <span class="st">"Est_Slope"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>estimated_params<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">rownames</span>(estimated_params)</span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a>p_est_int <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(estimated_params, <span class="fu">aes</span>(<span class="at">x =</span> Est_Intercept)) <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">"#4CAF50"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Estimated Intercepts"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10"></a>       <span class="at">x =</span> <span class="st">"Estimated Intercept"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11"></a>       <span class="at">y =</span> <span class="st">"Density"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12"></a></span>
+<span id="cb7-13"><a href="#cb7-13"></a>p_est_slope <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(estimated_params, <span class="fu">aes</span>(<span class="at">x =</span> Est_Slope)) <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">"#2196F3"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Estimated Slopes"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17"></a>       <span class="at">x =</span> <span class="st">"Estimated Slope"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18"></a>       <span class="at">y =</span> <span class="st">"Density"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19"></a></span>
+<span id="cb7-20"><a href="#cb7-20"></a>p_est_scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(estimated_params, <span class="fu">aes</span>(<span class="at">x =</span> Est_Intercept, <span class="at">y =</span> Est_Slope)) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">"#673AB7"</span>) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Intercept vs. Slope Covariance"</span>,</span>
+<span id="cb7-24"><a href="#cb7-24"></a>       <span class="at">x =</span> <span class="st">"Estimated Intercept"</span>,</span>
+<span id="cb7-25"><a href="#cb7-25"></a>       <span class="at">y =</span> <span class="st">"Estimated Slope"</span>)</span>
+<span id="cb7-26"><a href="#cb7-26"></a></span>
+<span id="cb7-27"><a href="#cb7-27"></a>(p_est_int <span class="sc">|</span> p_est_slope) <span class="sc">/</span> p_est_scatter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="latent-class-growth-analysis-model" class="slide level2">
+<h2>Latent class growth analysis model</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">library</span>(lcmm)</span>
+<span id="cb8-2"><a href="#cb8-2"></a></span>
+<span id="cb8-3"><a href="#cb8-3"></a>m1 <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb8-4"><a href="#cb8-4"></a>           <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb8-5"><a href="#cb8-5"></a>           <span class="at">ng =</span> <span class="dv">1</span>, <span class="co"># number of classes</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>           <span class="at">data =</span> df)</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a>m2_lcga <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb8-9"><a href="#cb8-9"></a>                <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb8-10"><a href="#cb8-10"></a>                <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb8-11"><a href="#cb8-11"></a>                <span class="at">ng =</span> <span class="dv">2</span>, </span>
+<span id="cb8-12"><a href="#cb8-12"></a>                <span class="at">data =</span> df, </span>
+<span id="cb8-13"><a href="#cb8-13"></a>                <span class="at">B =</span> m1) <span class="co"># Feeds the starting values from the 1-class model to help the math converge</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="fu">summary</span>(m2_lcga)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Heterogenous linear mixed model 
+     fitted by maximum likelihood method 
+ 
+hlme(fixed = Score ~ Time, mixture = ~Time, subject = "ID", ng = 2, 
+    data = df)
+ 
+Statistical Model: 
+     Dataset: df 
+     Number of subjects: 300 
+     Number of observations: 1500 
+     Number of latent classes: 2 
+     Number of parameters: 6  
+ 
+Iteration process: 
+     Convergence criteria satisfied 
+     Number of iterations:  10 
+     Convergence criteria: parameters= 1.7e-09 
+                         : likelihood= 6e-08 
+                         : second derivatives= 8e-15 
+ 
+Goodness-of-fit statistics: 
+     maximum log-likelihood: -3765.01  
+     AIC: 7542.02  
+     BIC: 7564.24  
+ 
+ 
+Maximum Likelihood Estimates: 
+ 
+Fixed effects in the class-membership model:
+(the class of reference is the last class) 
+
+                     coef      Se    Wald p-value
+intercept class1  0.90148 0.13182   6.839 0.00000
+
+Fixed effects in the longitudinal model:
+
+                     coef      Se    Wald p-value
+intercept class1 15.01204 0.14884 100.864 0.00000
+intercept class2 24.76562 0.25252  98.075 0.00000
+Time class1       0.20016 0.05920   3.381 0.00072
+Time class2      -2.83514 0.10983 -25.813 0.00000
+
+                             coef      Se
+Residual standard error:  2.65744 0.04905</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>class_assignments <span class="ot">&lt;-</span> m2_lcga<span class="sc">$</span>pprob <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">select</span>(ID, <span class="at">Estimated_Class =</span> class)</span>
+<span id="cb10-3"><a href="#cb10-3"></a></span>
+<span id="cb10-4"><a href="#cb10-4"></a>df_plot <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="fu">left_join</span>(class_assignments, <span class="at">by =</span> <span class="st">"ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="fu">mutate</span>(<span class="at">Estimated_Class =</span> <span class="fu">factor</span>(Estimated_Class, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Estimated Class 1"</span>, <span class="st">"Estimated Class 2"</span>)))</span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co"># unfortunately marginaleffects does not work with this package</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>time_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb10-10"><a href="#cb10-10"></a>pred_trajectories <span class="ot">&lt;-</span> <span class="fu">predictY</span>(m2_lcga, <span class="at">newdata =</span> time_grid, <span class="at">var.time =</span> <span class="st">"Time"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>pred_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-13"><a href="#cb10-13"></a>  <span class="at">Time =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb10-14"><a href="#cb10-14"></a>  <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">5</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Estimated Class 1"</span>, <span class="st">"Estimated Class 2"</span>)),</span>
+<span id="cb10-15"><a href="#cb10-15"></a>  <span class="at">Predicted_Score =</span> <span class="fu">c</span>(pred_trajectories<span class="sc">$</span>pred[, <span class="dv">1</span>], pred_trajectories<span class="sc">$</span>pred[, <span class="dv">2</span>])</span>
+<span id="cb10-16"><a href="#cb10-16"></a>)</span>
+<span id="cb10-17"><a href="#cb10-17"></a></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> df_plot, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">group =</span> ID, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb10-20"><a href="#cb10-20"></a>            <span class="at">alpha =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_plot, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb10-22"><a href="#cb10-22"></a>             <span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_df, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb10-24"><a href="#cb10-24"></a>            <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E53935"</span>, <span class="st">"#1E88E5"</span>)) <span class="sc">+</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Latent Class Growth Analysis (LCGA)"</span>,</span>
+<span id="cb10-29"><a href="#cb10-29"></a>       <span class="at">x =</span> <span class="st">"Time Point"</span>,</span>
+<span id="cb10-30"><a href="#cb10-30"></a>       <span class="at">y =</span> <span class="st">"Score"</span>,</span>
+<span id="cb10-31"><a href="#cb10-31"></a>       <span class="at">color =</span> <span class="st">"Class Assignment"</span>) <span class="sc">+</span></span>
+<span id="cb10-32"><a href="#cb10-32"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="did-it-get-it-right" class="slide level2">
+<h2>did it get it right?</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>df_plot <span class="ot">&lt;-</span> df_plot <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="at">Aligned_Class =</span> <span class="fu">ifelse</span>(Estimated_Class <span class="sc">==</span> <span class="st">"Estimated Class 1"</span>, <span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="at">Classification_Status =</span> <span class="fu">ifelse</span>(<span class="fu">as.numeric</span>(True_Class) <span class="sc">==</span> Aligned_Class, </span>
+<span id="cb11-5"><a href="#cb11-5"></a>                                   <span class="st">"Correct"</span>, </span>
+<span id="cb11-6"><a href="#cb11-6"></a>                                   <span class="st">"Incorrect"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  )</span>
+<span id="cb11-8"><a href="#cb11-8"></a></span>
+<span id="cb11-9"><a href="#cb11-9"></a>accuracy_table <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">True =</span> df_plot<span class="sc">$</span>True_Class, <span class="at">Estimated =</span> df_plot<span class="sc">$</span>Aligned_Class)</span>
+<span id="cb11-10"><a href="#cb11-10"></a>accuracy_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Estimated
+True    1    2
+   2   30 1060
+   1  405    5</code></pre>
+</div>
+</div>
+</section>
 <section id="how-many-classes" class="slide level2">
 <h2>How many classes?</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>m3_lcga <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb13-2"><a href="#cb13-2"></a>                <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb13-3"><a href="#cb13-3"></a>                <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb13-4"><a href="#cb13-4"></a>                <span class="at">ng =</span> <span class="dv">3</span>, </span>
+<span id="cb13-5"><a href="#cb13-5"></a>                <span class="at">data =</span> df, </span>
+<span id="cb13-6"><a href="#cb13-6"></a>                <span class="at">B =</span> m1)</span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co"># built in function from lcca</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>comparison_table <span class="ot">&lt;-</span> <span class="fu">summarytable</span>(m1, m2_lcga, m3_lcga)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        G    loglik npm      BIC %class1 %class2 %class3
+m1      1 -4087.719   3 8192.549     100                
+m2_lcga 2 -3765.008   6 7564.239      71      29        
+m3_lcga 3 -3580.683   9 7212.699      29      44      27</code></pre>
+</div>
+</div>
+<p>wut?!</p>
 </section>
+<section id="growth-mixture-model" class="slide level2">
+<h2>Growth mixture model</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>m1_gmm <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb15-2"><a href="#cb15-2"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, <span class="co">#new!</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb15-4"><a href="#cb15-4"></a>               <span class="at">ng =</span> <span class="dv">1</span>, </span>
+<span id="cb15-5"><a href="#cb15-5"></a>               <span class="at">data =</span> df)</span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a>m2_gmm <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb15-8"><a href="#cb15-8"></a>               <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb15-9"><a href="#cb15-9"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb15-10"><a href="#cb15-10"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb15-11"><a href="#cb15-11"></a>               <span class="at">ng =</span> <span class="dv">2</span>, </span>
+<span id="cb15-12"><a href="#cb15-12"></a>               <span class="at">data =</span> df, </span>
+<span id="cb15-13"><a href="#cb15-13"></a>               <span class="at">B =</span> m1_gmm)</span>
+<span id="cb15-14"><a href="#cb15-14"></a></span>
+<span id="cb15-15"><a href="#cb15-15"></a>m3_gmm <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb15-16"><a href="#cb15-16"></a>               <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb15-17"><a href="#cb15-17"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb15-18"><a href="#cb15-18"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb15-19"><a href="#cb15-19"></a>               <span class="at">ng =</span> <span class="dv">3</span>, </span>
+<span id="cb15-20"><a href="#cb15-20"></a>               <span class="at">data =</span> df, </span>
+<span id="cb15-21"><a href="#cb15-21"></a>               <span class="at">B =</span> m1_gmm)</span>
+<span id="cb15-22"><a href="#cb15-22"></a></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="fu">summarytable</span>(m1_gmm, m2_gmm, m3_gmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       G    loglik npm      BIC   %class1  %class2  %class3
+m1_gmm 1 -3469.125   6 6972.472 100.00000                  
+m2_gmm 2 -3340.773   9 6732.880  72.33333 27.66667         
+m3_gmm 3 -3339.805  12 6748.055  31.00000 27.33333 41.66667</code></pre>
+</div>
+</div>
+</section>
+<section id="lo-mendell-rubin-adjusted-lrt" class="slide level2">
+<h2>Lo-Mendell-Rubin Adjusted LRT</h2>
+<ul>
+<li>not available in lcmm… boo. Can use tidySEM or tidyLPA</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">library</span>(tidyLPA)</span>
+<span id="cb17-2"><a href="#cb17-2"></a>sample_size <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>k2_ll <span class="ot">&lt;-</span> m2_gmm<span class="sc">$</span>loglik</span>
+<span id="cb17-4"><a href="#cb17-4"></a>k2_params <span class="ot">&lt;-</span> <span class="fu">length</span>(m2_gmm<span class="sc">$</span>best) <span class="co"># Number of parameters</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>k2_classes <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a></span>
+<span id="cb17-7"><a href="#cb17-7"></a>k3_ll <span class="ot">&lt;-</span> m3_gmm<span class="sc">$</span>loglik</span>
+<span id="cb17-8"><a href="#cb17-8"></a>k3_params <span class="ot">&lt;-</span> <span class="fu">length</span>(m3_gmm<span class="sc">$</span>best)</span>
+<span id="cb17-9"><a href="#cb17-9"></a>k3_classes <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a></span>
+<span id="cb17-11"><a href="#cb17-11"></a>lmr_test <span class="ot">&lt;-</span> <span class="fu">calc_lrt</span>(<span class="at">n =</span> sample_size, </span>
+<span id="cb17-12"><a href="#cb17-12"></a>                     <span class="at">null_ll =</span> k2_ll, </span>
+<span id="cb17-13"><a href="#cb17-13"></a>                     <span class="at">null_param =</span> k2_params, </span>
+<span id="cb17-14"><a href="#cb17-14"></a>                     <span class="at">null_classes =</span> k2_classes, </span>
+<span id="cb17-15"><a href="#cb17-15"></a>                     <span class="at">alt_ll =</span> k3_ll, </span>
+<span id="cb17-16"><a href="#cb17-16"></a>                     <span class="at">alt_param =</span> k3_params, </span>
+<span id="cb17-17"><a href="#cb17-17"></a>                     <span class="at">alt_classes =</span> k3_classes)</span>
+<span id="cb17-18"><a href="#cb17-18"></a></span>
+<span id="cb17-19"><a href="#cb17-19"></a>lmr_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Lo-Mendell-Rubin ad-hoc adjusted likelihood ratio rest:
+
+LR = 1.937, LMR LR (df = 3) = 1.830, p = 0.609</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">summary</span>(m2_gmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Heterogenous linear mixed model 
+     fitted by maximum likelihood method 
+ 
+hlme(fixed = Score ~ Time, mixture = ~Time, random = ~Time, subject = "ID", 
+    ng = 2, data = df)
+ 
+Statistical Model: 
+     Dataset: df 
+     Number of subjects: 300 
+     Number of observations: 1500 
+     Number of latent classes: 2 
+     Number of parameters: 9  
+ 
+Iteration process: 
+     Convergence criteria satisfied 
+     Number of iterations:  28 
+     Convergence criteria: parameters= 7.9e-09 
+                         : likelihood= 4.6e-07 
+                         : second derivatives= 3.3e-14 
+ 
+Goodness-of-fit statistics: 
+     maximum log-likelihood: -3340.77  
+     AIC: 6699.55  
+     BIC: 6732.88  
+ 
+ 
+Maximum Likelihood Estimates: 
+ 
+Fixed effects in the class-membership model:
+(the class of reference is the last class) 
+
+                     coef      Se    Wald p-value
+intercept class1  0.97078 0.12997   7.469 0.00000
+
+Fixed effects in the longitudinal model:
+
+                     coef      Se    Wald p-value
+intercept class1 15.11185 0.15394  98.169 0.00000
+intercept class2 24.99987 0.25160  99.365 0.00000
+Time class1       0.21382 0.04546   4.704 0.00000
+Time class2      -3.02610 0.07466 -40.532 0.00000
+
+
+Variance-covariance matrix of the random-effects:
+          intercept    Time
+intercept   3.78022        
+Time       -0.03996 0.22657
+
+                             coef      Se
+Residual standard error:  1.46784 0.03460</code></pre>
+</div>
+</div>
+</section>
+<section id="assumes-same-variability-random-effects" class="slide level2">
+<h2>assumes same variability (random effects)</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>m2_gmm_varying <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb21-2"><a href="#cb21-2"></a>                       <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb21-3"><a href="#cb21-3"></a>                       <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb21-4"><a href="#cb21-4"></a>                       <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb21-5"><a href="#cb21-5"></a>                       <span class="at">ng =</span> <span class="dv">2</span>, </span>
+<span id="cb21-6"><a href="#cb21-6"></a>                       <span class="at">nwg =</span> <span class="cn">TRUE</span>,  <span class="co"># THE SWITCH</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a>                       <span class="at">data =</span> df, </span>
+<span id="cb21-8"><a href="#cb21-8"></a>                       <span class="at">B =</span> m1_gmm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>To have fully unrestricted matrices, you need more advanced packages, like tidySEM.</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">summary</span>(m2_gmm_varying)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Heterogenous linear mixed model 
+     fitted by maximum likelihood method 
+ 
+hlme(fixed = Score ~ Time, mixture = ~Time, random = ~Time, subject = "ID", 
+    ng = 2, nwg = TRUE, data = df)
+ 
+Statistical Model: 
+     Dataset: df 
+     Number of subjects: 300 
+     Number of observations: 1500 
+     Number of latent classes: 2 
+     Number of parameters: 10  
+ 
+Iteration process: 
+     Convergence criteria satisfied 
+     Number of iterations:  27 
+     Convergence criteria: parameters= 1.4e-06 
+                         : likelihood= 7e-05 
+                         : second derivatives= 6.3e-11 
+ 
+Goodness-of-fit statistics: 
+     maximum log-likelihood: -3340.32  
+     AIC: 6700.65  
+     BIC: 6737.68  
+ 
+ 
+Maximum Likelihood Estimates: 
+ 
+Fixed effects in the class-membership model:
+(the class of reference is the last class) 
+
+                     coef      Se    Wald p-value
+intercept class1 -0.97296 0.13005  -7.481 0.00000
+
+Fixed effects in the longitudinal model:
+
+                     coef      Se    Wald p-value
+intercept class1 25.00721 0.24046 103.998 0.00000
+intercept class2 15.11500 0.15660  96.517 0.00000
+Time class1      -3.02858 0.07255 -41.747 0.00000
+Time class2       0.21282 0.04602   4.625 0.00000
+
+
+Variance-covariance matrix of the random-effects:
+          intercept    Time
+intercept   3.95771        
+Time       -0.04159 0.23779
+
+                                    coef      Se
+Proportional coefficient class1  0.91682 0.08355
+Residual standard error:         1.46733 0.03457</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="fu">summarytable</span>(m2_gmm, m2_gmm_varying)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               G    loglik npm      BIC  %class1  %class2
+m2_gmm         2 -3340.773   9 6732.880 72.33333 27.66667
+m2_gmm_varying 2 -3340.323  10 6737.683 27.66667 72.33333</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>class_assignments <span class="ot">&lt;-</span> m2_gmm<span class="sc">$</span>pprob <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>  <span class="fu">select</span>(ID, <span class="at">Estimated_Class =</span> class)</span>
+<span id="cb26-3"><a href="#cb26-3"></a></span>
+<span id="cb26-4"><a href="#cb26-4"></a>df_plot_gmm <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a>  <span class="fu">left_join</span>(class_assignments, <span class="at">by =</span> <span class="st">"ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-7"><a href="#cb26-7"></a>    <span class="at">pred_ss1 =</span> m2_gmm<span class="sc">$</span>pred<span class="sc">$</span>pred_ss1,</span>
+<span id="cb26-8"><a href="#cb26-8"></a>    <span class="at">pred_ss2 =</span> m2_gmm<span class="sc">$</span>pred<span class="sc">$</span>pred_ss2,</span>
+<span id="cb26-9"><a href="#cb26-9"></a>    <span class="at">Fitted_Ind_Score =</span> <span class="fu">ifelse</span>(Estimated_Class <span class="sc">==</span> <span class="dv">1</span>, pred_ss1, pred_ss2),</span>
+<span id="cb26-10"><a href="#cb26-10"></a>    </span>
+<span id="cb26-11"><a href="#cb26-11"></a>    <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(Estimated_Class, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Class 1"</span>, <span class="st">"Class 2"</span>))</span>
+<span id="cb26-12"><a href="#cb26-12"></a>  )</span>
+<span id="cb26-13"><a href="#cb26-13"></a></span>
+<span id="cb26-14"><a href="#cb26-14"></a>time_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb26-15"><a href="#cb26-15"></a>class_trajectories <span class="ot">&lt;-</span> <span class="fu">predictY</span>(m2_gmm, <span class="at">newdata =</span> time_grid, <span class="at">var.time =</span> <span class="st">"Time"</span>)</span>
+<span id="cb26-16"><a href="#cb26-16"></a></span>
+<span id="cb26-17"><a href="#cb26-17"></a>pred_df_gmm <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-18"><a href="#cb26-18"></a>  <span class="at">Time =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb26-19"><a href="#cb26-19"></a>  <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">5</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Class 1"</span>, <span class="st">"Class 2"</span>)),</span>
+<span id="cb26-20"><a href="#cb26-20"></a>  <span class="at">Predicted_Score =</span> <span class="fu">c</span>(class_trajectories<span class="sc">$</span>pred[, <span class="dv">1</span>], class_trajectories<span class="sc">$</span>pred[, <span class="dv">2</span>])</span>
+<span id="cb26-21"><a href="#cb26-21"></a>)</span>
+<span id="cb26-22"><a href="#cb26-22"></a></span>
+<span id="cb26-23"><a href="#cb26-23"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> df_plot_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Fitted_Ind_Score, <span class="at">group =</span> ID, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb26-25"><a href="#cb26-25"></a>            <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb26-26"><a href="#cb26-26"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_plot_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb26-27"><a href="#cb26-27"></a>             <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb26-28"><a href="#cb26-28"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_df_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb26-29"><a href="#cb26-29"></a>            <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb26-30"><a href="#cb26-30"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb26-31"><a href="#cb26-31"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E53935"</span>, <span class="st">"#1E88E5"</span>)) <span class="sc">+</span></span>
+<span id="cb26-32"><a href="#cb26-32"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb26-33"><a href="#cb26-33"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Growth Mixture Model (GMM)"</span>,</span>
+<span id="cb26-34"><a href="#cb26-34"></a>       <span class="at">x =</span> <span class="st">"Time Point"</span>,</span>
+<span id="cb26-35"><a href="#cb26-35"></a>       <span class="at">y =</span> <span class="st">"Score"</span>,</span>
+<span id="cb26-36"><a href="#cb26-36"></a>       <span class="at">color =</span> <span class="st">"Estimated Class"</span>) <span class="sc">+</span></span>
+<span id="cb26-37"><a href="#cb26-37"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-17-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>class_assignments <span class="ot">&lt;-</span> m2_gmm_varying<span class="sc">$</span>pprob <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>  <span class="fu">select</span>(ID, <span class="at">Estimated_Class =</span> class)</span>
+<span id="cb27-3"><a href="#cb27-3"></a></span>
+<span id="cb27-4"><a href="#cb27-4"></a>df_plot_gmm <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>  <span class="fu">left_join</span>(class_assignments, <span class="at">by =</span> <span class="st">"ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb27-7"><a href="#cb27-7"></a>    <span class="at">pred_ss1 =</span> m2_gmm_varying<span class="sc">$</span>pred<span class="sc">$</span>pred_ss1,</span>
+<span id="cb27-8"><a href="#cb27-8"></a>    <span class="at">pred_ss2 =</span> m2_gmm_varying<span class="sc">$</span>pred<span class="sc">$</span>pred_ss2,</span>
+<span id="cb27-9"><a href="#cb27-9"></a>    <span class="at">Fitted_Ind_Score =</span> <span class="fu">ifelse</span>(Estimated_Class <span class="sc">==</span> <span class="dv">1</span>, pred_ss1, pred_ss2),</span>
+<span id="cb27-10"><a href="#cb27-10"></a>    </span>
+<span id="cb27-11"><a href="#cb27-11"></a>    <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(Estimated_Class, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Class 1"</span>, <span class="st">"Class 2"</span>))</span>
+<span id="cb27-12"><a href="#cb27-12"></a>  )</span>
+<span id="cb27-13"><a href="#cb27-13"></a></span>
+<span id="cb27-14"><a href="#cb27-14"></a>time_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb27-15"><a href="#cb27-15"></a>class_trajectories <span class="ot">&lt;-</span> <span class="fu">predictY</span>(m2_gmm_varying, <span class="at">newdata =</span> time_grid, <span class="at">var.time =</span> <span class="st">"Time"</span>)</span>
+<span id="cb27-16"><a href="#cb27-16"></a></span>
+<span id="cb27-17"><a href="#cb27-17"></a>pred_df_gmm <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb27-18"><a href="#cb27-18"></a>  <span class="at">Time =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">2</span>),</span>
+<span id="cb27-19"><a href="#cb27-19"></a>  <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">each =</span> <span class="dv">5</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Class 1"</span>, <span class="st">"Class 2"</span>)),</span>
+<span id="cb27-20"><a href="#cb27-20"></a>  <span class="at">Predicted_Score =</span> <span class="fu">c</span>(class_trajectories<span class="sc">$</span>pred[, <span class="dv">1</span>], class_trajectories<span class="sc">$</span>pred[, <span class="dv">2</span>])</span>
+<span id="cb27-21"><a href="#cb27-21"></a>)</span>
+<span id="cb27-22"><a href="#cb27-22"></a></span>
+<span id="cb27-23"><a href="#cb27-23"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb27-24"><a href="#cb27-24"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> df_plot_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Fitted_Ind_Score, <span class="at">group =</span> ID, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb27-25"><a href="#cb27-25"></a>            <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb27-26"><a href="#cb27-26"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> df_plot_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb27-27"><a href="#cb27-27"></a>             <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-28"><a href="#cb27-28"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_df_gmm, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb27-29"><a href="#cb27-29"></a>            <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb27-30"><a href="#cb27-30"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb27-31"><a href="#cb27-31"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>( <span class="st">"#1E88E5"</span>, <span class="st">"#E53935"</span>)) <span class="sc">+</span></span>
+<span id="cb27-32"><a href="#cb27-32"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb27-33"><a href="#cb27-33"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Growth Mixture Model (GMM)"</span>,</span>
+<span id="cb27-34"><a href="#cb27-34"></a>       <span class="at">x =</span> <span class="st">"Time Point"</span>,</span>
+<span id="cb27-35"><a href="#cb27-35"></a>       <span class="at">y =</span> <span class="st">"Score"</span>,</span>
+<span id="cb27-36"><a href="#cb27-36"></a>       <span class="at">color =</span> <span class="st">"Estimated Class"</span>) <span class="sc">+</span></span>
+<span id="cb27-37"><a href="#cb27-37"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-18-1.png" width="960" class="r-stretch"></section>
 <section id="issues" class="slide level2">
 <h2>Issues</h2>
 <ul>
@@ -665,7 +1232,252 @@
 <ul>
 <li><p>Always comes in mild medium and spicy. Patterns of high, medium, and low are not qualitatively distinct</p></li>
 <li><p>If you take a continuous variable (like a trajectory slope) and chop it into categorical buckets (classes), you are mathematically destroying information</p></li>
-<li><p>If that logic applies to dichotomized data, why not for GMMs? ## Theory testing</p></li>
+<li><p>If that logic applies to dichotomized data, why not for GMMs?</p></li>
+</ul>
+</section>
+<section id="simulated-data" class="slide level2">
+<h2>simulated data</h2>
+<ul>
+<li>will we be able to find differences if they are slight?</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb28-2"><a href="#cb28-2"></a></span>
+<span id="cb28-3"><a href="#cb28-3"></a>N <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a></span>
+<span id="cb28-6"><a href="#cb28-6"></a>class_assignment <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, N, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.7</span>))</span>
+<span id="cb28-7"><a href="#cb28-7"></a></span>
+<span id="cb28-8"><a href="#cb28-8"></a>df2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb28-10"><a href="#cb28-10"></a>  <span class="cf">if</span>(class_assignment[i] <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb28-11"><a href="#cb28-11"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">5</span>)   <span class="co"># Class 1</span></span>
+<span id="cb28-12"><a href="#cb28-12"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">5</span>) <span class="co"># Class 1</span></span>
+<span id="cb28-13"><a href="#cb28-13"></a>  } <span class="cf">else</span> {</span>
+<span id="cb28-14"><a href="#cb28-14"></a>    true_int <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">12</span>, <span class="at">sd =</span> <span class="dv">5</span>)   <span class="co"># Class 2 </span></span>
+<span id="cb28-15"><a href="#cb28-15"></a>    true_slope <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="fl">1.5</span>, <span class="at">sd =</span> <span class="dv">5</span>) <span class="co"># Class 2</span></span>
+<span id="cb28-16"><a href="#cb28-16"></a>  }</span>
+<span id="cb28-17"><a href="#cb28-17"></a></span>
+<span id="cb28-18"><a href="#cb28-18"></a>  scores <span class="ot">&lt;-</span> true_int <span class="sc">+</span> (true_slope <span class="sc">*</span> time_points) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
+<span id="cb28-19"><a href="#cb28-19"></a>  </span>
+<span id="cb28-20"><a href="#cb28-20"></a>  temp_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-21"><a href="#cb28-21"></a>    <span class="at">ID =</span> i,</span>
+<span id="cb28-22"><a href="#cb28-22"></a>    <span class="at">True_Class =</span> <span class="fu">factor</span>(class_assignment[i]),</span>
+<span id="cb28-23"><a href="#cb28-23"></a>    <span class="at">Time =</span> time_points,</span>
+<span id="cb28-24"><a href="#cb28-24"></a>    <span class="at">Score =</span> scores</span>
+<span id="cb28-25"><a href="#cb28-25"></a>  )</span>
+<span id="cb28-26"><a href="#cb28-26"></a>  df2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df, temp_df)</span>
+<span id="cb28-27"><a href="#cb28-27"></a>}</span>
+<span id="cb28-28"><a href="#cb28-28"></a></span>
+<span id="cb28-29"><a href="#cb28-29"></a></span>
+<span id="cb28-30"><a href="#cb28-30"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df2, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Score, <span class="at">group =</span> ID)) <span class="sc">+</span></span>
+<span id="cb28-31"><a href="#cb28-31"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="st">"gray30"</span>) <span class="sc">+</span></span>
+<span id="cb28-32"><a href="#cb28-32"></a>  <span class="fu">geom_smooth</span>(<span class="fu">aes</span>(<span class="at">group =</span> <span class="dv">1</span>), <span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb28-33"><a href="#cb28-33"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb28-34"><a href="#cb28-34"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"1 trajectory"</span>,</span>
+<span id="cb28-35"><a href="#cb28-35"></a>       <span class="at">y =</span> <span class="st">"DV"</span>) <span class="sc">+</span></span>
+<span id="cb28-36"><a href="#cb28-36"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb28-37"><a href="#cb28-37"></a></span>
+<span id="cb28-38"><a href="#cb28-38"></a>p2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-19-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>m1_gmm2 <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb29-2"><a href="#cb29-2"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb29-3"><a href="#cb29-3"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb29-4"><a href="#cb29-4"></a>               <span class="at">ng =</span> <span class="dv">1</span>, </span>
+<span id="cb29-5"><a href="#cb29-5"></a>               <span class="at">data =</span> df2)</span>
+<span id="cb29-6"><a href="#cb29-6"></a></span>
+<span id="cb29-7"><a href="#cb29-7"></a>m2_gmm2 <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb29-8"><a href="#cb29-8"></a>               <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb29-9"><a href="#cb29-9"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb29-10"><a href="#cb29-10"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb29-11"><a href="#cb29-11"></a>               <span class="at">ng =</span> <span class="dv">2</span>, </span>
+<span id="cb29-12"><a href="#cb29-12"></a>               <span class="at">data =</span> df2, </span>
+<span id="cb29-13"><a href="#cb29-13"></a>               <span class="at">B =</span> m1_gmm2)</span>
+<span id="cb29-14"><a href="#cb29-14"></a></span>
+<span id="cb29-15"><a href="#cb29-15"></a>m3_gmm2 <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb29-16"><a href="#cb29-16"></a>               <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb29-17"><a href="#cb29-17"></a>               <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb29-18"><a href="#cb29-18"></a>               <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb29-19"><a href="#cb29-19"></a>               <span class="at">ng =</span> <span class="dv">3</span>, </span>
+<span id="cb29-20"><a href="#cb29-20"></a>               <span class="at">data =</span> df2, </span>
+<span id="cb29-21"><a href="#cb29-21"></a>               <span class="at">B =</span> m1_gmm2)</span>
+<span id="cb29-22"><a href="#cb29-22"></a></span>
+<span id="cb29-23"><a href="#cb29-23"></a></span>
+<span id="cb29-24"><a href="#cb29-24"></a><span class="fu">summarytable</span>(m1_gmm2, m2_gmm2, m3_gmm2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        G    loglik npm      BIC   %class1  %class2  %class3
+m1_gmm2 1 -3529.382   6 7092.986 100.00000                  
+m2_gmm2 2 -3408.849   9 6869.031  72.33333 27.66667         
+m3_gmm2 3 -3408.220  12 6884.886  55.33333 17.00000 27.66667</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>-what if our random effects are skewed?</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>) </span>
+<span id="cb31-2"><a href="#cb31-2"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>time_points <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb31-4"><a href="#cb31-4"></a></span>
+<span id="cb31-5"><a href="#cb31-5"></a>df_spurious <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb31-6"><a href="#cb31-6"></a>params_spurious <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb31-7"><a href="#cb31-7"></a></span>
+<span id="cb31-8"><a href="#cb31-8"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb31-9"><a href="#cb31-9"></a>  true_int <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">1</span>, <span class="at">shape =</span> <span class="dv">2</span>, <span class="at">rate =</span> <span class="fl">0.2</span>) <span class="sc">+</span> <span class="dv">10</span> </span>
+<span id="cb31-10"><a href="#cb31-10"></a>  true_slope <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">1</span>, <span class="at">shape =</span> <span class="dv">2</span>, <span class="at">rate =</span> <span class="dv">1</span>)      </span>
+<span id="cb31-11"><a href="#cb31-11"></a>  </span>
+<span id="cb31-12"><a href="#cb31-12"></a>  scores <span class="ot">&lt;-</span> true_int <span class="sc">+</span> (true_slope <span class="sc">*</span> time_points) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">0</span>, <span class="fl">1.5</span>)</span>
+<span id="cb31-13"><a href="#cb31-13"></a>  </span>
+<span id="cb31-14"><a href="#cb31-14"></a>  temp_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb31-15"><a href="#cb31-15"></a>    <span class="at">ID =</span> i,</span>
+<span id="cb31-16"><a href="#cb31-16"></a>    <span class="at">True_Class =</span> <span class="fu">factor</span>(<span class="dv">1</span>), </span>
+<span id="cb31-17"><a href="#cb31-17"></a>    <span class="at">Time =</span> time_points,</span>
+<span id="cb31-18"><a href="#cb31-18"></a>    <span class="at">Score =</span> scores</span>
+<span id="cb31-19"><a href="#cb31-19"></a>  )</span>
+<span id="cb31-20"><a href="#cb31-20"></a>  df_spurious <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_spurious, temp_df)</span>
+<span id="cb31-21"><a href="#cb31-21"></a>    params_spurious <span class="ot">&lt;-</span> <span class="fu">rbind</span>(params_spurious, <span class="fu">data.frame</span>(</span>
+<span id="cb31-22"><a href="#cb31-22"></a>    <span class="at">ID =</span> i, </span>
+<span id="cb31-23"><a href="#cb31-23"></a>    <span class="at">True_Int =</span> true_int, </span>
+<span id="cb31-24"><a href="#cb31-24"></a>    <span class="at">True_Slope =</span> true_slope</span>
+<span id="cb31-25"><a href="#cb31-25"></a>  ))</span>
+<span id="cb31-26"><a href="#cb31-26"></a>}</span>
+<span id="cb31-27"><a href="#cb31-27"></a></span>
+<span id="cb31-28"><a href="#cb31-28"></a>m1_spur <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb31-29"><a href="#cb31-29"></a>                <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb31-30"><a href="#cb31-30"></a>                <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb31-31"><a href="#cb31-31"></a>                <span class="at">ng =</span> <span class="dv">1</span>, </span>
+<span id="cb31-32"><a href="#cb31-32"></a>                <span class="at">data =</span> df_spurious)</span>
+<span id="cb31-33"><a href="#cb31-33"></a></span>
+<span id="cb31-34"><a href="#cb31-34"></a></span>
+<span id="cb31-35"><a href="#cb31-35"></a>m2_spur <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb31-36"><a href="#cb31-36"></a>                <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb31-37"><a href="#cb31-37"></a>                <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb31-38"><a href="#cb31-38"></a>                <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb31-39"><a href="#cb31-39"></a>                <span class="at">ng =</span> <span class="dv">2</span>, </span>
+<span id="cb31-40"><a href="#cb31-40"></a>                <span class="at">data =</span> df_spurious, </span>
+<span id="cb31-41"><a href="#cb31-41"></a>                <span class="at">B =</span> m1_spur)</span>
+<span id="cb31-42"><a href="#cb31-42"></a></span>
+<span id="cb31-43"><a href="#cb31-43"></a>m3_spur <span class="ot">&lt;-</span> <span class="fu">hlme</span>(Score <span class="sc">~</span> Time, </span>
+<span id="cb31-44"><a href="#cb31-44"></a>                <span class="at">mixture =</span> <span class="sc">~</span> Time, </span>
+<span id="cb31-45"><a href="#cb31-45"></a>                <span class="at">random =</span> <span class="sc">~</span> Time, </span>
+<span id="cb31-46"><a href="#cb31-46"></a>                <span class="at">subject =</span> <span class="st">"ID"</span>, </span>
+<span id="cb31-47"><a href="#cb31-47"></a>                <span class="at">ng =</span> <span class="dv">3</span>, </span>
+<span id="cb31-48"><a href="#cb31-48"></a>                <span class="at">data =</span> df_spurious, </span>
+<span id="cb31-49"><a href="#cb31-49"></a>                <span class="at">B =</span> m1_spur)</span>
+<span id="cb31-50"><a href="#cb31-50"></a></span>
+<span id="cb31-51"><a href="#cb31-51"></a><span class="fu">summarytable</span>(m1_spur, m2_spur, m3_spur)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        G    loglik npm      BIC %class1 %class2 %class3
+m1_spur 1 -6325.167   6 12687.62   100.0                
+m2_spur 2 -6325.167   9 12706.27    55.2    44.8        
+m3_spur 3 -6253.552  12 12581.68    77.6     7.6    14.8</code></pre>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>fake_classes2 <span class="ot">&lt;-</span> m3_spur<span class="sc">$</span>pprob <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID, <span class="at">Estimated_Class =</span> class) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a>  <span class="fu">mutate</span>(<span class="at">Estimated_Class =</span> <span class="fu">factor</span>(Estimated_Class, </span>
+<span id="cb33-4"><a href="#cb33-4"></a>                                  <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>,<span class="dv">3</span>), </span>
+<span id="cb33-5"><a href="#cb33-5"></a>                                  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Fake Class 1"</span>, <span class="st">"Fake Class 2"</span>, <span class="st">"Fake Class 3"</span>)))</span>
+<span id="cb33-6"><a href="#cb33-6"></a></span>
+<span id="cb33-7"><a href="#cb33-7"></a></span>
+<span id="cb33-8"><a href="#cb33-8"></a>plot_data2 <span class="ot">&lt;-</span> params_spurious <span class="sc">%&gt;%</span></span>
+<span id="cb33-9"><a href="#cb33-9"></a>  <span class="fu">left_join</span>(fake_classes2, <span class="at">by =</span> <span class="st">"ID"</span>)</span>
+<span id="cb33-10"><a href="#cb33-10"></a></span>
+<span id="cb33-11"><a href="#cb33-11"></a><span class="fu">ggplot</span>(plot_data2, <span class="fu">aes</span>(<span class="at">x =</span> True_Int, <span class="at">y =</span> True_Slope, <span class="at">color =</span> Estimated_Class)) <span class="sc">+</span></span>
+<span id="cb33-12"><a href="#cb33-12"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb33-13"><a href="#cb33-13"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb33-14"><a href="#cb33-14"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb33-15"><a href="#cb33-15"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Spurious Classes"</span>,</span>
+<span id="cb33-16"><a href="#cb33-16"></a>       <span class="at">x =</span> <span class="st">"True Individual Intercepts"</span>,</span>
+<span id="cb33-17"><a href="#cb33-17"></a>       <span class="at">y =</span> <span class="st">"True Individual Slopes"</span>,</span>
+<span id="cb33-18"><a href="#cb33-18"></a>       <span class="at">color =</span> <span class="st">"Model class"</span>) <span class="sc">+</span></span>
+<span id="cb33-19"><a href="#cb33-19"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>class_assignments3 <span class="ot">&lt;-</span> m3_spur<span class="sc">$</span>pprob <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID, <span class="at">Estimated_Class =</span> class) <span class="sc">%&gt;%</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">mutate</span>(<span class="at">Estimated_Class =</span> <span class="fu">factor</span>(Estimated_Class, </span>
+<span id="cb34-4"><a href="#cb34-4"></a>                                  <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), </span>
+<span id="cb34-5"><a href="#cb34-5"></a>                                  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Fake Class 1"</span>, <span class="st">"Fake Class 2"</span>, <span class="st">"Fake Class 3"</span>)))</span>
+<span id="cb34-6"><a href="#cb34-6"></a></span>
+<span id="cb34-7"><a href="#cb34-7"></a>df_plot_spur3 <span class="ot">&lt;-</span> df_spurious <span class="sc">%&gt;%</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a>  <span class="fu">left_join</span>(class_assignments3, <span class="at">by =</span> <span class="st">"ID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb34-9"><a href="#cb34-9"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb34-10"><a href="#cb34-10"></a></span>
+<span id="cb34-11"><a href="#cb34-11"></a>    <span class="at">pred_ss1 =</span> m3_spur<span class="sc">$</span>pred<span class="sc">$</span>pred_ss1,</span>
+<span id="cb34-12"><a href="#cb34-12"></a>    <span class="at">pred_ss2 =</span> m3_spur<span class="sc">$</span>pred<span class="sc">$</span>pred_ss2,</span>
+<span id="cb34-13"><a href="#cb34-13"></a>    <span class="at">pred_ss3 =</span> m3_spur<span class="sc">$</span>pred<span class="sc">$</span>pred_ss3,</span>
+<span id="cb34-14"><a href="#cb34-14"></a>    </span>
+<span id="cb34-15"><a href="#cb34-15"></a>    <span class="at">Fitted_Ind_Score =</span> <span class="fu">case_when</span>(</span>
+<span id="cb34-16"><a href="#cb34-16"></a>      Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 1"</span> <span class="sc">~</span> pred_ss1,</span>
+<span id="cb34-17"><a href="#cb34-17"></a>      Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 2"</span> <span class="sc">~</span> pred_ss2,</span>
+<span id="cb34-18"><a href="#cb34-18"></a>      Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 3"</span> <span class="sc">~</span> pred_ss3</span>
+<span id="cb34-19"><a href="#cb34-19"></a>    )</span>
+<span id="cb34-20"><a href="#cb34-20"></a>  )</span>
+<span id="cb34-21"><a href="#cb34-21"></a></span>
+<span id="cb34-22"><a href="#cb34-22"></a>time_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Time =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb34-23"><a href="#cb34-23"></a>class_traj3 <span class="ot">&lt;-</span> <span class="fu">predictY</span>(m3_spur, <span class="at">newdata =</span> time_grid, <span class="at">var.time =</span> <span class="st">"Time"</span>)</span>
+<span id="cb34-24"><a href="#cb34-24"></a></span>
+<span id="cb34-25"><a href="#cb34-25"></a></span>
+<span id="cb34-26"><a href="#cb34-26"></a>pred_df_spur3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb34-27"><a href="#cb34-27"></a>  <span class="at">Time =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="dv">3</span>),</span>
+<span id="cb34-28"><a href="#cb34-28"></a>  <span class="at">Estimated_Class =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">each =</span> <span class="dv">5</span>), </span>
+<span id="cb34-29"><a href="#cb34-29"></a>                           <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Fake Class 1"</span>, <span class="st">"Fake Class 2"</span>, <span class="st">"Fake Class 3"</span>)),</span>
+<span id="cb34-30"><a href="#cb34-30"></a>  <span class="at">Predicted_Score =</span> <span class="fu">c</span>(class_traj3<span class="sc">$</span>pred[, <span class="dv">1</span>], class_traj3<span class="sc">$</span>pred[, <span class="dv">2</span>], class_traj3<span class="sc">$</span>pred[, <span class="dv">3</span>])</span>
+<span id="cb34-31"><a href="#cb34-31"></a>)</span>
+<span id="cb34-32"><a href="#cb34-32"></a></span>
+<span id="cb34-33"><a href="#cb34-33"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb34-34"><a href="#cb34-34"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> df_plot_spur3, <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Fitted_Ind_Score, <span class="at">group =</span> ID, <span class="at">color =</span> Estimated_Class), </span>
+<span id="cb34-35"><a href="#cb34-35"></a>            <span class="at">alpha =</span> <span class="fl">0.3</span>) <span class="sc">+</span></span>
+<span id="cb34-36"><a href="#cb34-36"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">filter</span>(pred_df_spur3, Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 1"</span>), </span>
+<span id="cb34-37"><a href="#cb34-37"></a>            <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score), <span class="at">color =</span> <span class="st">"#B35900"</span>, <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span> </span>
+<span id="cb34-38"><a href="#cb34-38"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">filter</span>(pred_df_spur3, Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 2"</span>), </span>
+<span id="cb34-39"><a href="#cb34-39"></a>            <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score), <span class="at">color =</span> <span class="st">"#00558A"</span>, <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span> </span>
+<span id="cb34-40"><a href="#cb34-40"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">filter</span>(pred_df_spur3, Estimated_Class <span class="sc">==</span> <span class="st">"Fake Class 3"</span>), </span>
+<span id="cb34-41"><a href="#cb34-41"></a>            <span class="fu">aes</span>(<span class="at">x =</span> Time, <span class="at">y =</span> Predicted_Score), <span class="at">color =</span> <span class="st">"#004D38"</span>, <span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span> </span>
+<span id="cb34-42"><a href="#cb34-42"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb34-43"><a href="#cb34-43"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>)) <span class="sc">+</span> </span>
+<span id="cb34-44"><a href="#cb34-44"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb34-45"><a href="#cb34-45"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"3-Class"</span>,</span>
+<span id="cb34-46"><a href="#cb34-46"></a>       <span class="at">x =</span> <span class="st">"Time Point"</span>,</span>
+<span id="cb34-47"><a href="#cb34-47"></a>       <span class="at">y =</span> <span class="st">"Score"</span>,</span>
+<span id="cb34-48"><a href="#cb34-48"></a>       <span class="at">color =</span> <span class="st">"Model's Guess"</span>) <span class="sc">+</span></span>
+<span id="cb34-49"><a href="#cb34-49"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="gmm_files/figure-revealjs/unnamed-chunk-23-1.png" width="960" class="r-stretch"></section>
+<section id="theory-testing" class="slide level2">
+<h2>Theory testing</h2>
+<ul>
 <li><p>Given that you will likely find classes, as it is a data reduction technique, you have to ask yourself if you think classes are real</p></li>
 <li><p>Normal growth model is simply a 1-Class GMM. So we can directly compare model fit.</p></li>
 </ul>

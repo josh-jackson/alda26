@@ -2720,7 +2720,7 @@
     "href": "gmm.html#how-many-classes",
     "title": "GMM",
     "section": "How many classes?",
-    "text": "How many classes?"
+    "text": "How many classes?\n\n\nCode\nm3_lcga &lt;- hlme(Score ~ Time, \n                mixture = ~ Time, \n                subject = \"ID\", \n                ng = 3, \n                data = df, \n                B = m1)\n# built in function from lcca\ncomparison_table &lt;- summarytable(m1, m2_lcga, m3_lcga)\n\n\n        G    loglik npm      BIC %class1 %class2 %class3\nm1      1 -4087.719   3 8192.549     100                \nm2_lcga 2 -3765.008   6 7564.239      71      29        \nm3_lcga 3 -3580.683   9 7212.699      29      44      27\n\n\nwut?!"
   },
   {
     "objectID": "gmm.html#issues",
@@ -2741,7 +2741,7 @@
     "href": "gmm.html#salsa-models",
     "title": "GMM",
     "section": "Salsa models",
-    "text": "Salsa models\n\nAlways comes in mild medium and spicy. Patterns of high, medium, and low are not qualitatively distinct\nIf you take a continuous variable (like a trajectory slope) and chop it into categorical buckets (classes), you are mathematically destroying information\nIf that logic applies to dichotomized data, why not for GMMs? ## Theory testing\nGiven that you will likely find classes, as it is a data reduction technique, you have to ask yourself if you think classes are real\nNormal growth model is simply a 1-Class GMM. So we can directly compare model fit."
+    "text": "Salsa models\n\nAlways comes in mild medium and spicy. Patterns of high, medium, and low are not qualitatively distinct\nIf you take a continuous variable (like a trajectory slope) and chop it into categorical buckets (classes), you are mathematically destroying information\nIf that logic applies to dichotomized data, why not for GMMs?"
   },
   {
     "objectID": "gmm.html#reification-of-classes",
@@ -2791,5 +2791,61 @@
     "title": "GMM",
     "section": "Mixture equation",
     "text": "Mixture equation\n\\[y_i \\sim \\operatorname{GMM}(\\boldsymbol{\\pi}_i, \\boldsymbol{\\mu}_, \\boldsymbol{\\sigma}^2)\\]\n\\[y_i \\sim \\sum_{k=1}^K \\pi_{ik} \\mathcal{N}(\\mu_{k}, \\sigma_{k}^2)\\]\n\n\\(K\\): The total number of latent classes, \\(\\pi_{ik}\\): The probability that individual \\(i\\) belongs to class \\(k\\). \\(\\mathcal{N}\\): The Normal (Gaussian) distribution."
+  },
+  {
+    "objectID": "gmm.html#start-with-simple-growth-model",
+    "href": "gmm.html#start-with-simple-growth-model",
+    "title": "GMM",
+    "section": "start with simple growth model",
+    "text": "start with simple growth model\n\n\nCode\nlibrary(lme4)\nfit_model &lt;- lmer(Score ~ Time + (Time | ID), data = df)\nsummary(fit_model)\n\n\nLinear mixed model fit by REML ['lmerMod']\nFormula: Score ~ Time + (Time | ID)\n   Data: df\n\nREML criterion at convergence: 6943.3\n\nScaled residuals: \n    Min      1Q  Median      3Q     Max \n-2.5846 -0.5422  0.0072  0.5463  2.7217 \n\nRandom effects:\n Groups   Name        Variance Std.Dev. Corr \n ID       (Intercept) 23.344   4.832         \n          Time         2.327   1.525    -0.87\n Residual              2.155   1.468         \nNumber of obs: 1500, groups:  ID, 300\n\nFixed effects:\n            Estimate Std. Error t value\n(Intercept) 17.82834    0.28657  62.213\nTime        -0.67627    0.09205  -7.347\n\nCorrelation of Fixed Effects:\n     (Intr)\nTime -0.869"
+  },
+  {
+    "objectID": "gmm.html#latent-class-growth-analysis-model",
+    "href": "gmm.html#latent-class-growth-analysis-model",
+    "title": "GMM",
+    "section": "Latent class growth analysis model",
+    "text": "Latent class growth analysis model\n\n\nCode\nlibrary(lcmm)\n\nm1 &lt;- hlme(Score ~ Time, \n           subject = \"ID\", \n           ng = 1, # number of classes\n           data = df)\n\nm2_lcga &lt;- hlme(Score ~ Time, \n                mixture = ~ Time, \n                subject = \"ID\", \n                ng = 2, \n                data = df, \n                B = m1) # Feeds the starting values from the 1-class model to help the math converge\n\nsummary(m2_lcga)\n\n\nHeterogenous linear mixed model \n     fitted by maximum likelihood method \n \nhlme(fixed = Score ~ Time, mixture = ~Time, subject = \"ID\", ng = 2, \n    data = df)\n \nStatistical Model: \n     Dataset: df \n     Number of subjects: 300 \n     Number of observations: 1500 \n     Number of latent classes: 2 \n     Number of parameters: 6  \n \nIteration process: \n     Convergence criteria satisfied \n     Number of iterations:  10 \n     Convergence criteria: parameters= 1.7e-09 \n                         : likelihood= 6e-08 \n                         : second derivatives= 8e-15 \n \nGoodness-of-fit statistics: \n     maximum log-likelihood: -3765.01  \n     AIC: 7542.02  \n     BIC: 7564.24  \n \n \nMaximum Likelihood Estimates: \n \nFixed effects in the class-membership model:\n(the class of reference is the last class) \n\n                     coef      Se    Wald p-value\nintercept class1  0.90148 0.13182   6.839 0.00000\n\nFixed effects in the longitudinal model:\n\n                     coef      Se    Wald p-value\nintercept class1 15.01204 0.14884 100.864 0.00000\nintercept class2 24.76562 0.25252  98.075 0.00000\nTime class1       0.20016 0.05920   3.381 0.00072\nTime class2      -2.83514 0.10983 -25.813 0.00000\n\n                             coef      Se\nResidual standard error:  2.65744 0.04905"
+  },
+  {
+    "objectID": "gmm.html#did-it-get-it-right",
+    "href": "gmm.html#did-it-get-it-right",
+    "title": "GMM",
+    "section": "did it get it right?",
+    "text": "did it get it right?\n\n\nCode\ndf_plot &lt;- df_plot %&gt;%\n  mutate(\n    Aligned_Class = ifelse(Estimated_Class == \"Estimated Class 1\", 2, 1),\n    Classification_Status = ifelse(as.numeric(True_Class) == Aligned_Class, \n                                   \"Correct\", \n                                   \"Incorrect\")\n  )\n\naccuracy_table &lt;- table(True = df_plot$True_Class, Estimated = df_plot$Aligned_Class)\naccuracy_table\n\n\n    Estimated\nTrue    1    2\n   2   30 1060\n   1  405    5"
+  },
+  {
+    "objectID": "gmm.html#growth-mixture-model",
+    "href": "gmm.html#growth-mixture-model",
+    "title": "GMM",
+    "section": "Growth mixture model",
+    "text": "Growth mixture model\n\n\nCode\nm1_gmm &lt;- hlme(Score ~ Time, \n               random = ~ Time, #new!\n               subject = \"ID\", \n               ng = 1, \n               data = df)\n\nm2_gmm &lt;- hlme(Score ~ Time, \n               mixture = ~ Time, \n               random = ~ Time, \n               subject = \"ID\", \n               ng = 2, \n               data = df, \n               B = m1_gmm)\n\nm3_gmm &lt;- hlme(Score ~ Time, \n               mixture = ~ Time, \n               random = ~ Time, \n               subject = \"ID\", \n               ng = 3, \n               data = df, \n               B = m1_gmm)\n\nsummarytable(m1_gmm, m2_gmm, m3_gmm)\n\n\n       G    loglik npm      BIC   %class1  %class2  %class3\nm1_gmm 1 -3469.125   6 6972.472 100.00000                  \nm2_gmm 2 -3340.773   9 6732.880  72.33333 27.66667         \nm3_gmm 3 -3339.805  12 6748.055  31.00000 27.33333 41.66667"
+  },
+  {
+    "objectID": "gmm.html#lo-mendell-rubin-adjusted-lrt",
+    "href": "gmm.html#lo-mendell-rubin-adjusted-lrt",
+    "title": "GMM",
+    "section": "Lo-Mendell-Rubin Adjusted LRT",
+    "text": "Lo-Mendell-Rubin Adjusted LRT\n\nnot available in lcmm… boo. Can use tidySEM or tidyLPA\n\n\n\nCode\nlibrary(tidyLPA)\nsample_size &lt;- 300\nk2_ll &lt;- m2_gmm$loglik\nk2_params &lt;- length(m2_gmm$best) # Number of parameters\nk2_classes &lt;- 2\n\nk3_ll &lt;- m3_gmm$loglik\nk3_params &lt;- length(m3_gmm$best)\nk3_classes &lt;- 3\n\nlmr_test &lt;- calc_lrt(n = sample_size, \n                     null_ll = k2_ll, \n                     null_param = k2_params, \n                     null_classes = k2_classes, \n                     alt_ll = k3_ll, \n                     alt_param = k3_params, \n                     alt_classes = k3_classes)\n\nlmr_test\n\n\nLo-Mendell-Rubin ad-hoc adjusted likelihood ratio rest:\n\nLR = 1.937, LMR LR (df = 3) = 1.830, p = 0.609"
+  },
+  {
+    "objectID": "gmm.html#assumes-same-variability-random-effects",
+    "href": "gmm.html#assumes-same-variability-random-effects",
+    "title": "GMM",
+    "section": "assumes same variability (random effects)",
+    "text": "assumes same variability (random effects)\n\n\nCode\nm2_gmm_varying &lt;- hlme(Score ~ Time, \n                       mixture = ~ Time, \n                       random = ~ Time, \n                       subject = \"ID\", \n                       ng = 2, \n                       nwg = TRUE,  # THE SWITCH\n                       data = df, \n                       B = m1_gmm)"
+  },
+  {
+    "objectID": "gmm.html#simulated-data",
+    "href": "gmm.html#simulated-data",
+    "title": "GMM",
+    "section": "simulated data",
+    "text": "simulated data\n\nwill we be able to find differences if they are slight?\n\n\n\nCode\nset.seed(2026)\n\nN &lt;- 300\ntime_points &lt;- 0:4\n\nclass_assignment &lt;- sample(1:2, N, replace = TRUE, prob = c(0.3, 0.7))\n\ndf2 &lt;- data.frame()\nfor(i in 1:N) {\n  if(class_assignment[i] == 1) {\n    true_int &lt;- rnorm(1, mean = 15, sd = 5)   # Class 1\n    true_slope &lt;- rnorm(1, mean = 0, sd = 5) # Class 1\n  } else {\n    true_int &lt;- rnorm(1, mean = 12, sd = 5)   # Class 2 \n    true_slope &lt;- rnorm(1, mean = 1.5, sd = 5) # Class 2\n  }\n\n  scores &lt;- true_int + (true_slope * time_points) + rnorm(5, 0, 1.5)\n  \n  temp_df &lt;- data.frame(\n    ID = i,\n    True_Class = factor(class_assignment[i]),\n    Time = time_points,\n    Score = scores\n  )\n  df2 &lt;- rbind(df, temp_df)\n}\n\n\np2 &lt;- ggplot(df2, aes(x = Time, y = Score, group = ID)) +\n  geom_line(alpha = 0.2, color = \"gray30\") +\n  geom_smooth(aes(group = 1), method = \"lm\", color = \"black\", size = 2, se = FALSE) +\n  theme_minimal(base_size = 15) +\n  labs(title = \"1 trajectory\",\n       y = \"DV\") +\n  theme(plot.title = element_text(face = \"bold\"))\n\np2"
+  },
+  {
+    "objectID": "gmm.html#theory-testing",
+    "href": "gmm.html#theory-testing",
+    "title": "GMM",
+    "section": "Theory testing",
+    "text": "Theory testing\n\nGiven that you will likely find classes, as it is a data reduction technique, you have to ask yourself if you think classes are real\nNormal growth model is simply a 1-Class GMM. So we can directly compare model fit."
   }
 ]

@@ -65,24 +65,27 @@ Latent Class Analysis (LCA): A mixture model where the observed variables are ca
 
 Latent Profile Analysis (LPA): A mixture model where the observed variables are continuous at a single point in time.
 
+## LPA
+
+-   Every hidden subgroup (profile) in your data is a Multivariate Normal Distribution.
+
+-   In K-Means, the "mountains" must be perfect circles of the exact same size. In LPA, you have parameters for Variance (how wide the mountain is) and Covariance (whether the mountain is tilted diagonally)
+
 ## Mixtures
 
-- Often the DGP of our data are complex in that there could be multiple reasons someone responds the way they do. Mixture models allows us to fit more than one DGP at a time
+-   Often the DGP of our data are complex in that there could be multiple reasons someone responds the way they do. Mixture models allows us to fit more than one DGP at a time
 
-
-$$Y \sim \textrm{NB}(\mu,\phi)$$
-$$y_i  \sim \operatorname{ZIPoisson} (p_i, \lambda_i)$$
-
+$$Y \sim \textrm{NB}(\mu,\phi)$$ $$y_i  \sim \operatorname{ZIPoisson} (p_i, \lambda_i)$$
 
 ## Mixture equation
 
 $$y_i \sim \operatorname{GMM}(\boldsymbol{\pi}_i, \boldsymbol{\mu}_, \boldsymbol{\sigma}^2)$$
 
-$$y_i \sim \sum_{k=1}^K \pi_{ik} \mathcal{N}(\mu_{k}, \sigma_{k}^2)$$ 
+$$y_i \sim \sum_{k=1}^K \pi_{ik} \mathcal{N}(\mu_{k}, \sigma_{k}^2)$$
 
-- $K$: The total number of latent classes, $\pi_{ik}$: The probability that individual $i$ belongs to class $k$. $\mathcal{N}$: The Normal (Gaussian) distribution.
+-   $K$: The total number of latent classes, $\pi_{ik}$: The probability that individual $i$ belongs to class $k$. $\mathcal{N}$: The Normal (Gaussian) distribution.
 
------------
+------------------------------------------------------------------------
 
 ```{r}
 #| code-fold: true
@@ -119,14 +122,6 @@ plot_sep <- ggplot(df, aes(x = Variable, fill = Population)) +
 
 plot_combined / plot_sep
 ```
-
-
-
-## LPA
-
--   Every hidden subgroup (profile) in your data is a Multivariate Normal Distribution.
-
--   In K-Means, the "mountains" must be perfect circles of the exact same size. In LPA, you have parameters for Variance (how wide the mountain is) and Covariance (whether the mountain is tilted diagonally)
 
 ## EM algorithm
 
@@ -181,18 +176,14 @@ library(lcmm)
 
 set.seed(2026)
 
-# 1. Simulate the Data
 N <- 300
 time_points <- 0:4
 
-# Create the latent classes
 class_assignment <- sample(1:2, N, replace = TRUE, prob = c(0.3, 0.7))
 
-# Initialize an empty data frame
 df <- data.frame()
 
 for(i in 1:N) {
-  # Assign Intercept and Slope based on hidden class
   if(class_assignment[i] == 1) {
     true_int <- rnorm(1, mean = 25, sd = 2)   # Class 1: Starts high
     true_slope <- rnorm(1, mean = -3, sd = 0.5) # Class 1: Declines rapidly
@@ -200,7 +191,6 @@ for(i in 1:N) {
     true_int <- rnorm(1, mean = 15, sd = 2)   # Class 2: Starts lower
     true_slope <- rnorm(1, mean = 0.2, sd = 0.5) # Class 2: Stays flat
   }
-  
 
   scores <- true_int + (true_slope * time_points) + rnorm(5, 0, 1.5)
   
@@ -218,12 +208,11 @@ p1 <- ggplot(df, aes(x = Time, y = Score, group = ID)) +
   geom_line(alpha = 0.2, color = "gray30") +
   geom_smooth(aes(group = 1), method = "lm", color = "black", size = 2, se = FALSE) +
   theme_minimal(base_size = 15) +
-  labs(title = "Standard Growth Model (Assuming 1 Population)",
-       subtitle = "The black line is the 'average' trajectory.",
-       y = "Psychological Construct") +
+  labs(title = "1 trajectory",
+       y = "DV") +
   theme(plot.title = element_text(face = "bold"))
 
-print(p1) 
+p1
 
 ```
 
@@ -232,13 +221,12 @@ print(p1)
 ```{r}
 #| code-fold: true
 p2 <- ggplot(df, aes(x = Time, y = Score, group = ID, color = True_Class)) +
-  geom_line(alpha = 0.4) +
+  geom_line(alpha = 0.2) +
   geom_smooth(aes(group = True_Class), method = "lm", size = 2, se = FALSE) +
   scale_color_manual(values = c("#D55E00", "#0072B2"), labels = c("Responders", "Non-Responders")) +
   theme_minimal(base_size = 15) +
-  labs(title = "Growth Mixture Model (Uncovering 2 Classes)",
-       subtitle = "The algorithm finds the hidden subgroups and fits separate trajectories.",
-       y = "Psychological Construct",
+  labs(title = "Growth Mixture Model",
+       y = "DV",
        color = "Latent Class") +
   theme(plot.title = element_text(face = "bold"),
         legend.position = "bottom")
@@ -252,7 +240,363 @@ print(p2)
 
 -   Can be thought of a latent growth model with a latent class variable predicting intercept and slope.
 
+
+## start with simple growth model
+
+```{r}
+#| code-fold: true
+library(lme4)
+fit_model <- lmer(Score ~ Time + (Time | ID), data = df)
+summary(fit_model)
+```
+
+
+-----
+
+```{r}
+#| code-fold: true
+library(marginaleffects)
+
+ind_predictions <- predictions(fit_model, newdata = df)
+
+
+pop_predictions <- predictions(fit_model, 
+                               newdata = datagrid(Time = 0:4), 
+                               re.form = NA)
+
+ggplot() +
+  geom_point(data = df, aes(x = Time, y = Score), 
+             color = "gray60", alpha = 0.2, size = 1) +
+  geom_line(data = ind_predictions, aes(x = Time, y = estimate, group = ID), 
+            color = "gray50", alpha = 0.4) +
+  geom_ribbon(data = pop_predictions, aes(x = Time, ymin = conf.low, ymax = conf.high), 
+              fill = "#E53935", alpha = 0.2) +
+  geom_line(data = pop_predictions, aes(x = Time, y = estimate), 
+            color = "#E53935", size = 1.5) +
+  theme_minimal(base_size = 14) +
+  scale_x_continuous(breaks = 0:4) +
+  labs(title = "Model-Implied Trajectories",
+       x = "Time Point",
+       y = "Score")
+```
+
+
+
+-----------
+
+
+```{r}
+#| code-fold: true
+estimated_params <- coef(fit_model)$ID
+
+colnames(estimated_params) <- c("Est_Intercept", "Est_Slope")
+estimated_params$ID <- rownames(estimated_params)
+
+p_est_int <- ggplot(estimated_params, aes(x = Est_Intercept)) +
+  geom_density(fill = "#4CAF50", alpha = 0.7, color = "white") +
+  theme_minimal(base_size = 14) +
+  labs(title = "Estimated Intercepts",
+       x = "Estimated Intercept",
+       y = "Density")
+
+p_est_slope <- ggplot(estimated_params, aes(x = Est_Slope)) +
+  geom_density(fill = "#2196F3", alpha = 0.7, color = "white") +
+  theme_minimal(base_size = 14) +
+  labs(title = "Estimated Slopes",
+       x = "Estimated Slope",
+       y = "Density")
+
+p_est_scatter <- ggplot(estimated_params, aes(x = Est_Intercept, y = Est_Slope)) +
+  geom_point(alpha = 0.5, size = 2.5, color = "#673AB7") +
+  theme_minimal(base_size = 14) +
+  labs(title = "Intercept vs. Slope Covariance",
+       x = "Estimated Intercept",
+       y = "Estimated Slope")
+
+(p_est_int | p_est_slope) / p_est_scatter
+```
+
+
+## Latent class growth analysis model
+
+
+```{r}
+#| code-fold: true
+library(lcmm)
+
+m1 <- hlme(Score ~ Time, 
+           subject = "ID", 
+           ng = 1, # number of classes
+           data = df)
+
+m2_lcga <- hlme(Score ~ Time, 
+                mixture = ~ Time, 
+                subject = "ID", 
+                ng = 2, 
+                data = df, 
+                B = m1) # Feeds the starting values from the 1-class model to help the math converge
+
+summary(m2_lcga)
+
+
+```
+
+
+-------
+
+```{r}
+#| code-fold: true
+class_assignments <- m2_lcga$pprob %>%
+  select(ID, Estimated_Class = class)
+
+df_plot <- df %>%
+  left_join(class_assignments, by = "ID") %>%
+  mutate(Estimated_Class = factor(Estimated_Class, labels = c("Estimated Class 1", "Estimated Class 2")))
+
+# unfortunately marginaleffects does not work with this package
+time_grid <- data.frame(Time = 0:4)
+pred_trajectories <- predictY(m2_lcga, newdata = time_grid, var.time = "Time")
+
+pred_df <- data.frame(
+  Time = rep(0:4, 2),
+  Estimated_Class = factor(rep(1:2, each = 5), labels = c("Estimated Class 1", "Estimated Class 2")),
+  Predicted_Score = c(pred_trajectories$pred[, 1], pred_trajectories$pred[, 2])
+)
+
+ggplot() +
+  geom_line(data = df_plot, aes(x = Time, y = Score, group = ID, color = Estimated_Class), 
+            alpha = 0.2) +
+  geom_point(data = df_plot, aes(x = Time, y = Score, color = Estimated_Class), 
+             alpha = 0.2, size = 1) +
+  geom_line(data = pred_df, aes(x = Time, y = Predicted_Score, color = Estimated_Class), 
+            size = 2) +
+  theme_minimal(base_size = 14) +
+  scale_color_manual(values = c("#E53935", "#1E88E5")) +
+  scale_x_continuous(breaks = 0:4) +
+  labs(title = "Latent Class Growth Analysis (LCGA)",
+       x = "Time Point",
+       y = "Score",
+       color = "Class Assignment") +
+  theme(legend.position = "bottom")
+```
+
+## did it get it right? 
+
+```{r}
+#| code-fold: true
+df_plot <- df_plot %>%
+  mutate(
+    Aligned_Class = ifelse(Estimated_Class == "Estimated Class 1", 2, 1),
+    Classification_Status = ifelse(as.numeric(True_Class) == Aligned_Class, 
+                                   "Correct", 
+                                   "Incorrect")
+  )
+
+accuracy_table <- table(True = df_plot$True_Class, Estimated = df_plot$Aligned_Class)
+accuracy_table
+
+```
+
+
+
 ## How many classes?
+
+
+```{r}
+#| code-fold: true
+m3_lcga <- hlme(Score ~ Time, 
+                mixture = ~ Time, 
+                subject = "ID", 
+                ng = 3, 
+                data = df, 
+                B = m1)
+# built in function from lcca
+comparison_table <- summarytable(m1, m2_lcga, m3_lcga)
+```
+wut?!
+
+## Growth mixture model
+
+```{r}
+#| code-fold: true
+m1_gmm <- hlme(Score ~ Time, 
+               random = ~ Time, #new!
+               subject = "ID", 
+               ng = 1, 
+               data = df)
+
+m2_gmm <- hlme(Score ~ Time, 
+               mixture = ~ Time, 
+               random = ~ Time, 
+               subject = "ID", 
+               ng = 2, 
+               data = df, 
+               B = m1_gmm)
+
+m3_gmm <- hlme(Score ~ Time, 
+               mixture = ~ Time, 
+               random = ~ Time, 
+               subject = "ID", 
+               ng = 3, 
+               data = df, 
+               B = m1_gmm)
+
+summarytable(m1_gmm, m2_gmm, m3_gmm)
+```
+
+## Lo-Mendell-Rubin Adjusted LRT
+
+- not available in lcmm... boo. Can use tidySEM or tidyLPA
+
+```{r}
+#| code-fold: true
+library(tidyLPA)
+sample_size <- 300
+k2_ll <- m2_gmm$loglik
+k2_params <- length(m2_gmm$best) # Number of parameters
+k2_classes <- 2
+
+k3_ll <- m3_gmm$loglik
+k3_params <- length(m3_gmm$best)
+k3_classes <- 3
+
+lmr_test <- calc_lrt(n = sample_size, 
+                     null_ll = k2_ll, 
+                     null_param = k2_params, 
+                     null_classes = k2_classes, 
+                     alt_ll = k3_ll, 
+                     alt_param = k3_params, 
+                     alt_classes = k3_classes)
+
+lmr_test
+```
+
+----------
+
+```{r}
+summary(m2_gmm)
+```
+
+## assumes same variability (random effects) 
+
+```{r}
+#| code-fold: true
+m2_gmm_varying <- hlme(Score ~ Time, 
+                       mixture = ~ Time, 
+                       random = ~ Time, 
+                       subject = "ID", 
+                       ng = 2, 
+                       nwg = TRUE,  # THE SWITCH
+                       data = df, 
+                       B = m1_gmm)
+```
+
+
+---------
+
+- To have fully unrestricted matrices, you need more advanced packages, like tidySEM. 
+
+```{r}
+#| code-fold: true
+summary(m2_gmm_varying)
+```
+
+
+--------
+
+```{r}
+summarytable(m2_gmm, m2_gmm_varying)
+```
+
+-----------
+
+```{r}
+#| code-fold: true
+class_assignments <- m2_gmm$pprob %>%
+  select(ID, Estimated_Class = class)
+
+df_plot_gmm <- df %>%
+  left_join(class_assignments, by = "ID") %>%
+  mutate(
+    pred_ss1 = m2_gmm$pred$pred_ss1,
+    pred_ss2 = m2_gmm$pred$pred_ss2,
+    Fitted_Ind_Score = ifelse(Estimated_Class == 1, pred_ss1, pred_ss2),
+    
+    Estimated_Class = factor(Estimated_Class, labels = c("Class 1", "Class 2"))
+  )
+
+time_grid <- data.frame(Time = 0:4)
+class_trajectories <- predictY(m2_gmm, newdata = time_grid, var.time = "Time")
+
+pred_df_gmm <- data.frame(
+  Time = rep(0:4, 2),
+  Estimated_Class = factor(rep(1:2, each = 5), labels = c("Class 1", "Class 2")),
+  Predicted_Score = c(class_trajectories$pred[, 1], class_trajectories$pred[, 2])
+)
+
+ggplot() +
+  geom_line(data = df_plot_gmm, aes(x = Time, y = Fitted_Ind_Score, group = ID, color = Estimated_Class), 
+            alpha = 0.3) +
+  geom_point(data = df_plot_gmm, aes(x = Time, y = Score, color = Estimated_Class), 
+             alpha = 0.15, size = 1) +
+  geom_line(data = pred_df_gmm, aes(x = Time, y = Predicted_Score, color = Estimated_Class), 
+            size = 2.5) +
+  theme_minimal(base_size = 14) +
+  scale_color_manual(values = c("#E53935", "#1E88E5")) +
+  scale_x_continuous(breaks = 0:4) +
+  labs(title = "Growth Mixture Model (GMM)",
+       x = "Time Point",
+       y = "Score",
+       color = "Estimated Class") +
+  theme(legend.position = "bottom")
+```
+
+
+------------
+
+```{r}
+#| code-fold: true
+class_assignments <- m2_gmm_varying$pprob %>%
+  select(ID, Estimated_Class = class)
+
+df_plot_gmm <- df %>%
+  left_join(class_assignments, by = "ID") %>%
+  mutate(
+    pred_ss1 = m2_gmm_varying$pred$pred_ss1,
+    pred_ss2 = m2_gmm_varying$pred$pred_ss2,
+    Fitted_Ind_Score = ifelse(Estimated_Class == 1, pred_ss1, pred_ss2),
+    
+    Estimated_Class = factor(Estimated_Class, labels = c("Class 1", "Class 2"))
+  )
+
+time_grid <- data.frame(Time = 0:4)
+class_trajectories <- predictY(m2_gmm_varying, newdata = time_grid, var.time = "Time")
+
+pred_df_gmm <- data.frame(
+  Time = rep(0:4, 2),
+  Estimated_Class = factor(rep(1:2, each = 5), labels = c("Class 1", "Class 2")),
+  Predicted_Score = c(class_trajectories$pred[, 1], class_trajectories$pred[, 2])
+)
+
+ggplot() +
+  geom_line(data = df_plot_gmm, aes(x = Time, y = Fitted_Ind_Score, group = ID, color = Estimated_Class), 
+            alpha = 0.3) +
+  geom_point(data = df_plot_gmm, aes(x = Time, y = Score, color = Estimated_Class), 
+             alpha = 0.15, size = 1) +
+  geom_line(data = pred_df_gmm, aes(x = Time, y = Predicted_Score, color = Estimated_Class), 
+            size = 2.5) +
+  theme_minimal(base_size = 14) +
+  scale_color_manual(values = c( "#1E88E5", "#E53935")) +
+  scale_x_continuous(breaks = 0:4) +
+  labs(title = "Growth Mixture Model (GMM)",
+       x = "Time Point",
+       y = "Score",
+       color = "Estimated Class") +
+  theme(legend.position = "bottom")
+```
+
+
+
 
 ## Issues
 
@@ -272,7 +616,227 @@ print(p2)
 
 -   If you take a continuous variable (like a trajectory slope) and chop it into categorical buckets (classes), you are mathematically destroying information
 
--   If that logic applies to dichotomized data, why not for GMMs? \## Theory testing
+-   If that logic applies to dichotomized data, why not for GMMs? 
+
+
+## simulated data
+
+- will we be able to find differences if they are slight? 
+
+```{r}
+#| code-fold: true
+set.seed(2026)
+
+N <- 300
+time_points <- 0:4
+
+class_assignment <- sample(1:2, N, replace = TRUE, prob = c(0.3, 0.7))
+
+df2 <- data.frame()
+for(i in 1:N) {
+  if(class_assignment[i] == 1) {
+    true_int <- rnorm(1, mean = 15, sd = 5)   # Class 1
+    true_slope <- rnorm(1, mean = 0, sd = 5) # Class 1
+  } else {
+    true_int <- rnorm(1, mean = 12, sd = 5)   # Class 2 
+    true_slope <- rnorm(1, mean = 1.5, sd = 5) # Class 2
+  }
+
+  scores <- true_int + (true_slope * time_points) + rnorm(5, 0, 1.5)
+  
+  temp_df <- data.frame(
+    ID = i,
+    True_Class = factor(class_assignment[i]),
+    Time = time_points,
+    Score = scores
+  )
+  df2 <- rbind(df, temp_df)
+}
+
+
+p2 <- ggplot(df2, aes(x = Time, y = Score, group = ID)) +
+  geom_line(alpha = 0.2, color = "gray30") +
+  geom_smooth(aes(group = 1), method = "lm", color = "black", size = 2, se = FALSE) +
+  theme_minimal(base_size = 15) +
+  labs(title = "1 trajectory",
+       y = "DV") +
+  theme(plot.title = element_text(face = "bold"))
+
+p2
+```
+
+---------
+
+```{r}
+#| code-fold: true
+m1_gmm2 <- hlme(Score ~ Time, 
+               random = ~ Time, 
+               subject = "ID", 
+               ng = 1, 
+               data = df2)
+
+m2_gmm2 <- hlme(Score ~ Time, 
+               mixture = ~ Time, 
+               random = ~ Time, 
+               subject = "ID", 
+               ng = 2, 
+               data = df2, 
+               B = m1_gmm2)
+
+m3_gmm2 <- hlme(Score ~ Time, 
+               mixture = ~ Time, 
+               random = ~ Time, 
+               subject = "ID", 
+               ng = 3, 
+               data = df2, 
+               B = m1_gmm2)
+
+
+summarytable(m1_gmm2, m2_gmm2, m3_gmm2)
+```
+
+--------------
+
+-what if our random effects are skewed? 
+
+```{r}
+#| code-fold: true
+set.seed(123) 
+N <- 500
+time_points <- 0:4
+
+df_spurious <- data.frame()
+params_spurious <- data.frame()
+
+for(i in 1:N) {
+  true_int <- rgamma(1, shape = 2, rate = 0.2) + 10 
+  true_slope <- rgamma(1, shape = 2, rate = 1)      
+  
+  scores <- true_int + (true_slope * time_points) + rnorm(5, 0, 1.5)
+  
+  temp_df <- data.frame(
+    ID = i,
+    True_Class = factor(1), 
+    Time = time_points,
+    Score = scores
+  )
+  df_spurious <- rbind(df_spurious, temp_df)
+    params_spurious <- rbind(params_spurious, data.frame(
+    ID = i, 
+    True_Int = true_int, 
+    True_Slope = true_slope
+  ))
+}
+
+m1_spur <- hlme(Score ~ Time, 
+                random = ~ Time, 
+                subject = "ID", 
+                ng = 1, 
+                data = df_spurious)
+
+
+m2_spur <- hlme(Score ~ Time, 
+                mixture = ~ Time, 
+                random = ~ Time, 
+                subject = "ID", 
+                ng = 2, 
+                data = df_spurious, 
+                B = m1_spur)
+
+m3_spur <- hlme(Score ~ Time, 
+                mixture = ~ Time, 
+                random = ~ Time, 
+                subject = "ID", 
+                ng = 3, 
+                data = df_spurious, 
+                B = m1_spur)
+
+summarytable(m1_spur, m2_spur, m3_spur)
+```
+
+---------------------
+
+```{r}
+#| code-fold: true
+fake_classes2 <- m3_spur$pprob %>%
+  dplyr::select(ID, Estimated_Class = class) %>%
+  mutate(Estimated_Class = factor(Estimated_Class, 
+                                  levels = c(1, 2,3), 
+                                  labels = c("Fake Class 1", "Fake Class 2", "Fake Class 3")))
+
+
+plot_data2 <- params_spurious %>%
+  left_join(fake_classes2, by = "ID")
+
+ggplot(plot_data2, aes(x = True_Int, y = True_Slope, color = Estimated_Class)) +
+  geom_point(alpha = 0.8, size = 2.5) +
+  scale_color_manual(values = c("#E69F00", "#56B4E9", "black")) +
+  theme_minimal(base_size = 14) +
+  labs(title = "Spurious Classes",
+       x = "True Individual Intercepts",
+       y = "True Individual Slopes",
+       color = "Model class") +
+  theme(legend.position = "bottom")
+```
+
+
+------------
+
+```{r}
+#| code-fold: true
+class_assignments3 <- m3_spur$pprob %>%
+  dplyr::select(ID, Estimated_Class = class) %>%
+  mutate(Estimated_Class = factor(Estimated_Class, 
+                                  levels = c(1, 2, 3), 
+                                  labels = c("Fake Class 1", "Fake Class 2", "Fake Class 3")))
+
+df_plot_spur3 <- df_spurious %>%
+  left_join(class_assignments3, by = "ID") %>%
+  mutate(
+
+    pred_ss1 = m3_spur$pred$pred_ss1,
+    pred_ss2 = m3_spur$pred$pred_ss2,
+    pred_ss3 = m3_spur$pred$pred_ss3,
+    
+    Fitted_Ind_Score = case_when(
+      Estimated_Class == "Fake Class 1" ~ pred_ss1,
+      Estimated_Class == "Fake Class 2" ~ pred_ss2,
+      Estimated_Class == "Fake Class 3" ~ pred_ss3
+    )
+  )
+
+time_grid <- data.frame(Time = 0:4)
+class_traj3 <- predictY(m3_spur, newdata = time_grid, var.time = "Time")
+
+
+pred_df_spur3 <- data.frame(
+  Time = rep(0:4, 3),
+  Estimated_Class = factor(rep(1:3, each = 5), 
+                           labels = c("Fake Class 1", "Fake Class 2", "Fake Class 3")),
+  Predicted_Score = c(class_traj3$pred[, 1], class_traj3$pred[, 2], class_traj3$pred[, 3])
+)
+
+ggplot() +
+  geom_line(data = df_plot_spur3, aes(x = Time, y = Fitted_Ind_Score, group = ID, color = Estimated_Class), 
+            alpha = 0.3) +
+  geom_line(data = filter(pred_df_spur3, Estimated_Class == "Fake Class 1"), 
+            aes(x = Time, y = Predicted_Score), color = "#B35900", size = 2.5) + 
+  geom_line(data = filter(pred_df_spur3, Estimated_Class == "Fake Class 2"), 
+            aes(x = Time, y = Predicted_Score), color = "#00558A", size = 2.5) + 
+  geom_line(data = filter(pred_df_spur3, Estimated_Class == "Fake Class 3"), 
+            aes(x = Time, y = Predicted_Score), color = "#004D38", size = 2.5) + 
+  theme_minimal(base_size = 14) +
+  scale_color_manual(values = c("#E69F00", "#56B4E9", "#009E73")) + 
+  scale_x_continuous(breaks = 0:4) +
+  labs(title = "3-Class",
+       x = "Time Point",
+       y = "Score",
+       color = "Model's Guess") +
+  theme(legend.position = "bottom")
+```
+
+
+## Theory testing
 
 -   Given that you will likely find classes, as it is a data reduction technique, you have to ask yourself if you think classes are real
 
